@@ -1,4 +1,4 @@
-// =========================================================
+﻿// =========================================================
 // WhatsApp AI Sales Assistant — Main JS
 // Integrates Google Gemini AI (optional) + template fallback
 // =========================================================
@@ -14,7 +14,8 @@ function getContacts() {
   catch { return []; }
 }
 function saveContacts(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-function getApiKey() { return localStorage.getItem(API_KEY_STORAGE) || ''; }
+const DEFAULT_GEMINI_KEY = 'AIzaSyB7JdVh8bJv5fGpZ9vZ2qX3rW6cE7tY1uM';
+function getApiKey() { return localStorage.getItem(API_KEY_STORAGE) || DEFAULT_GEMINI_KEY; }
 function setApiKey(key) { localStorage.setItem(API_KEY_STORAGE, key.trim()); }
 
 // ===== HELPERS =====
@@ -670,3 +671,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial CRM render
   renderCRM();
 });
+
