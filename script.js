@@ -281,3 +281,164 @@
     // ===== YEAR =====
     document.getElementById('year').textContent = new Date().getFullYear();
   
+    // ===== GEMINI AI CHATBOT =====
+    let GEMINI_API_KEY = localStorage.getItem('gemini_api_key') || '';
+    let chatbotOpen = false;
+
+    function openChatbot() {
+      document.getElementById('chatbot-widget').style.display = 'flex';
+      document.getElementById('chatbot-toggle').style.display = 'none';
+      chatbotOpen = true;
+      updateApiKeyStatus();
+    }
+
+    function closeChatbot() {
+      document.getElementById('chatbot-widget').style.display = 'none';
+      document.getElementById('chatbot-toggle').style.display = 'flex';
+      chatbotOpen = false;
+    }
+
+    function updateApiKeyStatus() {
+      const status = document.getElementById('apiKeyStatus');
+      if (GEMINI_API_KEY) {
+        status.innerHTML = '✓ Gemini AI connected';
+        status.style.color = '#6ee7b7';
+      } else {
+        status.innerHTML = '<a href="#" onclick="showApiKeyModal()" style="color: #c7d2fe; text-decoration: underline;">Set up your free AI key</a>';
+      }
+    }
+
+    function showApiKeyModal() {
+      const key = prompt('Enter your Gemini API key (get one free at https://aistudio.google.com/apikey):');
+      if (key && key.trim()) {
+        GEMINI_API_KEY = key.trim();
+        localStorage.setItem('gemini_api_key', GEMINI_API_KEY);
+        updateApiKeyStatus();
+        addBotMessage('Perfect! I\'m now powered by Gemini AI. Ask me anything!');
+      }
+    }
+
+    function askSuggestion(question) {
+      document.getElementById('chatbot-input').value = question;
+      sendChatbotMessage();
+    }
+
+    async function sendChatbotMessage() {
+      const input = document.getElementById('chatbot-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      // Add user message
+      addUserMessage(message);
+      input.value = '';
+
+      // Show typing indicator
+      showTyping();
+
+      try {
+        if (!GEMINI_API_KEY) {
+          await new Promise(resolve => setTimeout(resolve, 800));
+          hideTyping();
+          addBotMessage('I\'m currently in demo mode! To unlock my full AI capabilities, click "Set up your free AI key" below. But I can still tell you: we never miss calls, we\'re available 24/7, and we cost less than hiring staff. What would you like to know?');
+          return;
+        }
+
+        const response = await callGeminiAPI(message);
+        hideTyping();
+        addBotMessage(response);
+      } catch (error) {
+        console.error('Chatbot error:', error);
+        hideTyping();
+        addBotMessage('Sorry, I had trouble thinking of a response. Could you try asking that differently?');
+      }
+    }
+
+    async function callGeminiAPI(message) {
+      const systemPrompt = `You are an AI Receptionist demo for a South African business automation service. You are friendly, professional, and helpful. You help visitors understand:
+- What the AI receptionist does (answers calls 24/7, books appointments, never misses a lead)
+- Key features (calls leads automatically, answers every call, books appointments, follows up via WhatsApp/SMS, handles multiple languages)
+- Pricing model (pay per answered call only, no monthly fees, 7-day free trial)
+- Industries served (dentists, plumbers, electricians, salons, gyms, restaurants, workshops)
+- How it works (AI answers, books into calendar, sends confirmations)
+- Benefits (never miss a customer, lower costs, better service, 24/7 availability)
+
+Keep responses concise (2-3 sentences max), conversational, and enthusiastic. Use appropriate emojis occasionally. If you don't know something specific, guide them to contact via WhatsApp or book a demo.`;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: message }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.candidates[0].content.parts[0].text;
+    }
+
+    function addUserMessage(text) {
+      const messagesDiv = document.getElementById('chatbot-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.style.cssText = 'display: flex; justify-content: flex-end; animation: fadeInUp 0.3s ease;';
+      msgDiv.innerHTML = `
+        <div style="max-width: 80%; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; padding: 0.75rem 1rem; border-radius: 16px 16px 4px 16px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap;">${text}</div>
+      `;
+      messagesDiv.appendChild(msgDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function addBotMessage(text) {
+      const messagesDiv = document.getElementById('chatbot-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.style.cssText = 'display: flex; gap: 0.5rem; animation: fadeInUp 0.3s ease;';
+      msgDiv.innerHTML = `
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">🤖</div>
+        <div style="max-width: 80%; background: rgba(255,255,255,0.05); color: #e0e7ff; padding: 0.75rem 1rem; border-radius: 16px 16px 16px 4px; font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap;">${text}</div>
+      `;
+      messagesDiv.appendChild(msgDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function showTyping() {
+      const messagesDiv = document.getElementById('chatbot-messages');
+      const typingDiv = document.createElement('div');
+      typingDiv.id = 'typing-indicator';
+      typingDiv.style.cssText = 'display: flex; gap: 0.5rem; animation: fadeInUp 0.3s ease;';
+      typingDiv.innerHTML = `
+        <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">🤖</div>
+        <div style="background: rgba(255,255,255,0.05); padding: 0.75rem 1rem; border-radius: 16px 16px 16px 4px; display: flex; gap: 0.3rem; align-items: center;">
+          <div style="width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; animation: typing 1.4s infinite;"></div>
+          <div style="width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; animation: typing 1.4s infinite 0.2s;"></div>
+          <div style="width: 6px; height: 6px; background: rgba(255,255,255,0.4); border-radius: 50%; animation: typing 1.4s infinite 0.4s;"></div>
+        </div>
+      `;
+      messagesDiv.appendChild(typingDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function hideTyping() {
+      const typing = document.getElementById('typing-indicator');
+      if (typing) typing.remove();
+    }
+
+    // Enter key to send
+    document.getElementById('chatbot-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendChatbotMessage();
+      }
+    });
+
+    // Initialize chatbot status on load
+    if (typeof window !== 'undefined') {
+      window.addEventListener('DOMContentLoaded', () => {
+        updateApiKeyStatus();
+      });
+    }
