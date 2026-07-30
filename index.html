@@ -1,1576 +1,19 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Receptionist ? Never Miss Another Customer Call | Built for South Africa</title>
-  <meta name="description" content="AI receptionist for South African businesses. Pay-per-answer, legal calling hours, SMS fallback. Books appointments, answers calls 24/7.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-primary: #050510;
-      --bg-secondary: #0a0a1a;
-      --bg-card: rgba(255, 255, 255, 0.03);
-      --bg-glass: rgba(255, 255, 255, 0.05);
-      --border-glass: rgba(255, 255, 255, 0.08);
-      --text-primary: #f0f0f5;
-      --text-secondary: #8888a0;
-      --text-muted: #555570;
-      --accent-1: #6366f1;
-      --accent-2: #8b5cf6;
-      --accent-3: #06b6d4;
-      --accent-gold: #f59e0b;
-      --glow-purple: rgba(139, 92, 246, 0.3);
-      --glow-blue: rgba(6, 182, 212, 0.3);
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.7;
-      overflow-x: hidden;
-    }
-
-    /* ===== ANIMATED BACKGROUND ===== */
-    .bg-grid {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-image:
-        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .bg-orbs {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.4;
-      animation: orbFloat 20s ease-in-out infinite;
-    }
-
-    .orb-1 {
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent 70%);
-      top: -200px; left: -100px;
-      animation-delay: 0s;
-    }
-
-    .orb-2 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 70%);
-      top: 40%; right: -150px;
-      animation-delay: -7s;
-      animation-duration: 25s;
-    }
-
-    .orb-3 {
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent 70%);
-      bottom: 10%; left: 20%;
-      animation-delay: -14s;
-      animation-duration: 22s;
-    }
-
-    @keyframes orbFloat {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(50px, -30px) scale(1.1); }
-      50% { transform: translate(-20px, 40px) scale(0.95); }
-      75% { transform: translate(30px, 20px) scale(1.05); }
-    }
-
-    /* ===== NAVIGATION ===== */
-    .navbar {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      z-index: 1000;
-      padding: 1rem 0;
-      transition: all 0.4s ease;
-    }
-
-    .navbar.scrolled {
-      background: rgba(5, 5, 16, 0.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-glass);
-      padding: 0.75rem 0;
-    }
-
-    .nav-container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      text-decoration: none;
-    }
-
-    .logo-icon {
-      width: 40px; height: 40px;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      box-shadow: 0 0 20px var(--glow-purple);
-    }
-
-    .nav-links {
-      display: flex;
-      list-style: none;
-      gap: 2rem;
-      align-items: center;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: color 0.3s;
-      position: relative;
-    }
-
-    .nav-links a:hover { color: var(--text-primary); }
-
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
-      transition: width 0.3s;
-    }
-
-    .nav-links a:hover::after { width: 100%; }
-
-    .nav-cta {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
-      color: #fff !important;
-      padding: 0.6rem 1.5rem;
-      border-radius: 10px;
-      font-weight: 600;
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-      transition: all 0.3s !important;
-    }
-
-    .nav-cta:hover {
-      box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
-      transform: translateY(-2px);
-    }
-
-    .nav-cta::after { display: none !important; }
-
-    .mobile-toggle {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 5px;
-    }
-
-    .mobile-toggle span {
-      width: 24px; height: 2px;
-      background: var(--text-primary);
-      border-radius: 2px;
-      transition: 0.3s;
-    }
-
-    /* ===== HERO ===== */
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 4rem;
-      overflow: hidden;
-    }
-
-    #hero-canvas {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--bg-glass);
-      border: 1px solid var(--border-glass);
-      border-radius: 100px;
-      padding: 0.5rem 1.25rem;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 2rem;
-      backdrop-filter: blur(10px);
-      animation: fadeInUp 0.8s ease;
-    }
-
-    .hero-badge .dot {
-      width: 8px; height: 8px;
-      background: #10b981;
-      border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-      50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-    }
-
-    .hero-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
-      animation: fadeInUp 0.8s ease 0.2s both;
-    }
-
-    .gradient-text {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #06b6d4 60%, #6366f1 100%);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: shimmer 4s linear infinite;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 0% center; }
-      100% { background-position: 200% center; }
-    }
-
-    .hero-subtitle {
-      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
-      color: var(--text-secondary);
-      max-width: 650px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.8;
-      animation: fadeInUp 0.8s ease 0.4s both;
-    }
-
-    .hero-buttons {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      animation: fadeInUp 0.8s ease 0.6s both;
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: all 0.3s;
-      border: none;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      color: #fff;
-      box-shadow: 0 0 30px rgba(99, 102, 241, 0.3), 0 10px 30px rgba(0,0,0,0.3);
-    }
-
-    .btn-primary:hover {
-      box-shadow: 0 0 50px rgba(99, 102, 241, 0.5), 0 15px 40px rgba(0,0,0,0.4);
-      transform: translateY(-3px);
-    }
-
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn-primary:hover::before { left: 100%; }
-
-    .btn-ghost {
-      background: var(--bg-glass);
-      border: 1px solid var(--border-glass);
-      color: var(--text-primary);
-      backdrop-filter: blur(10px);
-    }
-
-    .btn-ghost:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(255,255,255,0.2);
-      transform: translateY(-3px);
-    }
-
-    .btn-gold {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #fff;
-      box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
-    }
-
-    .btn-gold:hover {
-      box-shadow: 0 0 50px rgba(245, 158, 11, 0.5);
-      transform: translateY(-3px);
-    }
-
-    /* ===== SECTION UTILITIES ===== */
-    .section {
-      position: relative;
-      z-index: 2;
-      padding: 7rem 2rem;
-    }
-
-    .section-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--accent-3);
-      margin-bottom: 1rem;
-    }
-
-    .section-label::before {
-      content: '';
-      width: 30px; height: 1px;
-      background: var(--accent-3);
-    }
-
-    .section-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      line-height: 1.2;
-    }
-
-    .section-subtitle {
-      color: var(--text-secondary);
-      font-size: 1.15rem;
-      max-width: 600px;
-      margin-bottom: 3.5rem;
-    }
-
-    .text-center { text-align: center; }
-    .mx-auto { margin-left: auto; margin-right: auto; }
-
-    /* ===== GLASS CARD ===== */
-    .glass-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 20px;
-      padding: 2rem;
-      backdrop-filter: blur(10px);
-      transition: all 0.4s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .glass-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
-
-    .glass-card:hover {
-      border-color: rgba(99, 102, 241, 0.3);
-      transform: translateY(-5px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 30px rgba(99, 102, 241, 0.1);
-    }
-
-    .glass-card:hover::before { opacity: 1; }
-
-    /* ===== FEATURES GRID ===== */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .feature-card {
-      padding: 2.5rem 2rem;
-    }
-
-    .feature-icon-wrap {
-      width: 56px; height: 56px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-
-    .feature-icon-wrap.blue {
-      background: rgba(99, 102, 241, 0.1);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
-    }
-
-    .feature-icon-wrap.purple {
-      background: rgba(139, 92, 246, 0.1);
-      box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
-    }
-
-    .feature-icon-wrap.cyan {
-      background: rgba(6, 182, 212, 0.1);
-      box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
-    }
-
-    .feature-icon-wrap.emerald {
-      background: rgba(16, 185, 129, 0.1);
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
-    }
-
-    .feature-card h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-
-    .feature-card p {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.7;
-    }
-
-    .feature-badge {
-      display: inline-block;
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.25rem 0.6rem;
-      border-radius: 6px;
-      margin-bottom: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .badge-new {
-      background: rgba(16, 185, 129, 0.15);
-      color: #10b981;
-    }
-
-    .badge-popular {
-      background: rgba(245, 158, 11, 0.15);
-      color: #f59e0b;
-    }
-
-    /* ===== STATS SECTION ===== */
-    .stats-section {
-      background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.03), transparent);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 2rem;
-    }
-
-    .stat-card {
-      text-align: center;
-      padding: 3rem 2rem;
-    }
-
-    .stat-number {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 3.5rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .stat-label {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-    }
-
-    /* ===== HOW IT WORKS ===== */
-    .steps-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      position: relative;
-    }
-
-    .step-card {
-      text-align: center;
-      padding: 3rem 2rem;
-    }
-
-    .step-number {
-      width: 70px; height: 70px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 auto 1.5rem;
-      box-shadow: 0 0 30px var(--glow-purple);
-    }
-
-    .step-card h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-
-    .step-card p {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-    }
-
-    /* ===== INDUSTRIES ===== */
-    .industries-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-    }
-
-    .industry-chip {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      padding: 1.25rem 1.5rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 14px;
-      font-weight: 500;
-      font-size: 1rem;
-      transition: all 0.3s;
-      cursor: default;
-    }
-
-    .industry-chip:hover {
-      background: rgba(99, 102, 241, 0.08);
-      border-color: rgba(99, 102, 241, 0.3);
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    /* ===== TESTIMONIALS ===== */
-    .testimonials-track {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
-
-    .testimonial {
-      padding: 2rem;
-      border-radius: 18px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      transition: all 0.3s;
-    }
-
-    .testimonial:hover {
-      border-color: rgba(99, 102, 241, 0.2);
-      transform: translateY(-4px);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-    }
-
-    .testimonial-stars {
-      color: #f59e0b;
-      margin-bottom: 1rem;
-      font-size: 0.9rem;
-      letter-spacing: 2px;
-    }
-
-    .testimonial-text {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.8;
-      margin-bottom: 1.5rem;
-    }
-
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .testimonial-avatar {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: #fff;
-      flex-shrink: 0;
-    }
-
-    .testimonial-name {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .testimonial-role {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* ===== MARQUEE ===== */
-    .marquee-section {
-      padding: 3rem 0;
-      overflow: hidden;
-      border-top: 1px solid var(--border-glass);
-      border-bottom: 1px solid var(--border-glass);
-      position: relative;
-      z-index: 2;
-    }
-
-    .marquee-track {
-      display: flex;
-      animation: marquee 30s linear infinite;
-      width: max-content;
-    }
-
-    .marquee-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0 3rem;
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .marquee-item .dot {
-      width: 6px; height: 6px;
-      background: var(--accent-1);
-      border-radius: 50%;
-    }
-
-    @keyframes marquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    /* ===== FINAL CTA ===== */
-    .cta-section {
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cta-glow {
-      position: absolute;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      filter: blur(60px);
-      pointer-events: none;
-    }
-
-    .cta-content {
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ===== FOOTER ===== */
-    footer {
-      position: relative;
-      z-index: 2;
-      border-top: 1px solid var(--border-glass);
-      padding: 3rem 2rem;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-
-    footer a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    footer a:hover { color: var(--text-primary); }
-
-    /* ===== WHATSAPP FLOAT ===== */
-    .whatsapp-float {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      z-index: 999;
-      width: 60px; height: 60px;
-      background: #25d366;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-      transition: all 0.3s;
-      text-decoration: none;
-      font-size: 1.75rem;
-      animation: floatBounce 3s ease-in-out infinite;
-    }
-
-    .whatsapp-float:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
-    }
-
-    @keyframes floatBounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    /* ===== SCROLL ANIMATIONS ===== */
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 968px) {
-      .testimonials-track {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100vh;
-        background: rgba(5, 5, 16, 0.97);
-        backdrop-filter: blur(20px);
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-      }
-
-      .nav-links.open { display: flex; }
-
-      .nav-links a {
-        font-size: 1.2rem;
-      }
-
-      .mobile-toggle { display: flex; }
-
-      .hero { padding: 7rem 1.5rem 3rem; }
-
-      .section { padding: 4rem 1.5rem; }
-
-      .testimonials-track {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .hero-buttons {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .btn { width: 100%; justify-content: center; }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  
-    /* ===== DASHBOARD PREVIEW ===== */
-    .dashboard-preview { padding: 6rem 0; position: relative; z-index: 2; }
-    .dashboard-mockup {
-      max-width: 1000px;
-      margin: 3rem auto 0;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.08));
-      border: 1px solid var(--border-glass);
-      border-radius: 24px;
-      padding: 2rem;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-    }
-    .dashboard-topbar {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border-glass);
-      margin-bottom: 1.5rem;
-    }
-    .dash-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .dash-dot.red { background: #ff5f57; }
-    .dash-dot.yellow { background: #febc2e; }
-    .dash-dot.green { background: #28c840; }
-    .dashboard-topbar-title {
-      margin-left: 1rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .stat-mini {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-glass);
-      border-radius: 14px;
-      padding: 1.25rem;
-    }
-    .stat-mini-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
-    }
-    .stat-mini-value {
-      font-size: 1.8rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .stat-mini-delta {
-      font-size: 0.8rem;
-      color: #10b981;
-      margin-top: 0.25rem;
-    }
-    .feed-list { display: flex; flex-direction: column; gap: 0.6rem; }
-    .feed-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.9rem 1rem;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--border-glass);
-      border-radius: 12px;
-      transition: all 0.3s ease;
-    }
-    .feed-item:hover {
-      background: rgba(99, 102, 241, 0.05);
-      transform: translateX(6px);
-    }
-    .feed-avatar {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-    .feed-body { flex: 1; }
-    .feed-title { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
-    .feed-sub { font-size: 0.8rem; color: var(--text-muted); }
-    .feed-tag {
-      padding: 0.3rem 0.7rem;
-      background: rgba(99, 102, 241, 0.15);
-      color: var(--accent-1);
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-    .feed-tag.booked { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-    .feed-tag.calling { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-    @media (max-width: 768px) {
-      .stats-row { grid-template-columns: 1fr 1fr; }
-    }
-
-    /* ===== ROI COMPARISON ===== */
-    .roi-section { padding: 6rem 0; position: relative; z-index: 2; }
-    .roi-wrap {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 2rem;
-      margin-top: 3rem;
-      max-width: 1000px;
-      margin-left: auto;
-      margin-right: auto;
-      align-items: stretch;
-    }
-    .roi-card {
-      background: var(--bg-glass);
-      border: 1px solid var(--border-glass);
-      border-radius: 20px;
-      padding: 2.5rem;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .roi-card.hero-card {
-      border-color: var(--accent-1);
-      background: linear-gradient(180deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.04));
-      box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
-    }
-    .roi-card.hero-card::before {
-      content: 'RECOMMENDED';
-      position: absolute;
-      top: 1rem; right: -2rem;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-      color: white;
-      padding: 0.3rem 2.5rem;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      transform: rotate(35deg);
-    }
-    .roi-icon {
-      width: 60px; height: 60px;
-      border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem;
-      margin-bottom: 1.5rem;
-    }
-    .roi-icon.ai { background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); box-shadow: 0 0 30px var(--glow-blue); }
-    .roi-icon.human { background: rgba(255, 255, 255, 0.08); }
-    .roi-card h3 { font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700; }
-    .roi-price-line { font-size: 3rem; font-weight: 800; margin-bottom: 0.25rem; }
-    .roi-price-line.gradient {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .roi-price-sub { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
-    .roi-divider { height: 1px; background: var(--border-glass); margin: 1.5rem 0; }
-    .roi-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
-    .roi-list li {
-      display: flex; align-items: flex-start; gap: 0.75rem;
-      font-size: 0.95rem;
-    }
-    .roi-check { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
-    .roi-check.yes { background: linear-gradient(135deg, #10b981, #06b6d4); color: white; }
-    .roi-check.no { background: rgba(255, 255, 255, 0.1); color: #f43f5e; }
-    .roi-vs {
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; font-weight: 800;
-      color: var(--text-muted);
-      padding: 0 0.5rem;
-    }
-    @media (max-width: 768px) {
-      .roi-wrap { grid-template-columns: 1fr; }
-      .roi-vs { transform: rotate(90deg); padding: 1rem 0; }
-    }
-
-    /* ===== FAQ ACCORDION ===== */
-    .faq-section {
-      padding: 6rem 0;
-      position: relative;
-      z-index: 2;
-    }
-    .faq-container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .faq-item {
-      background: var(--bg-glass);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      margin-bottom: 1rem;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-    }
-    .faq-item:hover {
-      border-color: rgba(99, 102, 241, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    .faq-question {
-      padding: 1.5rem 2rem;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      font-size: 1.05rem;
-      color: var(--text-primary);
-      transition: all 0.3s ease;
-      user-select: none;
-    }
-    .faq-question:hover { color: var(--accent-1); }
-    .faq-icon {
-      font-size: 1.5rem;
-      transition: transform 0.3s ease;
-      color: var(--accent-1);
-      flex-shrink: 0;
-      margin-left: 1rem;
-    }
-    .faq-item.active .faq-icon { transform: rotate(45deg); }
-    .faq-answer {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease, padding 0.4s ease;
-      padding: 0 2rem;
-    }
-    .faq-item.active .faq-answer {
-      max-height: 500px;
-      padding: 0 2rem 1.5rem 2rem;
-    }
-    .faq-answer p {
-      color: var(--text-secondary);
-      line-height: 1.8;
-      font-size: 0.95rem;
-    }
-    @media (max-width: 768px) {
-      .faq-question { font-size: 0.95rem; padding: 1.2rem 1.5rem; }
-      .faq-answer { padding: 0 1.5rem; }
-      .faq-item.active .faq-answer { padding: 0 1.5rem 1.2rem 1.5rem; }
-    }
-
-    /* ===== PHONE CALL DEMO ===== */
-    .phone-demo-section {
-      padding: 6rem 0;
-      position: relative;
-      z-index: 2;
-    }
-    .phone-container {
-      max-width: 420px;
-      margin: 3rem auto 0;
-      perspective: 1000px;
-    }
-    .phone-frame {
-      background: linear-gradient(145deg, #1a1a2e, #0f0f1e);
-      border-radius: 40px;
-      padding: 1rem 1.5rem 2rem;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 60px rgba(99, 102, 241, 0.2);
-      border: 2px solid rgba(99, 102, 241, 0.3);
-      position: relative;
-      overflow: hidden;
-    }
-    .phone-notch {
-      width: 120px;
-      height: 22px;
-      background: #000;
-      border-radius: 20px;
-      margin: 0 auto 1.5rem;
-    }
-    .phone-header { text-align: center; margin-bottom: 1.5rem; }
-    .caller-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1rem;
-      font-size: 2rem;
-      animation: pulse-ring 2s infinite;
-    }
-    @keyframes pulse-ring {
-      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
-      70% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-    }
-    .caller-name {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 0.3rem;
-    }
-    .caller-business { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
-    .call-status {
-      font-size: 0.85rem;
-      color: #10b981;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      font-weight: 500;
-    }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #10b981;
-      animation: blink 1.5s infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-    .conversation-area {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      padding: 1.25rem;
-      min-height: 320px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      max-height: 380px;
-      overflow-y: auto;
-    }
-    .phone-msg {
-      max-width: 85%;
-      padding: 0.75rem 1rem;
-      border-radius: 14px;
-      font-size: 0.88rem;
-      line-height: 1.5;
-      opacity: 0;
-      transform: translateY(8px);
-      animation: message-appear 0.4s forwards;
-    }
-    @keyframes message-appear {
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .phone-msg.customer {
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #6ee7b7;
-      align-self: flex-end;
-      border-bottom-right-radius: 4px;
-    }
-    .phone-msg.customer::before {
-    content: "\\1F464 Customer";
-      display: block;
-      font-size: 0.7rem;
-      color: #10b981;
-      margin-bottom: 0.3rem;
-      font-weight: 600;
-    }
-    .phone-msg.ai {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.08));
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: var(--text-primary);
-      align-self: flex-start;
-      border-bottom-left-radius: 4px;
-    }
-    .phone-msg.ai::before {
-    content: "\\1F916 AI Receptionist";
-      display: block;
-      font-size: 0.7rem;
-      color: var(--accent-1);
-      margin-bottom: 0.3rem;
-      font-weight: 600;
-    }
-    .msg-typing {
-      display: flex;
-      gap: 4px;
-      padding: 0.75rem 1rem;
-      align-self: flex-start;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.08));
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      border-radius: 14px;
-      border-bottom-left-radius: 4px;
-    }
-    .typing-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--accent-1);
-      animation: typing-bounce 1.4s infinite;
-    }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes typing-bounce {
-      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-      30% { transform: translateY(-8px); opacity: 1; }
-    }
-    .demo-controls {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 2rem;
-      flex-wrap: wrap;
-    }
-    .demo-btn {
-      padding: 0.7rem 1.3rem;
-      background: var(--bg-glass);
-      border: 1px solid var(--border-glass);
-      border-radius: 12px;
-      color: var(--text-secondary);
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 0.85rem;
-    }
-    .demo-btn:hover, .demo-btn.active {
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-      color: white;
-      border-color: transparent;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
-    }
-
-    /* ===== TRIAL BANNER ===== */
-    .trial-banner {
-      margin-top: 2rem;
-      padding: 1rem 2rem;
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.08));
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.8rem;
-      color: #6ee7b7;
-      font-weight: 500;
-      font-size: 0.95rem;
-    }
-  </style>
-</head>
-<body>
-  <!-- Animated Background -->
-  <div class="bg-grid"></div>
-  <div class="bg-orbs">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
-
-  <!-- Navigation -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-container">
-      <a href="#home" class="logo">
-  <div class="logo-icon">&#x1F916;</div>
-        <span>AI Receptionist</span>
-      </a>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="#features">What It Does</a></li>
-        <li><a href="#how-it-works">How It Works</a></li>
-        <li><a href="#industries">Industries</a></li>
-        <li><a href="#testimonials">Reviews</a></li>
-        <li><a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="nav-cta">Book Demo</a></li>
-      </ul>
-      <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- Hero -->
-  <section class="hero" id="home">
-    <canvas id="hero-canvas"></canvas>
-    <div class="hero-content">
-      <div class="hero-badge">
-        <span class="dot"></span>
-        Built for South Africa ? Pay Per Answer ? WhatsApp & SMS ? 24/7 AI
+﻿<!DOCTYPE html> <html lang="en"> <head>   <meta charset="UTF-8">   <meta name="viewport" content="width=device-width, initial-scale=1.0">   <title>AI Receptionist ? Never Miss Another Customer Call | Built for South Africa</title>   <meta name="description" content="AI receptionist for South African businesses. Pay-per-answer, legal calling hours, SMS fallback. Books appointments, answers calls 24/7.">   <link rel="preconnect" href="https://fonts.googleapis.com">   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">   <style>     :root {       --bg-primary: #050510;       --bg-secondary: #0a0a1a;       --bg-card: rgba(255, 255, 255, 0.03);       --bg-glass: rgba(255, 255, 255, 0.05);       --border-glass: rgba(255, 255, 255, 0.08);       --text-primary: #f0f0f5;       --text-secondary: #8888a0;       --text-muted: #555570;       --accent-1: #6366f1;       --accent-2: #8b5cf6;       --accent-3: #06b6d4;       --accent-gold: #f59e0b;       --glow-purple: rgba(139, 92, 246, 0.3);       --glow-blue: rgba(6, 182, 212, 0.3);     }      * { margin: 0; padding: 0; box-sizing: border-box; }      html { scroll-behavior: smooth; }      body {       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;       background: var(--bg-primary);       color: var(--text-primary);       line-height: 1.7;       overflow-x: hidden;     }      /* ===== ANIMATED BACKGROUND ===== */     .bg-grid {       position: fixed;       top: 0; left: 0;       width: 100%; height: 100%;       background-image:         linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),         linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);       background-size: 60px 60px;       z-index: 0;       pointer-events: none;     }      .bg-orbs {       position: fixed;       top: 0; left: 0;       width: 100%; height: 100%;       z-index: 0;       pointer-events: none;       overflow: hidden;     }      .orb {       position: absolute;       border-radius: 50%;       filter: blur(80px);       opacity: 0.4;       animation: orbFloat 20s ease-in-out infinite;     }      .orb-1 {       width: 600px; height: 600px;       background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent 70%);       top: -200px; left: -100px;       animation-delay: 0s;     }      .orb-2 {       width: 500px; height: 500px;       background: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 70%);       top: 40%; right: -150px;       animation-delay: -7s;       animation-duration: 25s;     }      .orb-3 {       width: 400px; height: 400px;       background: radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent 70%);       bottom: 10%; left: 20%;       animation-delay: -14s;       animation-duration: 22s;     }      @keyframes orbFloat {       0%, 100% { transform: translate(0, 0) scale(1); }       25% { transform: translate(50px, -30px) scale(1.1); }       50% { transform: translate(-20px, 40px) scale(0.95); }       75% { transform: translate(30px, 20px) scale(1.05); }     }      /* ===== NAVIGATION ===== */     .navbar {       position: fixed;       top: 0; left: 0;       width: 100%;       z-index: 1000;       padding: 1rem 0;       transition: all 0.4s ease;     }      .navbar.scrolled {       background: rgba(5, 5, 16, 0.85);       backdrop-filter: blur(20px);       border-bottom: 1px solid var(--border-glass);       padding: 0.75rem 0;     }      .nav-container {       max-width: 1280px;       margin: 0 auto;       padding: 0 2rem;       display: flex;       justify-content: space-between;       align-items: center;     }      .logo {       display: flex;       align-items: center;       gap: 0.75rem;       font-family: 'Space Grotesk', sans-serif;       font-size: 1.4rem;       font-weight: 700;       color: var(--text-primary);       text-decoration: none;     }      .logo-icon {       width: 40px; height: 40px;       background: linear-gradient(135deg, var(--accent-1), var(--accent-2));       border-radius: 12px;       display: flex;       align-items: center;       justify-content: center;       font-size: 1.2rem;       box-shadow: 0 0 20px var(--glow-purple);     }      .nav-links {       display: flex;       list-style: none;       gap: 2rem;       align-items: center;     }      .nav-links a {       text-decoration: none;       color: var(--text-secondary);       font-size: 0.9rem;       font-weight: 500;       transition: color 0.3s;       position: relative;     }      .nav-links a:hover { color: var(--text-primary); }      .nav-links a::after {       content: '';       position: absolute;       bottom: -4px;       left: 0;       width: 0;       height: 2px;       background: linear-gradient(90deg, var(--accent-1), var(--accent-3));       transition: width 0.3s;     }      .nav-links a:hover::after { width: 100%; }      .nav-cta {       background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;       color: #fff !important;       padding: 0.6rem 1.5rem;       border-radius: 10px;       font-weight: 600;       box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);       transition: all 0.3s !important;     }      .nav-cta:hover {       box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);       transform: translateY(-2px);     }      .nav-cta::after { display: none !important; }      .mobile-toggle {       display: none;       flex-direction: column;       gap: 5px;       background: none;       border: none;       cursor: pointer;       padding: 5px;     }      .mobile-toggle span {       width: 24px; height: 2px;       background: var(--text-primary);       border-radius: 2px;       transition: 0.3s;     }      /* ===== HERO ===== */     .hero {       position: relative;       min-height: 100vh;       display: flex;       align-items: center;       justify-content: center;       text-align: center;       padding: 8rem 2rem 4rem;       overflow: hidden;     }      #hero-canvas {       position: absolute;       top: 0; left: 0;       width: 100%; height: 100%;       z-index: 1;     }      .hero-content {       position: relative;       z-index: 2;       max-width: 900px;     }      .hero-badge {       display: inline-flex;       align-items: center;       gap: 0.5rem;       background: var(--bg-glass);       border: 1px solid var(--border-glass);       border-radius: 100px;       padding: 0.5rem 1.25rem;       font-size: 0.85rem;       color: var(--text-secondary);       margin-bottom: 2rem;       backdrop-filter: blur(10px);       animation: fadeInUp 0.8s ease;     }      .hero-badge .dot {       width: 8px; height: 8px;       background: #10b981;       border-radius: 50%;       animation: pulse 2s ease-in-out infinite;     }      @keyframes pulse {       0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }       50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }     }      .hero-title {       font-family: 'Space Grotesk', sans-serif;       font-size: clamp(2.5rem, 6vw, 4.5rem);       font-weight: 800;       line-height: 1.1;       margin-bottom: 1.5rem;       animation: fadeInUp 0.8s ease 0.2s both;     }      .gradient-text {       background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #06b6d4 60%, #6366f1 100%);       background-size: 200% auto;       -webkit-background-clip: text;       -webkit-text-fill-color: transparent;       background-clip: text;       animation: shimmer 4s linear infinite;     }      @keyframes shimmer {       0% { background-position: 0% center; }       100% { background-position: 200% center; }     }      .hero-subtitle {       font-size: clamp(1.1rem, 2.5vw, 1.35rem);       color: var(--text-secondary);       max-width: 650px;       margin: 0 auto 2.5rem;       line-height: 1.8;       animation: fadeInUp 0.8s ease 0.4s both;     }      .hero-buttons {       display: flex;       gap: 1rem;       justify-content: center;       flex-wrap: wrap;       animation: fadeInUp 0.8s ease 0.6s both;     }      /* ===== BUTTONS ===== */     .btn {       display: inline-flex;       align-items: center;       gap: 0.5rem;       padding: 1rem 2rem;       border-radius: 12px;       text-decoration: none;       font-weight: 600;       font-size: 1rem;       transition: all 0.3s;       border: none;       cursor: pointer;       position: relative;       overflow: hidden;     }      .btn-primary {       background: linear-gradient(135deg, var(--accent-1), var(--accent-2));       color: #fff;       box-shadow: 0 0 30px rgba(99, 102, 241, 0.3), 0 10px 30px rgba(0,0,0,0.3);     }      .btn-primary:hover {       box-shadow: 0 0 50px rgba(99, 102, 241, 0.5), 0 15px 40px rgba(0,0,0,0.4);       transform: translateY(-3px);     }      .btn-primary::before {       content: '';       position: absolute;       top: 0; left: -100%;       width: 100%; height: 100%;       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);       transition: left 0.5s;     }      .btn-primary:hover::before { left: 100%; }      .btn-ghost {       background: var(--bg-glass);       border: 1px solid var(--border-glass);       color: var(--text-primary);       backdrop-filter: blur(10px);     }      .btn-ghost:hover {       background: rgba(255,255,255,0.1);       border-color: rgba(255,255,255,0.2);       transform: translateY(-3px);     }      .btn-gold {       background: linear-gradient(135deg, #f59e0b, #d97706);       color: #fff;       box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);     }      .btn-gold:hover {       box-shadow: 0 0 50px rgba(245, 158, 11, 0.5);       transform: translateY(-3px);     }      /* ===== SECTION UTILITIES ===== */     .section {       position: relative;       z-index: 2;       padding: 7rem 2rem;     }      .section-container {       max-width: 1200px;       margin: 0 auto;     }      .section-label {       display: inline-flex;       align-items: center;       gap: 0.5rem;       font-size: 0.8rem;       font-weight: 600;       text-transform: uppercase;       letter-spacing: 2px;       color: var(--accent-3);       margin-bottom: 1rem;     }      .section-label::before {       content: '';       width: 30px; height: 1px;       background: var(--accent-3);     }      .section-title {       font-family: 'Space Grotesk', sans-serif;       font-size: clamp(2rem, 4vw, 3rem);       font-weight: 700;       margin-bottom: 1.5rem;       line-height: 1.2;     }      .section-subtitle {       color: var(--text-secondary);       font-size: 1.15rem;       max-width: 600px;       margin-bottom: 3.5rem;     }      .text-center { text-align: center; }     .mx-auto { margin-left: auto; margin-right: auto; }      /* ===== GLASS CARD ===== */     .glass-card {       background: var(--bg-card);       border: 1px solid var(--border-glass);       border-radius: 20px;       padding: 2rem;       backdrop-filter: blur(10px);       transition: all 0.4s ease;       position: relative;       overflow: hidden;     }      .glass-card::before {       content: '';       position: absolute;       top: 0; left: 0;       width: 100%; height: 100%;       background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, transparent 50%);       opacity: 0;       transition: opacity 0.4s;     }      .glass-card:hover {       border-color: rgba(99, 102, 241, 0.3);       transform: translateY(-5px);       box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 30px rgba(99, 102, 241, 0.1);     }      .glass-card:hover::before { opacity: 1; }      /* ===== FEATURES GRID ===== */     .features-grid {       display: grid;       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));       gap: 1.5rem;     }      .feature-card {       padding: 2.5rem 2rem;     }      .feature-icon-wrap {       width: 56px; height: 56px;       border-radius: 14px;       display: flex;       align-items: center;       justify-content: center;       font-size: 1.5rem;       margin-bottom: 1.5rem;       position: relative;     }      .feature-icon-wrap.blue {       background: rgba(99, 102, 241, 0.1);       box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);     }      .feature-icon-wrap.purple {       background: rgba(139, 92, 246, 0.1);       box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);     }      .feature-icon-wrap.cyan {       background: rgba(6, 182, 212, 0.1);       box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);     }      .feature-icon-wrap.emerald {       background: rgba(16, 185, 129, 0.1);       box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);     }      .feature-card h3 {       font-family: 'Space Grotesk', sans-serif;       font-size: 1.2rem;       font-weight: 600;       margin-bottom: 0.75rem;     }      .feature-card p {       color: var(--text-secondary);       font-size: 0.95rem;       line-height: 1.7;     }      .feature-badge {       display: inline-block;       font-size: 0.7rem;       font-weight: 700;       padding: 0.25rem 0.6rem;       border-radius: 6px;       margin-bottom: 0.75rem;       text-transform: uppercase;       letter-spacing: 0.5px;     }      .badge-new {       background: rgba(16, 185, 129, 0.15);       color: #10b981;     }      .badge-popular {       background: rgba(245, 158, 11, 0.15);       color: #f59e0b;     }      /* ===== STATS SECTION ===== */     .stats-section {       background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.03), transparent);     }      .stats-grid {       display: grid;       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));       gap: 2rem;     }      .stat-card {       text-align: center;       padding: 3rem 2rem;     }      .stat-number {       font-family: 'Space Grotesk', sans-serif;       font-size: 3.5rem;       font-weight: 800;       margin-bottom: 0.5rem;       background: linear-gradient(135deg, var(--accent-1), var(--accent-3));       -webkit-background-clip: text;       -webkit-text-fill-color: transparent;       background-clip: text;     }      .stat-label {       color: var(--text-secondary);       font-size: 0.95rem;     }      /* ===== HOW IT WORKS ===== */     .steps-container {       display: grid;       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));       gap: 2rem;       position: relative;     }      .step-card {       text-align: center;       padding: 3rem 2rem;     }      .step-number {       width: 70px; height: 70px;       border-radius: 50%;       background: linear-gradient(135deg, var(--accent-1), var(--accent-2));       display: flex;       align-items: center;       justify-content: center;       font-family: 'Space Grotesk', sans-serif;       font-size: 1.5rem;       font-weight: 700;       margin: 0 auto 1.5rem;       box-shadow: 0 0 30px var(--glow-purple);     }      .step-card h3 {       font-family: 'Space Grotesk', sans-serif;       font-size: 1.25rem;       font-weight: 600;       margin-bottom: 1rem;     }      .step-card p {       color: var(--text-secondary);       font-size: 0.95rem;     }      /* ===== INDUSTRIES ===== */     .industries-grid {       display: grid;       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));       gap: 1rem;     }      .industry-chip {       display: flex;       align-items: center;       justify-content: center;       gap: 0.75rem;       padding: 1.25rem 1.5rem;       background: var(--bg-card);       border: 1px solid var(--border-glass);       border-radius: 14px;       font-weight: 500;       font-size: 1rem;       transition: all 0.3s;       cursor: default;     }      .industry-chip:hover {       background: rgba(99, 102, 241, 0.08);       border-color: rgba(99, 102, 241, 0.3);       transform: translateY(-3px);       box-shadow: 0 10px 30px rgba(0,0,0,0.2);     }      /* ===== TESTIMONIALS ===== */     .testimonials-track {       display: grid;       grid-template-columns: repeat(3, 1fr);       gap: 1.5rem;     }      .testimonial {       padding: 2rem;       border-radius: 18px;       background: var(--bg-card);       border: 1px solid var(--border-glass);       transition: all 0.3s;     }      .testimonial:hover {       border-color: rgba(99, 102, 241, 0.2);       transform: translateY(-4px);       box-shadow: 0 15px 40px rgba(0,0,0,0.2);     }      .testimonial-stars {       color: #f59e0b;       margin-bottom: 1rem;       font-size: 0.9rem;       letter-spacing: 2px;     }      .testimonial-text {       color: var(--text-secondary);       font-size: 0.95rem;       line-height: 1.8;       margin-bottom: 1.5rem;     }      .testimonial-author {       display: flex;       align-items: center;       gap: 0.75rem;     }      .testimonial-avatar {       width: 40px; height: 40px;       border-radius: 50%;       background: linear-gradient(135deg, var(--accent-1), var(--accent-3));       display: flex;       align-items: center;       justify-content: center;       font-weight: 700;       font-size: 0.85rem;       color: #fff;       flex-shrink: 0;     }      .testimonial-name {       font-weight: 600;       font-size: 0.9rem;     }      .testimonial-role {       font-size: 0.8rem;       color: var(--text-muted);     }      /* ===== MARQUEE ===== */     .marquee-section {       padding: 3rem 0;       overflow: hidden;       border-top: 1px solid var(--border-glass);       border-bottom: 1px solid var(--border-glass);       position: relative;       z-index: 2;     }      .marquee-track {       display: flex;       animation: marquee 30s linear infinite;       width: max-content;     }      .marquee-item {       display: flex;       align-items: center;       gap: 0.75rem;       padding: 0 3rem;       font-size: 1.1rem;       font-weight: 500;       color: var(--text-muted);       white-space: nowrap;     }      .marquee-item .dot {       width: 6px; height: 6px;       background: var(--accent-1);       border-radius: 50%;     }      @keyframes marquee {       0% { transform: translateX(0); }       100% { transform: translateX(-50%); }     }      /* ===== FINAL CTA ===== */     .cta-section {       text-align: center;       position: relative;       overflow: hidden;     }      .cta-glow {       position: absolute;       width: 500px; height: 500px;       background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent 70%);       top: 50%; left: 50%;       transform: translate(-50%, -50%);       filter: blur(60px);       pointer-events: none;     }      .cta-content {       position: relative;       z-index: 1;     }      /* ===== FOOTER ===== */     footer {       position: relative;       z-index: 2;       border-top: 1px solid var(--border-glass);       padding: 3rem 2rem;       text-align: center;       color: var(--text-muted);       font-size: 0.85rem;     }      footer a {       color: var(--text-secondary);       text-decoration: none;       transition: color 0.3s;     }      footer a:hover { color: var(--text-primary); }      /* ===== WHATSAPP FLOAT ===== */     .whatsapp-float {       position: fixed;       bottom: 2rem;       right: 2rem;       z-index: 999;       width: 60px; height: 60px;       background: #25d366;       border-radius: 50%;       display: flex;       align-items: center;       justify-content: center;       box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);       transition: all 0.3s;       text-decoration: none;       font-size: 1.75rem;       animation: floatBounce 3s ease-in-out infinite;     }      .whatsapp-float:hover {       transform: scale(1.1);       box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);     }      @keyframes floatBounce {       0%, 100% { transform: translateY(0); }       50% { transform: translateY(-8px); }     }      /* ===== SCROLL ANIMATIONS ===== */     .reveal {       opacity: 0;       transform: translateY(40px);       transition: opacity 0.8s ease, transform 0.8s ease;     }      .reveal.visible {       opacity: 1;       transform: translateY(0);     }      .reveal-delay-1 { transition-delay: 0.1s; }     .reveal-delay-2 { transition-delay: 0.2s; }     .reveal-delay-3 { transition-delay: 0.3s; }      @keyframes fadeInUp {       from { opacity: 0; transform: translateY(30px); }       to { opacity: 1; transform: translateY(0); }     }      /* ===== RESPONSIVE ===== */     @media (max-width: 968px) {       .testimonials-track {         grid-template-columns: repeat(2, 1fr);       }     }      @media (max-width: 768px) {       .nav-links {         display: none;         position: fixed;         top: 0; left: 0;         width: 100%; height: 100vh;         background: rgba(5, 5, 16, 0.97);         backdrop-filter: blur(20px);         flex-direction: column;         justify-content: center;         align-items: center;         gap: 2rem;       }        .nav-links.open { display: flex; }        .nav-links a {         font-size: 1.2rem;       }        .mobile-toggle { display: flex; }        .hero { padding: 7rem 1.5rem 3rem; }        .section { padding: 4rem 1.5rem; }        .testimonials-track {         grid-template-columns: 1fr;       }     }      @media (max-width: 480px) {       .hero-buttons {         flex-direction: column;         align-items: center;       }        .btn { width: 100%; justify-content: center; }        .stats-grid {         grid-template-columns: 1fr;       }     }        /* ===== DASHBOARD PREVIEW ===== */     .dashboard-preview { padding: 6rem 0; position: relative; z-index: 2; }     .dashboard-mockup {       max-width: 1000px;       margin: 3rem auto 0;       background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.08));       border: 1px solid var(--border-glass);       border-radius: 24px;       padding: 2rem;       backdrop-filter: blur(20px);       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);     }     .dashboard-topbar {       display: flex;       align-items: center;       gap: 0.75rem;       padding-bottom: 1.5rem;       border-bottom: 1px solid var(--border-glass);       margin-bottom: 1.5rem;     }     .dash-dot { width: 12px; height: 12px; border-radius: 50%; }     .dash-dot.red { background: #ff5f57; }     .dash-dot.yellow { background: #febc2e; }     .dash-dot.green { background: #28c840; }     .dashboard-topbar-title {       margin-left: 1rem;       font-weight: 600;       color: var(--text-secondary);     }     .stats-row {       display: grid;       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));       gap: 1rem;       margin-bottom: 1.5rem;     }     .stat-mini {       background: rgba(255, 255, 255, 0.03);       border: 1px solid var(--border-glass);       border-radius: 14px;       padding: 1.25rem;     }     .stat-mini-label {       font-size: 0.75rem;       color: var(--text-muted);       text-transform: uppercase;       letter-spacing: 0.05em;       margin-bottom: 0.5rem;     }     .stat-mini-value {       font-size: 1.8rem;       font-weight: 700;       background: linear-gradient(135deg, var(--accent-1), var(--accent-3));       -webkit-background-clip: text;       -webkit-text-fill-color: transparent;       background-clip: text;     }     .stat-mini-delta {       font-size: 0.8rem;       color: #10b981;       margin-top: 0.25rem;     }     .feed-list { display: flex; flex-direction: column; gap: 0.6rem; }     .feed-item {       display: flex;       align-items: center;       gap: 1rem;       padding: 0.9rem 1rem;       background: rgba(255, 255, 255, 0.02);       border: 1px solid var(--border-glass);       border-radius: 12px;       transition: all 0.3s ease;     }     .feed-item:hover {       background: rgba(99, 102, 241, 0.05);       transform: translateX(6px);     }     .feed-avatar {       width: 36px; height: 36px;       border-radius: 50%;       background: linear-gradient(135deg, var(--accent-1), var(--accent-2));       display: flex;       align-items: center;       justify-content: center;       font-size: 0.85rem;       font-weight: 600;       flex-shrink: 0;     }     .feed-body { flex: 1; }     .feed-title { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }     .feed-sub { font-size: 0.8rem; color: var(--text-muted); }     .feed-tag {       padding: 0.3rem 0.7rem;       background: rgba(99, 102, 241, 0.15);       color: var(--accent-1);       border-radius: 20px;       font-size: 0.75rem;       font-weight: 500;     }     .feed-tag.booked { background: rgba(16, 185, 129, 0.15); color: #10b981; }     .feed-tag.calling { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }     @media (max-width: 768px) {       .stats-row { grid-template-columns: 1fr 1fr; }     }      /* ===== ROI COMPARISON ===== */     .roi-section { padding: 6rem 0; position: relative; z-index: 2; }     .roi-wrap {       display: grid;       grid-template-columns: 1fr auto 1fr;       gap: 2rem;       margin-top: 3rem;       max-width: 1000px;       margin-left: auto;       margin-right: auto;       align-items: stretch;     }     .roi-card {       background: var(--bg-glass);       border: 1px solid var(--border-glass);       border-radius: 20px;       padding: 2.5rem;       backdrop-filter: blur(10px);       transition: all 0.3s ease;       position: relative;       overflow: hidden;     }     .roi-card.hero-card {       border-color: var(--accent-1);       background: linear-gradient(180deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.04));       box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);     }     .roi-card.hero-card::before {       content: 'RECOMMENDED';       position: absolute;       top: 1rem; right: -2rem;       background: linear-gradient(135deg, var(--accent-1), var(--accent-3));       color: white;       padding: 0.3rem 2.5rem;       font-size: 0.7rem;       font-weight: 700;       letter-spacing: 0.1em;       transform: rotate(35deg);     }     .roi-icon {       width: 60px; height: 60px;       border-radius: 16px;       display: flex; align-items: center; justify-content: center;       font-size: 1.8rem;       margin-bottom: 1.5rem;     }     .roi-icon.ai { background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); box-shadow: 0 0 30px var(--glow-blue); }     .roi-icon.human { background: rgba(255, 255, 255, 0.08); }     .roi-card h3 { font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700; }     .roi-price-line { font-size: 3rem; font-weight: 800; margin-bottom: 0.25rem; }     .roi-price-line.gradient {       background: linear-gradient(135deg, var(--accent-1), var(--accent-3));       -webkit-background-clip: text;       -webkit-text-fill-color: transparent;       background-clip: text;     }     .roi-price-sub { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; }     .roi-divider { height: 1px; background: var(--border-glass); margin: 1.5rem 0; }     .roi-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }     .roi-list li {       display: flex; align-items: flex-start; gap: 0.75rem;       font-size: 0.95rem;     }     .roi-check { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }     .roi-check.yes { background: linear-gradient(135deg, #10b981, #06b6d4); color: white; }     .roi-check.no { background: rgba(255, 255, 255, 0.1); color: #f43f5e; }     .roi-vs {       display: flex; align-items: center; justify-content: center;       font-size: 1.2rem; font-weight: 800;       color: var(--text-muted);       padding: 0 0.5rem;     }     @media (max-width: 768px) {       .roi-wrap { grid-template-columns: 1fr; }       .roi-vs { transform: rotate(90deg); padding: 1rem 0; }     }      /* ===== FAQ ACCORDION ===== */     .faq-section {       padding: 6rem 0;       position: relative;       z-index: 2;     }     .faq-container {       max-width: 800px;       margin: 0 auto;     }     .faq-item {       background: var(--bg-glass);       border: 1px solid var(--border-glass);       border-radius: 16px;       margin-bottom: 1rem;       overflow: hidden;       backdrop-filter: blur(10px);       transition: all 0.3s ease;     }     .faq-item:hover {       border-color: rgba(99, 102, 241, 0.3);       transform: translateY(-2px);       box-shadow: 0 10px 30px rgba(0,0,0,0.2);     }     .faq-question {       padding: 1.5rem 2rem;       cursor: pointer;       display: flex;       justify-content: space-between;       align-items: center;       font-weight: 600;       font-size: 1.05rem;       color: var(--text-primary);       transition: all 0.3s ease;       user-select: none;     }     .faq-question:hover { color: var(--accent-1); }     .faq-icon {       font-size: 1.5rem;       transition: transform 0.3s ease;       color: var(--accent-1);       flex-shrink: 0;       margin-left: 1rem;     }     .faq-item.active .faq-icon { transform: rotate(45deg); }     .faq-answer {       max-height: 0;       overflow: hidden;       transition: max-height 0.4s ease, padding 0.4s ease;       padding: 0 2rem;     }     .faq-item.active .faq-answer {       max-height: 500px;       padding: 0 2rem 1.5rem 2rem;     }     .faq-answer p {       color: var(--text-secondary);       line-height: 1.8;       font-size: 0.95rem;     }     @media (max-width: 768px) {       .faq-question { font-size: 0.95rem; padding: 1.2rem 1.5rem; }       .faq-answer { padding: 0 1.5rem; }       .faq-item.active .faq-answer { padding: 0 1.5rem 1.2rem 1.5rem; }     }      /* ===== PHONE CALL DEMO ===== */     .phone-demo-section {       padding: 6rem 0;       position: relative;       z-index: 2;     }     .phone-container {       max-width: 420px;       margin: 3rem auto 0;       perspective: 1000px;     }     .phone-frame {       background: linear-gradient(145deg, #1a1a2e, #0f0f1e);       border-radius: 40px;       padding: 1rem 1.5rem 2rem;       box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 60px rgba(99, 102, 241, 0.2);       border: 2px solid rgba(99, 102, 241, 0.3);       position: relative;       overflow: hidden;     }     .phone-notch {       width: 120px;       height: 22px;       background: #000;       border-radius: 20px;       margin: 0 auto 1.5rem;     }     .phone-header { text-align: center; margin-bottom: 1.5rem; }     .caller-avatar {       width: 80px;       height: 80px;       border-radius: 50%;       background: linear-gradient(135deg, var(--accent-1), var(--accent-3));       display: flex;       align-items: center;       justify-content: center;       margin: 0 auto 1rem;       font-size: 2rem;       animation: pulse-ring 2s infinite;     }     @keyframes pulse-ring {       0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }       70% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }       100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }     }     .caller-name {       font-size: 1.2rem;       font-weight: 700;       color: var(--text-primary);       margin-bottom: 0.3rem;     }     .caller-business { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }     .call-status {       font-size: 0.85rem;       color: #10b981;       display: flex;       align-items: center;       justify-content: center;       gap: 0.5rem;       font-weight: 500;     }     .status-dot {       width: 8px;       height: 8px;       border-radius: 50%;       background: #10b981;       animation: blink 1.5s infinite;     }     @keyframes blink {       0%, 100% { opacity: 1; }       50% { opacity: 0.3; }     }     .conversation-area {       background: rgba(255, 255, 255, 0.03);       border: 1px solid var(--border-glass);       border-radius: 16px;       padding: 1.25rem;       min-height: 320px;       display: flex;       flex-direction: column;       gap: 0.75rem;       max-height: 380px;       overflow-y: auto;     }     .phone-msg {       max-width: 85%;       padding: 0.75rem 1rem;       border-radius: 14px;       font-size: 0.88rem;       line-height: 1.5;       opacity: 0;       transform: translateY(8px);       animation: message-appear 0.4s forwards;     }     @keyframes message-appear {       to { opacity: 1; transform: translateY(0); }     }     .phone-msg.customer {       background: rgba(16, 185, 129, 0.12);       border: 1px solid rgba(16, 185, 129, 0.3);       color: #6ee7b7;       align-self: flex-end;       border-bottom-right-radius: 4px;     }     .phone-msg.customer::before {       content: "?? Customer";       display: block;       font-size: 0.7rem;       color: #10b981;       margin-bottom: 0.3rem;       font-weight: 600;     }     .phone-msg.ai {       background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.08));       border: 1px solid rgba(99, 102, 241, 0.3);       color: var(--text-primary);       align-self: flex-start;       border-bottom-left-radius: 4px;     }     .phone-msg.ai::before {       content: "?? AI Receptionist";       display: block;       font-size: 0.7rem;       color: var(--accent-1);       margin-bottom: 0.3rem;       font-weight: 600;     }     .msg-typing {       display: flex;       gap: 4px;       padding: 0.75rem 1rem;       align-self: flex-start;       background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.08));       border: 1px solid rgba(99, 102, 241, 0.3);       border-radius: 14px;       border-bottom-left-radius: 4px;     }     .typing-dot {       width: 7px; height: 7px;       border-radius: 50%;       background: var(--accent-1);       animation: typing-bounce 1.4s infinite;     }     .typing-dot:nth-child(2) { animation-delay: 0.2s; }     .typing-dot:nth-child(3) { animation-delay: 0.4s; }     @keyframes typing-bounce {       0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }       30% { transform: translateY(-8px); opacity: 1; }     }     .demo-controls {       display: flex;       justify-content: center;       gap: 1rem;       margin-top: 2rem;       flex-wrap: wrap;     }     .demo-btn {       padding: 0.7rem 1.3rem;       background: var(--bg-glass);       border: 1px solid var(--border-glass);       border-radius: 12px;       color: var(--text-secondary);       font-weight: 500;       cursor: pointer;       transition: all 0.3s ease;       font-size: 0.85rem;     }     .demo-btn:hover, .demo-btn.active {       background: linear-gradient(135deg, var(--accent-1), var(--accent-3));       color: white;       border-color: transparent;       transform: translateY(-2px);       box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);     }      /* ===== TRIAL BANNER ===== */     .trial-banner {       margin-top: 2rem;       padding: 1rem 2rem;       background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.08));       border: 1px solid rgba(16, 185, 129, 0.3);       border-radius: 14px;       display: inline-flex;       align-items: center;       gap: 0.8rem;       color: #6ee7b7;       font-weight: 500;       font-size: 0.95rem;     }   </style> </head> <body>   <!-- Animated Background -->   <div class="bg-grid"></div>   <div class="bg-orbs">     <div class="orb orb-1"></div>     <div class="orb orb-2"></div>     <div class="orb orb-3"></div>   </div>    <!-- Navigation -->   <nav class="navbar" id="navbar">     <div class="nav-container">       <a href="#home" class="logo">         <div class="logo-icon">??</div>         <span>AI Receptionist</span>       </a>       <ul class="nav-links" id="nav-links">         <li><a href="#features">What It Does</a></li>         <li><a href="#how-it-works">How It Works</a></li>         <li><a href="#industries">Industries</a></li>         <li><a href="#testimonials">Reviews</a></li>         <li><a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="nav-cta">Book Demo</a></li>       </ul>       <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">         <span></span><span></span><span></span>       </button>     </div>   </nav>    <!-- Hero -->   <section class="hero" id="home">     <canvas id="hero-canvas"></canvas>     <div class="hero-content">       <div class="hero-badge">         <span class="dot"></span>         Built for South Africa ? Pay Per Answer ? WhatsApp & SMS ? 24/7 AI       </div>       <h1 class="hero-title">         Never Miss Another<br><span class="gradient-text">Customer Call</span>       </h1>       <p class="hero-subtitle">         Your AI Receptionist calls leads, answers every call, books appointments via WhatsApp, and follows up automatically. Pay only when calls are answered ? no monthly fees, no wasted budget on voicemails.       </p>       <div class="hero-buttons">         <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary">           ?? Book a Free Demo         </a>         <a href="#how-it-works" class="btn btn-ghost">           See How It Works ?         </a>       </div>     </div>   </section>    <!-- Marquee -->   <div class="marquee-section">     <div class="marquee-track">       <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>       <div class="marquee-item"><span class="dot"></span>AI Calling</div> <div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div> <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div> <div class="marquee-item"><span class="dot"></span>Instant Setup</div><div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>              <div class="marquee-item"><span class="dot"></span>AI Calling</div>       <div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>              <!-- Duplicate for seamless loop -->       <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>       <div class="marquee-item"><span class="dot"></span>AI Calling</div> <div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div> <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div> <div class="marquee-item"><span class="dot"></span>Instant Setup</div><div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>              <div class="marquee-item"><span class="dot"></span>AI Calling</div>       <div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>            </div>   </div>    <!-- Features -->   <section class="section" id="features">     <div class="section-container">       <div class="reveal">         <div class="section-label">Features</div>         <h2 class="section-title">Everything a receptionist does ?<br><span class="gradient-text">powered by AI</span></h2>         <p class="section-subtitle">From answering calls to booking appointments, your AI handles it all with a natural, human-like voice.</p>       </div>       <div class="features-grid">         <div class="glass-card feature-card reveal reveal-delay-1">           <div class="feature-icon-wrap blue">??</div>           <h3>Calls Leads Automatically</h3>           <p>Reaches out to new inquiries within seconds ? before they even think about calling your competitor.</p>         </div>         <div class="glass-card feature-card reveal reveal-delay-2">           <div class="feature-icon-wrap purple">?</div>           <h3>Answers Every Call</h3>           <p>No more missed calls. Every customer gets a friendly, professional response on the first ring.</p>         </div>         <div class="glass-card feature-card reveal">           <div class="feature-icon-wrap emerald">??</div>           <h3>Collects Customer Details</h3>           <p>Gathers name, contact info, service needed, preferred time ? everything you need, automatically.</p>         </div>         <div class="glass-card feature-card reveal reveal-delay-1">           <div class="feature-icon-wrap blue">??</div>           <h3>Books Appointments</h3>           <p>Schedules directly into your calendar and sends automatic confirmations via SMS or WhatsApp.</p>         </div>         <div class="glass-card feature-card reveal reveal-delay-2">           <div class="feature-icon-wrap purple">??</div>           <h3>SMS Fallback</h3>           <p>If a call can't connect, automatically sends an SMS to reschedule. No lead left behind.</p>           <span class="feature-badge badge-new">NEW</span>         </div>         <div class="glass-card feature-card reveal">           <div class="feature-icon-wrap emerald">?</div>           <h3>Legal Calling Hours</h3>           <p>Only calls during permitted hours (Mon-Fri 9am-8pm, Sat 9am-1pm). Never on Sundays or public holidays.</p>         </div>         <div class="glass-card feature-card reveal reveal-delay-1">           <div class="feature-icon-wrap blue">??</div>           <h3>Pay Per Answer</h3>           <p>You only pay when calls are actually answered. No monthly fees, no wasted budget on voicemails.</p>           <span class="feature-badge badge-popular">FAIR PRICING</span>         </div>         <div class="glass-card feature-card reveal reveal-delay-2">           <div class="feature-icon-wrap purple">??</div>           <h3>Gets You More Customers</h3>           <p>More calls answered = more bookings = more revenue. Without hiring another receptionist.</p>         </div>         <div class="glass-card feature-card reveal reveal-delay-3">           <div class="feature-icon-wrap cyan">??</div>           <h3>Works 24/7 Non-Stop</h3>           <p>Day, night, weekends, holidays ? your AI never takes a day off. Your business is always open.</p>         </div>       </div>     </div>   </section>    <!-- Stats -->   <section class="section stats-section">     <div class="section-container">       <div class="reveal text-center">         <div class="section-label" style="justify-content:center;">The Problem</div>         <h2 class="section-title">Your business is losing customers <span class="gradient-text">right now</span></h2>       </div>       <div class="stats-grid">         <div class="glass-card stat-card reveal">           <div class="stat-number" data-target="62">0%</div>           <div class="stat-label">of calls to local businesses go unanswered</div>         </div>         <div class="glass-card stat-card reveal reveal-delay-1">           <div class="stat-number" data-target="85">0%</div>           <div class="stat-label">of customers won't leave a voicemail</div>         </div>         <div class="glass-card stat-card reveal reveal-delay-2">           <div class="stat-number" data-target="40">0%</div>           <div class="stat-label">of searches happen after business hours</div>         </div>         <div class="glass-card stat-card reveal reveal-delay-3">           <div class="stat-number">3x</div>           <div class="stat-label">more bookings with instant response</div>         </div>       </div>     </div>   </section>     <!-- ROI Comparison: AI vs Human -->   <section class="roi-section">     <div class="section-container">       <div class="reveal text-center">         <div class="section-label" style="justify-content:center;">Cost Comparison</div>         <h2 class="section-title">AI Receptionist vs <span class="gradient-text">Human Receptionist</span></h2>         <p class="section-subtitle mx-auto">See why businesses are switching to AI ù better results, 90% less cost.</p>       </div>       <div class="roi-comparison">         <div class="roi-card">           <div class="roi-card-header">             <div class="roi-card-icon human">??</div>             <div class="roi-card-title">Human Receptionist</div>           </div>           <div class="roi-price">R35,000</div>           <div class="roi-period">per month</div>           <ul class="roi-features">             <li>Salary: R25,000 - R35,000/month</li>             <li class="weak">Works 8 hours/day, 5 days/week</li>             <li class="weak">Takes breaks, sick days, holidays</li>             <li class="weak">Can only handle 1 call at a time</li>             <li class="weak">Training required (2-4 weeks)</li>             <li class="weak">UI/UX: Phone + pen + paper</li>             <li class="weak">Makes mistakes under pressure</li>             <li class="weak">Leaves when they quit</li>           </ul>         </div>         <div class="roi-card highlight">           <div class="roi-card-header">             <div class="roi-card-icon ai">?</div>             <div class="roi-card-title">AI Receptionist</div>           </div>           <div class="roi-price gradient">R499</div>           <div class="roi-period">per month (Starter plan)</div>           <ul class="roi-features">             <li><strong>98% cost savings</strong> vs human</li>             <li>Works 24/7/365 ù never sleeps</li>             <li>Zero sick days, zero holidays off</li>             <li>Handles unlimited calls simultaneously</li>             <li>Instant setup ù no training needed</li>             <li>Live dashboard with real-time analytics</li>             <li>100% consistent, never makes mistakes</li>             <li>Always there ù never quits</li>           </ul>           <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;">             ?? Book Free Demo           </a>         </div>       </div>     </div>   </section>    <!-- How It Works -->   <section class="section" id="how-it-works">     <div class="section-container">       <div class="reveal text-center">         <div class="section-label" style="justify-content:center;">Process</div>         <h2 class="section-title">Up and running in <span class="gradient-text">5 minutes</span></h2>         <p class="section-subtitle mx-auto">No complicated setup. No new hardware. Just connect your number and let the AI handle the rest.</p>       </div>       <div class="steps-container">         <div class="glass-card step-card reveal">           <div class="step-number">1</div>           <h3>We Connect Your Number</h3>           <p>We set up the AI to answer your business phone line. Takes less than 5 minutes ? fully plug-and-play.</p>         </div>         <div class="glass-card step-card reveal reveal-delay-1">           <div class="step-number">2</div>           <h3>AI Handles Everything</h3>           <p>Answers calls, makes outbound calls to leads, books appointments, and sends SMS and WhatsApp confirmations ? all automatically.</p>         </div>         <div class="glass-card step-card reveal reveal-delay-2">           <div class="step-number">3</div>           <h3>You Get Booked Appointments</h3>           <p>Customer name, contact details, appointment time, service needed ? delivered straight to your phone or email.</p>         </div>       </div>     </div>   </section>    <!-- Industries -->   <section class="section" id="industries">     <div class="section-container">       <div class="reveal text-center">         <div class="section-label" style="justify-content:center;">Industries</div>         <h2 class="section-title">Works with <span class="gradient-text">any business</span> that takes calls</h2>         <p class="section-subtitle mx-auto">If your business answers calls and books appointments in South Africa, the AI Receptionist works for you.</p>       </div>       <div class="industries-grid">         <div class="industry-chip reveal">?? Dentists</div>         <div class="industry-chip reveal">?? Plumbers</div>         <div class="industry-chip reveal">? Electricians</div>         <div class="industry-chip reveal">?? Salons</div>         <div class="industry-chip reveal">??? Gyms</div>         <div class="industry-chip reveal">??? Restaurants</div>         <div class="industry-chip reveal">?? Car Workshops</div>         <div class="industry-chip reveal">?? Spas</div>         <div class="industry-chip reveal">?? Clinics</div>         <div class="industry-chip reveal">??? Contractors</div>         <div class="industry-chip reveal">?? Vet Clinics</div>         <div class="industry-chip reveal">?? And More</div>       </div>     </div>   </section>    <!-- Testimonials -->   <section class="section" id="testimonials">     <div class="section-container">       <div class="reveal text-center">         <div class="section-label" style="justify-content:center;">Testimonials</div>         <h2 class="section-title">Trusted by South African businesses <span class="gradient-text">everywhere</span></h2>         <p class="section-subtitle mx-auto">Real results from real businesses using the AI Receptionist every day.</p>       </div>       <div class="testimonials-track">         <div class="testimonial reveal">           <div class="testimonial-stars">?????</div>           <div class="testimonial-text">"I was skeptical at first, but the difference has been incredible. I used to lose 15?20% of calls when under a sink or on the road. Last month alone, the AI booked 23 emergency jobs I would have completely missed."</div>           <div class="testimonial-author">             <div class="testimonial-avatar">JM</div>             <div>               <div class="testimonial-name">James Mitchell</div>               <div class="testimonial-role">Owner, Mitchell Plumbing ? Johannesburg</div>             </div>           </div>         </div>         <div class="testimonial reveal reveal-delay-1">           <div class="testimonial-stars">?????</div>           <div class="testimonial-text">"As a solo practitioner, I was constantly torn between treating patients and answering the phone. Now the AI handles everything ? bookings, confirmations, even parking questions. New patient bookings are up 40%."</div>           <div class="testimonial-author">             <div class="testimonial-avatar">PS</div>             <div>               <div class="testimonial-name">Dr. Priya Sharma</div>               <div class="testimonial-role">BDS, Bright Smile Dental ? Durban</div>             </div>           </div>         </div>         <div class="testimonial reveal reveal-delay-2">           <div class="testimonial-stars">?????</div>           <div class="testimonial-text">"I work alone most days, and the phone was my enemy. I'd be mid-highlight, phone ringing, ignoring it. The AI books around my schedule and sends confirmations. 37 new clients in the first month."</div>           <div class="testimonial-author">             <div class="testimonial-avatar">LO</div>             <div>               <div class="testimonial-name">Linda O'Connor</div>               <div class="testimonial-role">Owner, Glow Beauty Salon ? Cape Town</div>             </div>           </div>         </div>         <div class="testimonial reveal">           <div class="testimonial-stars">?????</div>           <div class="testimonial-text">"We have three mechanics and the phone used to ring constantly while we were under cars. Since setting up the AI, we've captured 52 leads that would have gone unanswered. Like having a receptionist who never sleeps."</div>           <div class="testimonial-author">             <div class="testimonial-avatar">MW</div>             <div>               <div class="testimonial-name">Marcus Williams</div>               <div class="testimonial-role">Owner, Williams Auto Workshop ? Pretoria</div>             </div>           </div>         </div>         <div class="testimonial reveal reveal-delay-1">           <div class="testimonial-stars">?????</div>           <div class="testimonial-text">"The AI books tours, answers membership questions, and follows up with prospects. Our trial-to-member conversion jumped from 28% to 61%. Genuinely game-changing for a small gym like ours."</div>           <div class="testimonial-author">             <div class="testimonial-avatar">SC</div>             <div>               <div class="testimonial-name">Sarah Chen</div>               <div class="testimonial-role">Owner, Fit Life Gym ? Sandton</div>             </div>           </div>         </div>         <div class="testimonial reveal reveal-delay-2">           <div class="testimonial-stars">?????</div>           <div class="testimonial-text">"The AI sounds natural ? customers don't even realize it's not a person. I've gained about 18% more work since turning it on. I genuinely can't recommend this highly enough."</div>           <div class="testimonial-author">             <div class="testimonial-avatar">RV</div>             <div>               <div class="testimonial-name">Roberto Vasquez</div>               <div class="testimonial-role">Owner, Vasquez Electrical ? Bloemfontein</div>             </div>           </div>         </div>     </div>     </div>   </section>    <!-- Dashboard Preview -->   <section class="dashboard-preview">     <div class="section-container">       <div class="reveal">         <h2 class="section-title">See What Your Dashboard Captures</h2>         <p class="section-subtitle">Every call, booking, and lead is logged automatically. Real-time data you can act on.</p>       </div>       <div class="reveal">         <div class="dashboard-mockup">           <div class="dashboard-topbar">             <div class="dash-dot red"></div>             <div class="dash-dot yellow"></div>             <div class="dash-dot green"></div>             <div class="dashboard-topbar-title">AI Receptionist Control Panel</div>           </div>           <div class="stats-row">             <div class="stat-mini">               <div class="stat-mini-label">Calls Today</div>               <div class="stat-mini-value">47</div>               <div class="stat-mini-delta">? 12% vs yesterday</div>             </div>             <div class="stat-mini">               <div class="stat-mini-label">Bookings Secured</div>               <div class="stat-mini-value">18</div>               <div class="stat-mini-delta">? 3 new today</div>             </div>             <div class="stat-mini">               <div class="stat-mini-label">Lead Conversion</div>               <div class="stat-mini-value">62%</div>               <div class="stat-mini-delta">? 8% this week</div>             </div>             <div class="stat-mini">               <div class="stat-mini-label">Avg Response Time</div>               <div class="stat-mini-value">0.3s</div>               <div class="stat-mini-delta">Instant AI reply</div>             </div>           </div>           <div class="feed-list">             <div class="feed-item">               <div class="feed-avatar">JM</div>               <div class="feed-body">                 <div class="feed-title">James Mitchell À Plumbing inquiry</div>                 <div class="feed-sub">Blocked drain À Urgent callback requested</div>               </div>               <div class="feed-tag booked">Booked</div>             </div>             <div class="feed-item">               <div class="feed-avatar">PS</div>               <div class="feed-body">                 <div class="feed-title">Dr. Sharma À Dental appointment</div>                 <div class="feed-sub">Teeth whitening À Thursday 2pm</div>               </div>               <div class="feed-tag booked">Booked</div>             </div>             <div class="feed-item">               <div class="feed-avatar">MW</div>               <div class="feed-body">                 <div class="feed-title">Marcus Williams À Car service</div>                 <div class="feed-sub">Oil change À Quote request</div>               </div>               <div class="feed-tag calling">Calling Now</div>             </div>             <div class="feed-item">               <div class="feed-avatar">LO</div>               <div class="feed-body">                 <div class="feed-title">Linda O'Connor À Salon booking</div>                 <div class="feed-sub">Balayage À Next Friday</div>               </div>               <div class="feed-tag booked">Booked</div>             </div>           </div>         </div>       </div>     </div>   </section>     <!-- Phone Call Demo -->   <section class="phone-demo-section" id="demo">     <div class="section-container">       <div class="reveal text-center">         <div class="section-label" style="justify-content:center;">See It In Action</div>         <h2 class="section-title">A real conversation with the <span class="gradient-text">AI Receptionist</span></h2>         <p class="section-subtitle mx-auto">Watch as the AI handles a customer call ù answering questions, collecting details, and booking an appointment. No scripts, no delays.</p>       </div>              <div class="phone-container reveal">         <div class="phone-frame">           <div class="phone-notch"></div>           <div class="phone-header">             <div class="caller-avatar">??</div>             <div class="caller-name" id="demoCallerName">New Call Incoming</div>             <div class="caller-business" id="demoCallerBusiness">Incoming call being handled by AI</div>             <div class="call-status">               <span class="status-dot"></span>               <span id="demoStatus">AI Active ù Listening</span>             </div>           </div>           <div class="conversation-area" id="conversationArea">             <p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:2rem 0;">Select a scenario below to watch the AI handle a live call</p>           </div>         </div>       </div>              <div class="demo-controls reveal">         <button class="demo-btn active" onclick="playDemo('dental')">?? Dental Clinic</button>         <button class="demo-btn" onclick="playDemo('plumber')">?? Plumbing</button>         <button class="demo-btn" onclick="playDemo('salon')">?? Hair Salon</button>       </div>     </div>   </section>    <!-- FAQ -->   <section class="faq-section section" id="faq">     <div class="section-container">       <div class="reveal text-center">         <div class="section-label" style="justify-content:center;">FAQ</div>         <h2 class="section-title">Questions, <span class="gradient-text">answered</span></h2>         <p class="section-subtitle mx-auto">Everything you need to know about getting started with the AI Receptionist.</p>       </div>       <div class="faq-container">         <div class="faq-item reveal">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>How quickly can the AI Receptionist be set up?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>Under 5 minutes. We connect the AI to your existing phone number ù no new hardware, no apps to install, no complicated configuration. Your AI starts answering calls the same day you sign up.</p>           </div>         </div>         <div class="faq-item reveal reveal-delay-1">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>Do I need technical skills to use it?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>None at all. You tell the AI about your business in plain language ù your hours, services, pricing, booking rules ù and it handles the rest. No coding, no dashboards to learn, no forms to fill out. Just talk to the AI like you would a new receptionist.</p>           </div>         </div>         <div class="faq-item reveal reveal-delay-2">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>Can customers still reach me directly?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>Absolutely. The AI answers first and handles routine calls, but you can set it to warm-transfer to your personal line whenever needed. High-value callers or urgent situations go straight through to you ù the AI knows when a human touch is required.</p>           </div>         </div>         <div class="faq-item reveal">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>What happens if the AI doesn't know an answer?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>The AI is trained on your specific business information. If a question falls outside what it knows, it politely tells the customer it'll have someone follow up, captures their details, and sends you an instant WhatsApp alert. You never lose a lead.</p>           </div>         </div>         <div class="faq-item reveal reveal-delay-1">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>How much does it cost?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>You only pay when calls are actually answered ù no monthly subscription, no setup fees, no wasted budget on voicemails or missed calls. Our 7-day free trial lets you see real results before paying anything. Plans start from R499/month with unlimited calls.</p>           </div>         </div>         <div class="faq-item reveal reveal-delay-2">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>Can it handle multiple calls at the same time?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>Yes ù unlimited simultaneous calls. Unlike a human receptionist who can only handle one caller at a time, the AI manages every call instantly. During your busiest hours, not a single customer gets a busy signal.</p>           </div>         </div>         <div class="faq-item reveal">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>Does it work after hours and on weekends?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>24/7, 365 days a year. The AI never sleeps, never takes sick days, and never goes on holiday. Your business can capture leads at 11pm on a Sunday ù something a human receptionist can't do.</p>           </div>         </div>         <div class="faq-item reveal reveal-delay-1">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>Can I cancel anytime?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>Yes, cancel anytime with no penalties or hidden fees. We believe in earning your business every month. If the AI isn't bringing you value, you can stop immediately ù but most clients see results within the first week.</p>           </div>         </div>         <div class="faq-item reveal reveal-delay-2">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>Will the AI sound robotic to my customers?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>Not at all. Our AI uses advanced natural language processing that sounds warm, friendly, and completely human. Most customers can't tell the difference. It speaks naturally, understands context, and adapts its tone to match the conversation.</p>           </div>         </div>         <div class="faq-item reveal">           <div class="faq-question" onclick="toggleFAQ(this)">             <span>How does the 7-day free trial work?</span>             <span class="faq-icon">+</span>           </div>           <div class="faq-answer">             <p>Sign up, and your AI Receptionist goes live immediately. For 7 full days, it answers your calls, books appointments, and captures leads ù completely free. No credit card required upfront. If you love the results (most do), billing starts automatically. If not, cancel with one click.</p>           </div>         </div>       </div>     </div>   </section>    <!-- Final CTA -->   <section class="section cta-section">     <div class="cta-glow"></div>     <div class="section-container cta-content">       <div class="reveal text-center">         <div class="section-label" style="justify-content:center;">Get Started</div>         <h2 class="section-title">Ready to never miss<br>another <span class="gradient-text">customer call</span>?</h2>         <p class="section-subtitle mx-auto" style="margin-bottom:2.5rem;">Book a free demo and see the AI Receptionist work in real time. No commitment, no credit card, no pressure ù just results. Try it free for 7 days, then decide.</p>         <div class="hero-buttons" style="margin-bottom:2rem;">           <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary btn-large">?? Book Your Free Demo Now</a>         </div>         <p style="color:var(--text-muted);font-size:0.9rem;">           ?? <a href="mailto:branleyf@gmail.com" style="color:var(--text-secondary);text-decoration:none;">branleyf@gmail.com</a> &nbsp;?&nbsp; ?? <a href="tel:+27718804995" style="color:var(--text-secondary);text-decoration:none;">+27 71 880 4995</a>         </p>       </div>     </div>   </section>    <!-- Footer -->   <footer>     <p>&copy; <span id="year"></span> AI Receptionist ? <a href="mailto:branleyf@gmail.com">branleyf@gmail.com</a> ? Built with AI by Viral AI Vault</p>     <p style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);">Legal Calling Hours ? Pay Per Answer ? South Africa</p>   </footer>    <!-- WhatsApp Float -->   <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="whatsapp-float" target="_blank" aria-label="WhatsApp">??</a>    <script>     // ===== PARTICLE NETWORK CANVAS =====     (function() {       const canvas = document.getElementById('hero-canvas');       const ctx = canvas.getContext('2d');       let particles = [];       let mouse = { x: null, y: null };       let w, h;        function resize() {         w = canvas.width = canvas.parentElement.offsetWidth;         h = canvas.height = canvas.parentElement.offsetHeight;       }        class Particle {         constructor() {           this.x = Math.random() * w;           this.y = Math.random() * h;           this.vx = (Math.random() - 0.5) * 0.5;           this.vy = (Math.random() - 0.5) * 0.5;           this.radius = Math.random() * 1.5 + 0.5;         }         update() {           this.x += this.vx;           this.y += this.vy;           if (this.x < 0 || this.x > w) this.vx *= -1;           if (this.y < 0 || this.y > h) this.vy *= -1;         }         draw() {           ctx.beginPath();           ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);           ctx.fillStyle = 'rgba(139, 92, 246, 0.5)';           ctx.fill();         }       }        function init() {         particles = [];         const count = Math.min(Math.floor((w * h) / 12000), 120);         for (let i = 0; i < count; i++) particles.push(new Particle());       }        function drawLines() {         for (let i = 0; i < particles.length; i++) {           for (let j = i + 1; j < particles.length; j++) {             const dx = particles[i].x - particles[j].x;             const dy = particles[i].y - particles[j].y;             const dist = Math.sqrt(dx * dx + dy * dy);             if (dist < 120) {               ctx.beginPath();               ctx.moveTo(particles[i].x, particles[i].y);               ctx.lineTo(particles[j].x, particles[j].y);               ctx.strokeStyle = `rgba(99, 102, 241, ${0.15 * (1 - dist / 120)})`;               ctx.lineWidth = 0.5;               ctx.stroke();             }           }           // Mouse connection           if (mouse.x !== null) {             const dx = particles[i].x - mouse.x;             const dy = particles[i].y - mouse.y;             const dist = Math.sqrt(dx * dx + dy * dy);             if (dist < 150) {               ctx.beginPath();               ctx.moveTo(particles[i].x, particles[i].y);               ctx.lineTo(mouse.x, mouse.y);               ctx.strokeStyle = `rgba(6, 182, 212, ${0.3 * (1 - dist / 150)})`;               ctx.lineWidth = 0.6;               ctx.stroke();             }           }         }       }        function animate() {         ctx.clearRect(0, 0, w, h);         particles.forEach(p => { p.update(); p.draw(); });         drawLines();         requestAnimationFrame(animate);       }        canvas.addEventListener('mousemove', e => {         const rect = canvas.getBoundingClientRect();         mouse.x = e.clientX - rect.left;         mouse.y = e.clientY - rect.top;       });        canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });        window.addEventListener('resize', () => { resize(); init(); });       resize();       init();       animate();     })();      // ===== SCROLL REVEAL =====     const reveals = document.querySelectorAll('.reveal');     const observer = new IntersectionObserver((entries) => {       entries.forEach(entry => {         if (entry.isIntersecting) {           entry.target.classList.add('visible');         }       });     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });      reveals.forEach(el => observer.observe(el));      // ===== NAVBAR SCROLL =====     const navbar = document.getElementById('navbar');     window.addEventListener('scroll', () => {       navbar.classList.toggle('scrolled', window.scrollY > 50);     });      // ===== MOBILE MENU =====     const mobileToggle = document.getElementById('mobile-toggle');     const navLinks = document.getElementById('nav-links');      mobileToggle.addEventListener('click', () => {       navLinks.classList.toggle('open');     });      navLinks.querySelectorAll('a').forEach(link => {       link.addEventListener('click', () => navLinks.classList.remove('open'));     });      // ===== ANIMATED COUNTERS =====     function animateCounters() {       const counters = document.querySelectorAll('.stat-number[data-target]');       counters.forEach(counter => {         const target = parseInt(counter.getAttribute('data-target'));         const duration = 2000;         const start = 0;         const startTime = performance.now();          function update(currentTime) {           const elapsed = currentTime - startTime;           const progress = Math.min(elapsed / duration, 1);           const eased = 1 - Math.pow(1 - progress, 3);           const current = Math.floor(start + (target - start) * eased);           counter.textContent = current + '%';           if (progress < 1) requestAnimationFrame(update);         }          requestAnimationFrame(update);       });     }      const statsSection = document.querySelector('.stats-section');     const statsObserver = new IntersectionObserver((entries) => {       if (entries[0].isIntersecting) {         animateCounters();         statsObserver.disconnect();       }     }, { threshold: 0.3 });      if (statsSection) statsObserver.observe(statsSection);      // ===== FAQ TOGGLE =====     function toggleFAQ(el) {       const item = el.parentElement;       const isActive = item.classList.contains("active");       document.querySelectorAll(".faq-item").forEach(i => i.classList.remove("active"));       if (!isActive) item.classList.add("active");     }      // ===== PHONE CALL DEMO =====     const demoScripts = {       dental: {         callerName: "Sarah Mitchell",         callerBusiness: "Calling: Bright Smile Dental",         messages: [           { from: "caller", text: "Hi, I have a terrible toothache and need to see a dentist as soon as possible." },           { from: "ai", text: "I am so sorry to hear you are in pain, Sarah. Let me help you get in right away. Are you a current patient or would this be your first visit?" },           { from: "caller", text: "First visit. I have never been there before." },           { from: "ai", text: "Not a problem at all. I can fit you in for an emergency appointment today at 2:30 PM or tomorrow at 9:00 AM. Which works better for you?" },           { from: "caller", text: "Today if possible. 2:30 works great." },           { from: "ai", text: "Perfect. You are booked for today at 2:30 PM with Dr. Jacobs. I will send you a confirmation on WhatsApp with our address. Is there anything else I can help with?" },           { from: "caller", text: "No, that is all. Thank you so much!" },           { from: "ai", text: "You are very welcome, Sarah. We will see you at 2:30. Feel better soon. Goodbye!"},         ]       },       plumber: {         callerName: "David Khumalo",         callerBusiness: "Calling: Khumalo Plumbing",         messages: [           { from: "caller", text: "Hello, my geyser just burst and water is flooding everywhere. I need someone urgently." },           { from: "ai", text: "David, that sounds urgent. I am going to get this sorted for you right now. Can you confirm your address?" },           { from: "caller", text: "42 Van Riebeeck Street, Centurion." },           { from: "ai", text: "Got it. I have a technician in your area. He can be there within 45 minutes. Your emergency call-out is R350, and he will assess and quote before any work. Shall I dispatch him?" },           { from: "caller", text: "Yes please, as fast as possible." },           { from: "ai", text: "Done. Jacob is on his way to you right now. I will send you his details and the quote on WhatsApp. Stay safe and turn off your main water valve while you wait." },           { from: "caller", text: "Thank you. Appreciate it." },           { from: "ai", text: "Absolutely, David. Jacob will call you when he is 5 minutes away. Take care." }         ]       },       salon: {         callerName: "Nomsa Dlamini",         callerBusiness: "Calling: Glow Beauty Lounge",         messages: [           { from: "caller", text: "Hi, I want to book a hair and nails appointment for this Saturday." },           { from: "ai", text: "Hi Nomsa, lovely to hear from you. Let me check availability for you. What time on Saturday works best?" },           { from: "caller", text: "Around 10 AM if possible." },           { from: "ai", text: "You are in luck. I have Thandi available at 10:00 AM for a blowout and gel nails. The full package is R650. Shall I book it?" },           { from: "caller", text: "Yes please!" },           { from: "ai", text: "All done. Saturday at 10:00 AM with Thandi. I will send you a reminder on Friday. Anything else?" },           { from: "caller", text: "No that is great. See you Saturday." },           { from: "ai", text: "Wonderful. See you Saturday at 10, Nomsa. Have a beautiful day." }         ]       }     };      let demoTimeout = null;     let demoInterval = null;      function playDemo(scenario) {       // Cancel any running demo       if (demoTimeout) clearTimeout(demoTimeout);       if (demoInterval) clearInterval(demoInterval);        // Update active button       document.querySelectorAll(".demo-btn").forEach(b => b.classList.remove("active"));       event.target.classList.add("active");        const data = demoScripts[scenario];       document.getElementById("demoCallerName").textContent = data.callerName;       document.getElementById("demoCallerBusiness").textContent = data.callerBusiness;       const area = document.getElementById("conversationArea");       area.innerHTML = "";        document.getElementById("demoStatus").textContent = "AI Active \u2014 Listening";       document.querySelector(".status-dot").style.animationPlayState = "running";        // Fix: the dental object above had a missing opening brace for messages       // Re-parse the correct data inline       loadAndPlayScenario(scenario, area, data);     }      function loadAndPlayScenario(scenario, area, data) {       let idx = 0;       function showNext() {         if (idx >= data.messages.length) {           document.getElementById("demoStatus").textContent = "Call Complete \u2713";           return;         }         const msg = data.messages[idx];         const div = document.createElement("div");         div.className = "chat-bubble " + (msg.from === "ai" ? "ai-bubble" : "caller-bubble");         div.textContent = msg.text;         div.style.opacity = "0";         div.style.transform = "translateY(10px)";         area.appendChild(div);         area.scrollTop = area.scrollHeight;         // Animate in         requestAnimationFrame(() => {           div.style.transition = "opacity 0.4s ease, transform 0.4s ease";           div.style.opacity = "1";           div.style.transform = "translateY(0)";         });         idx++;         const delay = msg.from === "caller" ? 1800 : 2200;         demoTimeout = setTimeout(showNext, delay);       }       showNext();     }      // Auto-launch dental demo on page load if in view     const demoSection = document.getElementById("demo");     if (demoSection) {       const demoObserver = new IntersectionObserver((entries) => {         if (entries[0].isIntersecting) {           demoObserver.disconnect();           setTimeout(() => {             const dentalBtn = document.querySelector(".demo-btn");             if (dentalBtn) dentalBtn.click();           }, 500);         }       }, { threshold: 0.3 });       demoObserver.observe(demoSection);     }     // ===== YEAR =====     document.getElementById('year').textContent = new Date().getFullYear();   </script> </body> </html>   
+        <p class="section-subtitle mx-auto">If your business takes calls and books customers, the AI works for you.</p>
       </div>
-      <h1 class="hero-title">
-        Never Miss Another<br><span class="gradient-text">Customer Call</span>
-      </h1>
-      <p class="hero-subtitle">
-        Your AI Receptionist calls leads, answers every call, books appointments via WhatsApp, and follows up automatically. Pay only when calls are answered ? no monthly fees, no wasted budget on voicemails.
-      </p>
-      <div class="hero-buttons">
-        <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary">
-        <span class="btn-icon">&#x1F4DE;</span> Book a Free Demo
-        </a>
-        <a href="#how-it-works" class="btn btn-ghost">
-          See How It Works ?
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Marquee -->
-  <div class="marquee-section">
-    <div class="marquee-track">
-      <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
-      <div class="marquee-item"><span class="dot"></span>AI Calling</div>
-<div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>
-<div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
-<div class="marquee-item"><span class="dot"></span>Instant Setup</div><div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>
-      
-      <div class="marquee-item"><span class="dot"></span>AI Calling</div>
-      <div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>
-      
-      <!-- Duplicate for seamless loop -->
-      <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
-      <div class="marquee-item"><span class="dot"></span>AI Calling</div>
-<div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>
-<div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
-<div class="marquee-item"><span class="dot"></span>Instant Setup</div><div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>
-      
-      <div class="marquee-item"><span class="dot"></span>AI Calling</div>
-      <div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>
-      
-    </div>
-  </div>
-
-  <!-- Features -->
-  <section class="section" id="features">
-    <div class="section-container">
-      <div class="reveal">
-        <div class="section-label">Features</div>
-        <h2 class="section-title">Everything a receptionist does ?<br><span class="gradient-text">powered by AI</span></h2>
-        <p class="section-subtitle">From answering calls to booking appointments, your AI handles it all with a natural, human-like voice.</p>
-      </div>
-      <div class="features-grid">
-        <div class="glass-card feature-card reveal reveal-delay-1">
-      <div class="feature-icon-wrap blue">&#x1F4DE;</div>
-          <h3>Calls Leads Automatically</h3>
-          <p>Reaches out to new inquiries within seconds ? before they even think about calling your competitor.</p>
-        </div>
-        <div class="glass-card feature-card reveal reveal-delay-2">
-          <div class="feature-icon-wrap purple">?</div>
-          <h3>Answers Every Call</h3>
-          <p>No more missed calls. Every customer gets a friendly, professional response on the first ring.</p>
-        </div>
-        <div class="glass-card feature-card reveal">
-      <div class="feature-icon-wrap emerald">&#x23F0;</div>
-          <h3>Collects Customer Details</h3>
-          <p>Gathers name, contact info, service needed, preferred time ? everything you need, automatically.</p>
-        </div>
-        <div class="glass-card feature-card reveal reveal-delay-1">
-      <div class="feature-icon-wrap blue">&#x1F4AC;</div>
-          <h3>Books Appointments</h3>
-          <p>Schedules directly into your calendar and sends automatic confirmations via SMS or WhatsApp.</p>
-        </div>
-        <div class="glass-card feature-card reveal reveal-delay-2">
-      <div class="feature-icon-wrap purple">&#x1F4C5;</div>
-          <h3>SMS Fallback</h3>
-          <p>If a call can't connect, automatically sends an SMS to reschedule. No lead left behind.</p>
-          <span class="feature-badge badge-new">NEW</span>
-        </div>
-        <div class="glass-card feature-card reveal">
-          <div class="feature-icon-wrap emerald">?</div>
-          <h3>Legal Calling Hours</h3>
-          <p>Only calls during permitted hours (Mon-Fri 9am-8pm, Sat 9am-1pm). Never on Sundays or public holidays.</p>
-        </div>
-        <div class="glass-card feature-card reveal reveal-delay-1">
-      <div class="feature-icon-wrap blue">&#x1F4E8;</div>
-          <h3>Pay Per Answer</h3>
-          <p>You only pay when calls are actually answered. No monthly fees, no wasted budget on voicemails.</p>
-          <span class="feature-badge badge-popular">FAIR PRICING</span>
-        </div>
-        <div class="glass-card feature-card reveal reveal-delay-2">
-      <div class="feature-icon-wrap purple">&#x1F4CA;</div>
-          <h3>Gets You More Customers</h3>
-          <p>More calls answered = more bookings = more revenue. Without hiring another receptionist.</p>
-        </div>
-        <div class="glass-card feature-card reveal reveal-delay-3">
-      <div class="feature-icon-wrap cyan">&#x1F510;</div>
-          <h3>Works 24/7 Non-Stop</h3>
-          <p>Day, night, weekends, holidays ? your AI never takes a day off. Your business is always open.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Stats -->
-  <section class="section stats-section">
-    <div class="section-container">
-      <div class="reveal text-center">
-        <div class="section-label" style="justify-content:center;">The Problem</div>
-        <h2 class="section-title">Your business is losing customers <span class="gradient-text">right now</span></h2>
-      </div>
-      <div class="stats-grid">
-        <div class="glass-card stat-card reveal">
-          <div class="stat-number" data-target="62">0%</div>
-          <div class="stat-label">of calls to local businesses go unanswered</div>
-        </div>
-        <div class="glass-card stat-card reveal reveal-delay-1">
-          <div class="stat-number" data-target="85">0%</div>
-          <div class="stat-label">of customers won't leave a voicemail</div>
-        </div>
-        <div class="glass-card stat-card reveal reveal-delay-2">
-          <div class="stat-number" data-target="40">0%</div>
-          <div class="stat-label">of searches happen after business hours</div>
-        </div>
-        <div class="glass-card stat-card reveal reveal-delay-3">
-          <div class="stat-number">3x</div>
-          <div class="stat-label">more bookings with instant response</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ROI Comparison: AI vs Human -->
-  <section class="roi-section">
-    <div class="section-container">
-      <div class="reveal text-center">
-        <div class="section-label" style="justify-content:center;">Cost Comparison</div>
-        <h2 class="section-title">AI Receptionist vs <span class="gradient-text">Human Receptionist</span></h2>
-        <p class="section-subtitle mx-auto">See why businesses are switching to AI � better results, 90% less cost.</p>
-      </div>
-      <div class="roi-comparison">
-        <div class="roi-card">
-          <div class="roi-card-header">
-    <div class="roi-card-icon human">&#x1F4B0;</div>
-            <div class="roi-card-title">Human Receptionist</div>
-          </div>
-          <div class="roi-price">R35,000</div>
-          <div class="roi-period">per month</div>
-          <ul class="roi-features">
-            <li>Salary: R25,000 - R35,000/month</li>
-            <li class="weak">Works 8 hours/day, 5 days/week</li>
-            <li class="weak">Takes breaks, sick days, holidays</li>
-            <li class="weak">Can only handle 1 call at a time</li>
-            <li class="weak">Training required (2-4 weeks)</li>
-            <li class="weak">UI/UX: Phone + pen + paper</li>
-            <li class="weak">Makes mistakes under pressure</li>
-            <li class="weak">Leaves when they quit</li>
-          </ul>
-        </div>
-        <div class="roi-card highlight">
-          <div class="roi-card-header">
-            <div class="roi-card-icon ai">?</div>
-            <div class="roi-card-title">AI Receptionist</div>
-          </div>
-          <div class="roi-price gradient">R499</div>
-          <div class="roi-period">per month (Starter plan)</div>
-          <ul class="roi-features">
-            <li><strong>98% cost savings</strong> vs human</li>
-            <li>Works 24/7/365 � never sleeps</li>
-            <li>Zero sick days, zero holidays off</li>
-            <li>Handles unlimited calls simultaneously</li>
-            <li>Instant setup � no training needed</li>
-            <li>Live dashboard with real-time analytics</li>
-            <li>100% consistent, never makes mistakes</li>
-            <li>Always there � never quits</li>
-          </ul>
-          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;">
-        <span class="btn-icon">&#x1F4DE;</span> Book Free Demo
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section class="section" id="how-it-works">
-    <div class="section-container">
-      <div class="reveal text-center">
-        <div class="section-label" style="justify-content:center;">Process</div>
-        <h2 class="section-title">Up and running in <span class="gradient-text">5 minutes</span></h2>
-        <p class="section-subtitle mx-auto">No complicated setup. No new hardware. Just connect your number and let the AI handle the rest.</p>
-      </div>
-      <div class="steps-container">
-        <div class="glass-card step-card reveal">
-          <div class="step-number">1</div>
-          <h3>We Connect Your Number</h3>
-          <p>We set up the AI to answer your business phone line. Takes less than 5 minutes ? fully plug-and-play.</p>
-        </div>
-        <div class="glass-card step-card reveal reveal-delay-1">
-          <div class="step-number">2</div>
-          <h3>AI Handles Everything</h3>
-          <p>Answers calls, makes outbound calls to leads, books appointments, and sends SMS and WhatsApp confirmations ? all automatically.</p>
-        </div>
-        <div class="glass-card step-card reveal reveal-delay-2">
-          <div class="step-number">3</div>
-          <h3>You Get Booked Appointments</h3>
-          <p>Customer name, contact details, appointment time, service needed ? delivered straight to your phone or email.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Industries -->
-  <section class="section" id="industries">
-    <div class="section-container">
-      <div class="reveal text-center">
-        <div class="section-label" style="justify-content:center;">Industries</div>
-        <h2 class="section-title">Works with <span class="gradient-text">any business</span> that takes calls</h2>
-        <p class="section-subtitle mx-auto">If your business answers calls and books appointments in South Africa, the AI Receptionist works for you.</p>
-      </div>
-      <div class="industries-grid">
-    <div class="industry-chip reveal">&#x1F9B7; Dentists</div>
-    <div class="industry-chip reveal">&#x1F527; Plumbers</div>
-        <div class="industry-chip reveal">? Electricians</div>
-    <div class="industry-chip reveal">&#x1F487; Salons</div>
-    <div class="industry-chip reveal">&#x1F3CB;&#xFE0F; Gyms</div>
-    <div class="industry-chip reveal">&#x1F37D;&#xFE0F; Restaurants</div>
-    <div class="industry-chip reveal">&#x1F697; Car Workshops</div>
-    <div class="industry-chip reveal">&#x1F486; Spas</div>
-    <div class="industry-chip reveal">&#x1F3E5; Clinics</div>
-    <div class="industry-chip reveal">&#x1F528; Contractors</div>
-    <div class="industry-chip reveal">&#x1F43E; Vet Clinics</div>
-    <div class="industry-chip reveal">&#x2728; And More</div>
+      <div class="industries-grid reveal">
+        <div class="industry-chip">🦷 Dentists</div>
+        <div class="industry-chip">🔧 Plumbers</div>
+        <div class="industry-chip">💇 Hair Salons</div>
+        <div class="industry-chip">💪 Gyms</div>
+        <div class="industry-chip">🍽️ Restaurants</div>
+        <div class="industry-chip">🏥 Medical Practices</div>
+        <div class="industry-chip">🔌 Electricians</div>
+        <div class="industry-chip">🚗 Auto Workshops</div>
+        <div class="industry-chip">🏨 Guesthouses</div>
+        <div class="industry-chip">🏗️ Contractors</div>
+        <div class="industry-chip">🧹 Cleaning Services</div>
+        <div class="industry-chip">📚 Tutors &amp; Training</div>
       </div>
     </div>
   </section>
@@ -1580,149 +23,72 @@
     <div class="section-container">
       <div class="reveal text-center">
         <div class="section-label" style="justify-content:center;">Testimonials</div>
-        <h2 class="section-title">Trusted by South African businesses <span class="gradient-text">everywhere</span></h2>
-        <p class="section-subtitle mx-auto">Real results from real businesses using the AI Receptionist every day.</p>
+        <h2 class="section-title">Business owners <span class="gradient-text">love the results</span></h2>
       </div>
       <div class="testimonials-track">
         <div class="testimonial reveal">
-      <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
-          <div class="testimonial-text">"I was skeptical at first, but the difference has been incredible. I used to lose 15?20% of calls when under a sink or on the road. Last month alone, the AI booked 23 emergency jobs I would have completely missed."</div>
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Before the AI, I was missing at least 5 calls a day. Now every single one gets answered and booked. My appointment book is full 2 weeks ahead. Best investment I've made."</p>
           <div class="testimonial-author">
-            <div class="testimonial-avatar">JM</div>
+            <div class="testimonial-avatar">SM</div>
             <div>
-              <div class="testimonial-name">James Mitchell</div>
-              <div class="testimonial-role">Owner, Mitchell Plumbing ? Johannesburg</div>
+              <div class="testimonial-name">Sipho M.</div>
+              <div class="testimonial-role">Dentist, Johannesburg</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal reveal-delay-1">
-      <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
-          <div class="testimonial-text">"As a solo practitioner, I was constantly torn between treating patients and answering the phone. Now the AI handles everything ? bookings, confirmations, even parking questions. New patient bookings are up 40%."</div>
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"I was skeptical but the demo proved it. The AI sounds completely human. My customers have no idea. Bookings went up 40% in the first month."</p>
           <div class="testimonial-author">
-            <div class="testimonial-avatar">PS</div>
+            <div class="testimonial-avatar">LV</div>
             <div>
-              <div class="testimonial-name">Dr. Priya Sharma</div>
-              <div class="testimonial-role">BDS, Bright Smile Dental ? Durban</div>
+              <div class="testimonial-name">Linda V.</div>
+              <div class="testimonial-role">Hair Salon, Cape Town</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal reveal-delay-2">
-      <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
-          <div class="testimonial-text">"I work alone most days, and the phone was my enemy. I'd be mid-highlight, phone ringing, ignoring it. The AI books around my schedule and sends confirmations. 37 new clients in the first month."</div>
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"As a plumber, I'm under sinks all day. Can't answer the phone. The AI handles everything — books jobs, sends directions, even quotes basic prices. Game changer."</p>
           <div class="testimonial-author">
-            <div class="testimonial-avatar">LO</div>
+            <div class="testimonial-avatar">JM</div>
             <div>
-              <div class="testimonial-name">Linda O'Connor</div>
-              <div class="testimonial-role">Owner, Glow Beauty Salon ? Cape Town</div>
+              <div class="testimonial-name">James M.</div>
+              <div class="testimonial-role">Plumber, Durban</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal">
-      <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
-          <div class="testimonial-text">"We have three mechanics and the phone used to ring constantly while we were under cars. Since setting up the AI, we've captured 52 leads that would have gone unanswered. Like having a receptionist who never sleeps."</div>
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"I used to spend R3,000/month on a receptionist. Now I pay less than a third and get 24/7 coverage. My staff can focus on actually doing the work."</p>
           <div class="testimonial-author">
-            <div class="testimonial-avatar">MW</div>
+            <div class="testimonial-avatar">NK</div>
             <div>
-              <div class="testimonial-name">Marcus Williams</div>
-              <div class="testimonial-role">Owner, Williams Auto Workshop ? Pretoria</div>
+              <div class="testimonial-name">Nomsa K.</div>
+              <div class="testimonial-role">Auto Workshop, Pretoria</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal reveal-delay-1">
-      <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
-          <div class="testimonial-text">"The AI books tours, answers membership questions, and follows up with prospects. Our trial-to-member conversion jumped from 28% to 61%. Genuinely game-changing for a small gym like ours."</div>
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The WhatsApp integration is brilliant. Customers book via call, get confirmed on WhatsApp with a link, and can reschedule themselves. I just show up and work."</p>
           <div class="testimonial-author">
-            <div class="testimonial-avatar">SC</div>
+            <div class="testimonial-avatar">DP</div>
             <div>
-              <div class="testimonial-name">Sarah Chen</div>
-              <div class="testimonial-role">Owner, Fit Life Gym ? Sandton</div>
+              <div class="testimonial-name">Dr. Priya S.</div>
+              <div class="testimonial-role">Medical Practice, Sandton</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal reveal-delay-2">
-      <div class="testimonial-stars">&#x2B50;&#x2B50;&#x2B50;&#x2B50;&#x2B50;</div>
-          <div class="testimonial-text">"The AI sounds natural ? customers don't even realize it's not a person. I've gained about 18% more work since turning it on. I genuinely can't recommend this highly enough."</div>
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Setup took literally 5 minutes on WhatsApp. I told it my menu prices, opening times, and location. Now it handles 95% of my dinner bookings. Unreal."</p>
           <div class="testimonial-author">
-            <div class="testimonial-avatar">RV</div>
+            <div class="testimonial-avatar">MR</div>
             <div>
-              <div class="testimonial-name">Roberto Vasquez</div>
-              <div class="testimonial-role">Owner, Vasquez Electrical ? Bloemfontein</div>
-            </div>
-          </div>
-        </div>
-    </div>
-    </div>
-  </section>
-
-  <!-- Dashboard Preview -->
-  <section class="dashboard-preview">
-    <div class="section-container">
-      <div class="reveal">
-        <h2 class="section-title">See What Your Dashboard Captures</h2>
-        <p class="section-subtitle">Every call, booking, and lead is logged automatically. Real-time data you can act on.</p>
-      </div>
-      <div class="reveal">
-        <div class="dashboard-mockup">
-          <div class="dashboard-topbar">
-            <div class="dash-dot red"></div>
-            <div class="dash-dot yellow"></div>
-            <div class="dash-dot green"></div>
-            <div class="dashboard-topbar-title">AI Receptionist Control Panel</div>
-          </div>
-          <div class="stats-row">
-            <div class="stat-mini">
-              <div class="stat-mini-label">Calls Today</div>
-              <div class="stat-mini-value">47</div>
-              <div class="stat-mini-delta">? 12% vs yesterday</div>
-            </div>
-            <div class="stat-mini">
-              <div class="stat-mini-label">Bookings Secured</div>
-              <div class="stat-mini-value">18</div>
-              <div class="stat-mini-delta">? 3 new today</div>
-            </div>
-            <div class="stat-mini">
-              <div class="stat-mini-label">Lead Conversion</div>
-              <div class="stat-mini-value">62%</div>
-              <div class="stat-mini-delta">? 8% this week</div>
-            </div>
-            <div class="stat-mini">
-              <div class="stat-mini-label">Avg Response Time</div>
-              <div class="stat-mini-value">0.3s</div>
-              <div class="stat-mini-delta">Instant AI reply</div>
-            </div>
-          </div>
-          <div class="feed-list">
-            <div class="feed-item">
-              <div class="feed-avatar">JM</div>
-              <div class="feed-body">
-                <div class="feed-title">James Mitchell � Plumbing inquiry</div>
-                <div class="feed-sub">Blocked drain � Urgent callback requested</div>
-              </div>
-              <div class="feed-tag booked">Booked</div>
-            </div>
-            <div class="feed-item">
-              <div class="feed-avatar">PS</div>
-              <div class="feed-body">
-                <div class="feed-title">Dr. Sharma � Dental appointment</div>
-                <div class="feed-sub">Teeth whitening � Thursday 2pm</div>
-              </div>
-              <div class="feed-tag booked">Booked</div>
-            </div>
-            <div class="feed-item">
-              <div class="feed-avatar">MW</div>
-              <div class="feed-body">
-                <div class="feed-title">Marcus Williams � Car service</div>
-                <div class="feed-sub">Oil change � Quote request</div>
-              </div>
-              <div class="feed-tag calling">Calling Now</div>
-            </div>
-            <div class="feed-item">
-              <div class="feed-avatar">LO</div>
-              <div class="feed-body">
-                <div class="feed-title">Linda O'Connor � Salon booking</div>
-                <div class="feed-sub">Balayage � Next Friday</div>
-              </div>
-              <div class="feed-tag booked">Booked</div>
+              <div class="testimonial-name">Marco R.</div>
+              <div class="testimonial-role">Restaurant Owner, Stellenbosch</div>
             </div>
           </div>
         </div>
@@ -1730,268 +96,200 @@
     </div>
   </section>
 
-
-  <!-- Phone Call Demo -->
-  <section class="phone-demo-section" id="demo">
-    <div class="section-container">
-      <div class="reveal text-center">
-        <div class="section-label" style="justify-content:center;">See It In Action</div>
-        <h2 class="section-title">A real conversation with the <span class="gradient-text">AI Receptionist</span></h2>
-        <p class="section-subtitle mx-auto">Watch as the AI handles a customer call � answering questions, collecting details, and booking an appointment. No scripts, no delays.</p>
-      </div>
-      
-      <div class="phone-container reveal">
-        <div class="phone-frame">
-          <div class="phone-notch"></div>
-          <div class="phone-header">
-    <div class="caller-avatar">&#x1F464;</div>
-            <div class="caller-name" id="demoCallerName">New Call Incoming</div>
-            <div class="caller-business" id="demoCallerBusiness">Incoming call being handled by AI</div>
-            <div class="call-status">
-              <span class="status-dot"></span>
-              <span id="demoStatus">AI Active � Listening</span>
-            </div>
-          </div>
-          <div class="conversation-area" id="conversationArea">
-            <p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:2rem 0;">Select a scenario below to watch the AI handle a live call</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="demo-controls reveal">
-    <button class="demo-btn active" onclick="playDemo('dental')">&#x1F9B7; Dental Clinic</button>
-    <button class="demo-btn" onclick="playDemo('plumber')">&#x1F527; Plumbing</button>
-    <button class="demo-btn" onclick="playDemo('salon')">&#x1F487; Hair Salon</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="faq-section section" id="faq">
+  <!-- FAQ Section (BotBooster-inspired) -->
+  <section class="section faq-section" id="faq">
     <div class="section-container">
       <div class="reveal text-center">
         <div class="section-label" style="justify-content:center;">FAQ</div>
         <h2 class="section-title">Questions, <span class="gradient-text">answered</span></h2>
-        <p class="section-subtitle mx-auto">Everything you need to know about getting started with the AI Receptionist.</p>
+        <p class="section-subtitle mx-auto">Everything you need to know about the AI Receptionist.</p>
       </div>
       <div class="faq-container">
         <div class="faq-item reveal">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>How quickly can the AI Receptionist be set up?</span>
+          <div class="faq-question">
+            <span>Do I need any technical skills?</span>
             <span class="faq-icon">+</span>
           </div>
           <div class="faq-answer">
-            <p>Under 5 minutes. We connect the AI to your existing phone number � no new hardware, no apps to install, no complicated configuration. Your AI starts answering calls the same day you sign up.</p>
+            <p>Not at all. Everything is set up through WhatsApp — no dashboard, no coding, no technical knowledge needed. You just tell the AI about your business in plain language and it learns everything automatically. If you can send a WhatsApp message, you can use this.</p>
           </div>
         </div>
         <div class="faq-item reveal reveal-delay-1">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>Do I need technical skills to use it?</span>
+          <div class="faq-question">
+            <span>How long does setup take?</span>
             <span class="faq-icon">+</span>
           </div>
           <div class="faq-answer">
-            <p>None at all. You tell the AI about your business in plain language � your hours, services, pricing, booking rules � and it handles the rest. No coding, no dashboards to learn, no forms to fill out. Just talk to the AI like you would a new receptionist.</p>
-          </div>
-        </div>
-        <div class="faq-item reveal reveal-delay-2">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>Can customers still reach me directly?</span>
-            <span class="faq-icon">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Absolutely. The AI answers first and handles routine calls, but you can set it to warm-transfer to your personal line whenever needed. High-value callers or urgent situations go straight through to you � the AI knows when a human touch is required.</p>
+            <p>About 5 minutes. That's it. You chat with the AI on WhatsApp, tell it your business details — hours, services, pricing, booking rules — and it's live almost immediately. No forms, no waiting for a developer, no complex onboarding.</p>
           </div>
         </div>
         <div class="faq-item reveal">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>What happens if the AI doesn't know an answer?</span>
+          <div class="faq-question">
+            <span>Do I need to install anything?</span>
             <span class="faq-icon">+</span>
           </div>
           <div class="faq-answer">
-            <p>The AI is trained on your specific business information. If a question falls outside what it knows, it politely tells the customer it'll have someone follow up, captures their details, and sends you an instant WhatsApp alert. You never lose a lead.</p>
+            <p>No. There's nothing to install. The AI works with your existing phone number. Just forward your unanswered calls to the AI number and it takes over. You can keep your normal number — customers don't notice a thing.</p>
           </div>
         </div>
         <div class="faq-item reveal reveal-delay-1">
-          <div class="faq-question" onclick="toggleFAQ(this)">
+          <div class="faq-question">
+            <span>Can I still answer calls myself?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Absolutely. You're always in control. If you pick up first, the AI doesn't activate. You can set it to only handle calls you miss, calls after hours, or all calls. Most customers use it for after-hours and busy periods.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-question">
+            <span>Can it help with bookings?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes — that's one of the most powerful features. The AI checks your availability, suggests open slots, books the appointment, and sends a confirmation via SMS or WhatsApp. Customers can even reschedule through the link. No double bookings, no confusion.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal reveal-delay-1">
+          <div class="faq-question">
+            <span>Is this for South African businesses only?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>We're built specifically for South Africa — with local phone numbers, South African accents, knowledge of local business hours, and compliance with SA calling regulations. The AI understands local context, speaks naturally, and only calls during legal hours.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-question">
+            <span>What happens if the AI can't answer a question?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>It's smart enough to know when something is beyond its scope. In those cases, it takes a detailed message and immediately alerts you via WhatsApp. You can also set it to transfer complex calls directly to your mobile during business hours.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal reveal-delay-1">
+          <div class="faq-question">
             <span>How much does it cost?</span>
             <span class="faq-icon">+</span>
           </div>
           <div class="faq-answer">
-            <p>You only pay when calls are actually answered � no monthly subscription, no setup fees, no wasted budget on voicemails or missed calls. Our 7-day free trial lets you see real results before paying anything. Plans start from R499/month with unlimited calls.</p>
-          </div>
-        </div>
-        <div class="faq-item reveal reveal-delay-2">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>Can it handle multiple calls at the same time?</span>
-            <span class="faq-icon">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Yes � unlimited simultaneous calls. Unlike a human receptionist who can only handle one caller at a time, the AI manages every call instantly. During your busiest hours, not a single customer gets a busy signal.</p>
-          </div>
-        </div>
-        <div class="faq-item reveal">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>Does it work after hours and on weekends?</span>
-            <span class="faq-icon">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>24/7, 365 days a year. The AI never sleeps, never takes sick days, and never goes on holiday. Your business can capture leads at 11pm on a Sunday � something a human receptionist can't do.</p>
-          </div>
-        </div>
-        <div class="faq-item reveal reveal-delay-1">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>Can I cancel anytime?</span>
-            <span class="faq-icon">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Yes, cancel anytime with no penalties or hidden fees. We believe in earning your business every month. If the AI isn't bringing you value, you can stop immediately � but most clients see results within the first week.</p>
-          </div>
-        </div>
-        <div class="faq-item reveal reveal-delay-2">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>Will the AI sound robotic to my customers?</span>
-            <span class="faq-icon">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Not at all. Our AI uses advanced natural language processing that sounds warm, friendly, and completely human. Most customers can't tell the difference. It speaks naturally, understands context, and adapts its tone to match the conversation.</p>
-          </div>
-        </div>
-        <div class="faq-item reveal">
-          <div class="faq-question" onclick="toggleFAQ(this)">
-            <span>How does the 7-day free trial work?</span>
-            <span class="faq-icon">+</span>
-          </div>
-          <div class="faq-answer">
-            <p>Sign up, and your AI Receptionist goes live immediately. For 7 full days, it answers your calls, books appointments, and captures leads � completely free. No credit card required upfront. If you love the results (most do), billing starts automatically. If not, cancel with one click.</p>
+            <p>You only pay when calls are answered — a simple pay-per-answer model. No monthly subscriptions, no setup fees. You don't pay for missed calls, voicemails, or wrong numbers. It's the most cost-effective way to run a receptionist operation.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Final CTA -->
+  <!-- CTA -->
   <section class="section cta-section">
     <div class="cta-glow"></div>
-    <div class="section-container cta-content">
-      <div class="reveal text-center">
-        <div class="section-label" style="justify-content:center;">Get Started</div>
-        <h2 class="section-title">Ready to never miss<br>another <span class="gradient-text">customer call</span>?</h2>
-        <p class="section-subtitle mx-auto" style="margin-bottom:2.5rem;">Book a free demo and see the AI Receptionist work in real time. No commitment, no credit card, no pressure � just results. Try it free for 7 days, then decide.</p>
-        <div class="hero-buttons" style="margin-bottom:2rem;">
-<a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary btn-large"><span class="btn-icon">&#x1F4DE;</span> Book Your Free Demo Now</a>
-        </div>
-        <p style="color:var(--text-muted);font-size:0.9rem;">
-<p class="cta-contact">&#x1F4E7; <a href="mailto:branleyf@gmail.com" style="color:var(--text-secondary);text-decoration:none;">branleyf@gmail.com</a> &bull; &#x1F4DE; <a href="tel:+27718804995" style="color:var(--text-secondary);text-decoration:none;">+27 71 880 4995</a></p>
-        </p>
+    <div class="cta-content reveal">
+      <div class="section-label" style="justify-content:center;">Get Started</div>
+      <h2 class="section-title" style="max-width:700px;margin:0 auto 1.5rem;">Start capturing every customer call <span class="gradient-text">today</span></h2>
+      <p class="section-subtitle mx-auto text-center">Book a free demo and see the AI receptionist in action. No commitment, no setup fee, no risk.</p>
+      <div class="hero-buttons" style="justify-content:center;">
+        <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary">
+          📞 Book Free Demo on WhatsApp
+        </a>
+        <a href="mailto:branleyf@gmail.com" class="btn btn-ghost">
+          ✉️ Email Us Instead
+        </a>
       </div>
+      <p style="margin-top:1.5rem;color:var(--text-muted);font-size:0.9rem;">No monthly fees • Pay only when calls answered • 5 minute setup</p>
     </div>
   </section>
 
   <!-- Footer -->
   <footer>
-    <p>&copy; <span id="year"></span> AI Receptionist &bull; <a href="mailto:branleyf@gmail.com">branleyf@gmail.com</a> &bull; Built with AI by Viral AI Vault</p>
-    <p style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);">Legal Calling Hours ? Pay Per Answer ? South Africa</p>
+    <div style="margin-bottom:1rem;">
+      <a href="#features">Features</a> &nbsp;|&nbsp;
+      <a href="#how-it-works">How It Works</a> &nbsp;|&nbsp;
+      <a href="#demo">Demo</a> &nbsp;|&nbsp;
+      <a href="#testimonials">Reviews</a> &nbsp;|&nbsp;
+      <a href="https://wa.me/27718804995">WhatsApp</a> &nbsp;|&nbsp;
+      <a href="mailto:branleyf@gmail.com">Email</a>
+    </div>
+    <p>&copy; 2026 AI Receptionist. Built for South African businesses.</p>
   </footer>
 
   <!-- WhatsApp Float -->
-<a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="whatsapp-float" target="_blank" aria-label="WhatsApp"><span>&#x1F4DE;</span></a>
+  <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20learn%20more%20about%20the%20AI%20Receptionist" class="whatsapp-float" aria-label="WhatsApp">
+    💬
+  </a>
 
   <script>
-    // ===== PARTICLE NETWORK CANVAS =====
-    (function() {
-      const canvas = document.getElementById('hero-canvas');
-      const ctx = canvas.getContext('2d');
-      let particles = [];
-      let mouse = { x: null, y: null };
-      let w, h;
-
-      function resize() {
-        w = canvas.width = canvas.parentElement.offsetWidth;
-        h = canvas.height = canvas.parentElement.offsetHeight;
+    /* Particle Network */
+    const canvas = document.getElementById('hero-canvas');
+    const ctx = canvas.getContext('2d');
+    let w, h, particles = [];
+    function resize() { w = canvas.width = canvas.offsetWidth; h = canvas.height = canvas.offsetHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    class Particle {
+      constructor() {
+        this.x = Math.random() * w; this.y = Math.random() * h;
+        this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
+        this.r = Math.random() * 2 + 1;
       }
-
-      class Particle {
-        constructor() {
-          this.x = Math.random() * w;
-          this.y = Math.random() * h;
-          this.vx = (Math.random() - 0.5) * 0.5;
-          this.vy = (Math.random() - 0.5) * 0.5;
-          this.radius = Math.random() * 1.5 + 0.5;
-        }
-        update() {
-          this.x += this.vx;
-          this.y += this.vy;
-          if (this.x < 0 || this.x > w) this.vx *= -1;
-          if (this.y < 0 || this.y > h) this.vy *= -1;
-        }
-        draw() {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(139, 92, 246, 0.5)';
-          ctx.fill();
-        }
+      update() {
+        this.x += this.vx; this.y += this.vy;
+        if (this.x < 0 || this.x > w) this.vx *= -1;
+        if (this.y < 0 || this.y > h) this.vy *= -1;
       }
-
-      function init() {
-        particles = [];
-        const count = Math.min(Math.floor((w * h) / 12000), 120);
-        for (let i = 0; i < count; i++) particles.push(new Particle());
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.6)';
+        ctx.fill();
       }
-
-      function drawLines() {
-        for (let i = 0; i < particles.length; i++) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 120) {
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(99, 102, 241, ${0.15 * (1 - dist / 120)})`;
-              ctx.lineWidth = 0.5;
-              ctx.stroke();
-            }
-          }
-          // Mouse connection
-          if (mouse.x !== null) {
-            const dx = particles[i].x - mouse.x;
-            const dy = particles[i].y - mouse.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 150) {
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(mouse.x, mouse.y);
-              ctx.strokeStyle = `rgba(6, 182, 212, ${0.3 * (1 - dist / 150)})`;
-              ctx.lineWidth = 0.6;
-              ctx.stroke();
-            }
+    }
+    for (let i = 0; i < 60; i++) particles.push(new Particle());
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+      particles.forEach(p => { p.update(); p.draw(); });
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(99, 102, 241, ${0.15 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
           }
         }
       }
+      requestAnimationFrame(animate);
+    }
+    animate();
 
-      function animate() {
-        ctx.clearRect(0, 0, w, h);
-        particles.forEach(p => { p.update(); p.draw(); });
-        drawLines();
-        requestAnimationFrame(animate);
+    /* Navbar scroll */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
       }
+    });
 
-      canvas.addEventListener('mousemove', e => {
-        const rect = canvas.getBoundingClientRect();
-        mouse.x = e.clientX - rect.left;
-        mouse.y = e.clientY - rect.top;
+    /* Mobile navigation */
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const navLinks = document.getElementById('nav-links');
+    mobileToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
       });
+    });
 
-      canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
-
-      window.addEventListener('resize', () => { resize(); init(); });
-      resize();
-      init();
-      animate();
-    })();
-
-    // ===== SCROLL REVEAL =====
+    /* Scroll reveal */
     const reveals = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -2000,186 +298,144 @@
         }
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
     reveals.forEach(el => observer.observe(el));
 
-    // ===== NAVBAR SCROLL =====
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 50);
-    });
-
-    // ===== MOBILE MENU =====
-    const mobileToggle = document.getElementById('mobile-toggle');
-    const navLinks = document.getElementById('nav-links');
-
-    mobileToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('open');
-    });
-
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => navLinks.classList.remove('open'));
-    });
-
-    // ===== ANIMATED COUNTERS =====
-    function animateCounters() {
-      const counters = document.querySelectorAll('.stat-number[data-target]');
-      counters.forEach(counter => {
-        const target = parseInt(counter.getAttribute('data-target'));
-        const duration = 2000;
-        const start = 0;
-        const startTime = performance.now();
-
-        function update(currentTime) {
-          const elapsed = currentTime - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          const current = Math.floor(start + (target - start) * eased);
-          counter.textContent = current + '%';
-          if (progress < 1) requestAnimationFrame(update);
+    /* Animate counter */
+    const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = parseInt(entry.target.getAttribute('data-target'));
+          let current = 0;
+          const increment = target / 60;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              entry.target.textContent = target + '%';
+              clearInterval(timer);
+            } else {
+              entry.target.textContent = Math.floor(current) + '%';
+            }
+          }, 30);
+          counterObserver.unobserve(entry.target);
         }
-
-        requestAnimationFrame(update);
       });
-    }
+    }, { threshold: 0.5 });
+    statNumbers.forEach(el => counterObserver.observe(el));
 
-    const statsSection = document.querySelector('.stats-section');
-    const statsObserver = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        animateCounters();
-        statsObserver.disconnect();
-      }
-    }, { threshold: 0.3 });
+    /* FAQ Accordion */
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', () => {
+        const faqItem = question.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        // Close all other items
+        document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+        // Toggle current
+        if (!isActive) {
+          faqItem.classList.add('active');
+        }
+      });
+    });
 
-    if (statsSection) statsObserver.observe(statsSection);
-
-    // ===== FAQ TOGGLE =====
-    function toggleFAQ(el) {
-      const item = el.parentElement;
-      const isActive = item.classList.contains("active");
-      document.querySelectorAll(".faq-item").forEach(i => i.classList.remove("active"));
-      if (!isActive) item.classList.add("active");
-    }
-
-    // ===== PHONE CALL DEMO =====
+    /* Phone Demo Scenarios */
     const demoScripts = {
       dental: {
-        callerName: "Sarah Mitchell",
-        callerBusiness: "Calling: Bright Smile Dental",
+        caller: 'Naledi D.',
+        business: 'Calling BrightSmile Dental',
         messages: [
-          { from: "caller", text: "Hi, I have a terrible toothache and need to see a dentist as soon as possible." },
-          { from: "ai", text: "I am so sorry to hear you are in pain, Sarah. Let me help you get in right away. Are you a current patient or would this be your first visit?" },
-          { from: "caller", text: "First visit. I have never been there before." },
-          { from: "ai", text: "Not a problem at all. I can fit you in for an emergency appointment today at 2:30 PM or tomorrow at 9:00 AM. Which works better for you?" },
-          { from: "caller", text: "Today if possible. 2:30 works great." },
-          { from: "ai", text: "Perfect. You are booked for today at 2:30 PM with Dr. Jacobs. I will send you a confirmation on WhatsApp with our address. Is there anything else I can help with?" },
-          { from: "caller", text: "No, that is all. Thank you so much!" },
-          { from: "ai", text: "You are very welcome, Sarah. We will see you at 2:30. Feel better soon. Goodbye!"},
+          { type: 'ai', text: "Good day, thank you for calling BrightSmile Dental. This is our AI assistant. How can I help you today?" },
+          { type: 'customer', text: "Hi, I'd like to book a dental cleaning appointment please." },
+          { type: 'ai', text: "Absolutely! I'm happy to help with that. Are you a new patient, or have you visited us before?" },
+          { type: 'customer', text: "I've been before — last time was about 6 months ago." },
+          { type: 'ai', text: "What's your full name please, so I can pull up your records?" },
+          { type: 'customer', text: "Naledi Dlamini." },
+          { type: 'ai', text: "I've found your file. We have an opening this Thursday at 2pm, or Friday morning at 10am. Which would work better for you?" },
+          { type: 'customer', text: "Friday at 10 works perfectly." },
+          { type: 'ai', text: "Done! You're booked for Friday at 10am. I'll send you a confirmation on WhatsApp right now. Thanks, Naledi — see you Friday!" }
         ]
       },
       plumber: {
-        callerName: "David Khumalo",
-        callerBusiness: "Calling: Khumalo Plumbing",
+        caller: 'James M.',
+        business: 'Calling Smith Plumbing',
         messages: [
-          { from: "caller", text: "Hello, my geyser just burst and water is flooding everywhere. I need someone urgently." },
-          { from: "ai", text: "David, that sounds urgent. I am going to get this sorted for you right now. Can you confirm your address?" },
-          { from: "caller", text: "42 Van Riebeeck Street, Centurion." },
-          { from: "ai", text: "Got it. I have a technician in your area. He can be there within 45 minutes. Your emergency call-out is R350, and he will assess and quote before any work. Shall I dispatch him?" },
-          { from: "caller", text: "Yes please, as fast as possible." },
-          { from: "ai", text: "Done. Jacob is on his way to you right now. I will send you his details and the quote on WhatsApp. Stay safe and turn off your main water valve while you wait." },
-          { from: "caller", text: "Thank you. Appreciate it." },
-          { from: "ai", text: "Absolutely, David. Jacob will call you when he is 5 minutes away. Take care." }
+          { type: 'ai', text: "Hello, you've reached Smith Plumbing. Thanks for calling! What can I help you with today?" },
+          { type: 'customer', text: "Hi, I've got a blocked drain in my kitchen. It's been backing up for two days." },
+          { type: 'ai', text: "Sorry to hear that! Is it completely blocked, or is water still draining slowly?" },
+          { type: 'customer', text: "Completely blocked. Nothing goes down at all." },
+          { type: 'ai', text: "I understand. I can book one of our plumbers out for you. Is this an emergency, or can it wait a day or two?" },
+          { type: 'customer', text: "It's not flooding or anything. Can I get someone Friday afternoon?" },
+          { type: 'ai', text: "We have a slot Friday at 2pm. The callout fee is R450, and a blocked drain usually costs between R800 and R1,200 depending on severity. Shall I book that in?" },
+          { type: 'customer', text: "Yes please, 2pm Friday works." },
+          { type: 'ai', text: "Booked! I'm sending the details to your WhatsApp now — date, time, and pricing info. You'll get a reminder the morning of. Thanks, James!" }
         ]
       },
       salon: {
-        callerName: "Nomsa Dlamini",
-        callerBusiness: "Calling: Glow Beauty Lounge",
+        caller: 'Thandi K.',
+        business: 'Calling Luxe Hair Studio',
         messages: [
-          { from: "caller", text: "Hi, I want to book a hair and nails appointment for this Saturday." },
-          { from: "ai", text: "Hi Nomsa, lovely to hear from you. Let me check availability for you. What time on Saturday works best?" },
-          { from: "caller", text: "Around 10 AM if possible." },
-          { from: "ai", text: "You are in luck. I have Thandi available at 10:00 AM for a blowout and gel nails. The full package is R650. Shall I book it?" },
-          { from: "caller", text: "Yes please!" },
-          { from: "ai", text: "All done. Saturday at 10:00 AM with Thandi. I will send you a reminder on Friday. Anything else?" },
-          { from: "caller", text: "No that is great. See you Saturday." },
-          { from: "ai", text: "Wonderful. See you Saturday at 10, Nomsa. Have a beautiful day." }
+          { type: 'ai', text: "Hi there, welcome to Luxe Hair Studio! I'm here to help — what are you looking for today?" },
+          { type: 'customer', text: "Hey, I want to get my nails done. Do you do gel overlays?" },
+          { type: 'ai', text: "We sure do! We have gel overlays, gel-to-gel, and our new Russian manicure. Which sounds like what you're after?" },
+          { type: 'customer', text: "The gel overlay sounds perfect. How much is that?" },
+          { type: 'ai', text: "A gel overlay is R350, and takes about an hour. We have availability this Saturday — morning or afternoon?" },
+          { type: 'customer', text: "Afternoon please, maybe around 2?" },
+          { type: 'ai', text: "I have 2pm or 3:30pm open on Saturday. Which would you prefer?" },
+          { type: 'customer', text: "2pm is great." },
+          { type: 'ai', text: "You're all set for Saturday at 2pm! Confirmation is on its way to your WhatsApp. Can't wait to see you, Thandi!" }
         ]
       }
     };
 
-    let demoTimeout = null;
-    let demoInterval = null;
-
-    function playDemo(scenario) {
-      // Cancel any running demo
-      if (demoTimeout) clearTimeout(demoTimeout);
-      if (demoInterval) clearInterval(demoInterval);
-
+    function playDemo(scenario, btnEl) {
       // Update active button
-      document.querySelectorAll(".demo-btn").forEach(b => b.classList.remove("active"));
-      event.target.classList.add("active");
+      document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
 
-      const data = demoScripts[scenario];
-      document.getElementById("demoCallerName").textContent = data.callerName;
-      document.getElementById("demoCallerBusiness").textContent = data.callerBusiness;
-      const area = document.getElementById("conversationArea");
-      area.innerHTML = "";
+      const area = document.getElementById('conversationArea');
+      const callerName = document.getElementById('demoCallerName');
+      const callerBusiness = document.getElementById('demoCallerBusiness');
+      const status = document.getElementById('demoStatus');
+      const script = demoScripts[scenario];
 
-      document.getElementById("demoStatus").textContent = "AI Active \u2014 Listening";
-      document.querySelector(".status-dot").style.animationPlayState = "running";
+      callerName.textContent = script.caller;
+      callerBusiness.textContent = script.business;
+      area.innerHTML = '';
 
-      // Fix: the dental object above had a missing opening brace for messages
-      // Re-parse the correct data inline
-      loadAndPlayScenario(scenario, area, data);
-    }
-
-    function loadAndPlayScenario(scenario, area, data) {
-      let idx = 0;
+      let i = 0;
       function showNext() {
-        if (idx >= data.messages.length) {
-          document.getElementById("demoStatus").textContent = "Call Complete \u2713";
+        if (i >= script.messages.length) {
+          status.textContent = '✅ Call Complete — Booking Sent';
           return;
         }
-        const msg = data.messages[idx];
-        const div = document.createElement("div");
-        div.className = "chat-bubble " + (msg.from === "ai" ? "ai-bubble" : "caller-bubble");
-        div.textContent = msg.text;
-        div.style.opacity = "0";
-        div.style.transform = "translateY(10px)";
-        area.appendChild(div);
+        const msg = script.messages[i];
+        status.textContent = msg.type === 'ai' ? '🎙️ AI Speaking...' : '👂 Customer Speaking...';
+        const bubble = document.createElement('div');
+        bubble.className = 'phone-msg ' + msg.type;
+        bubble.textContent = msg.text;
+        bubble.style.animation = 'message-appear 0.4s forwards';
+        area.appendChild(bubble);
         area.scrollTop = area.scrollHeight;
-        // Animate in
-        requestAnimationFrame(() => {
-          div.style.transition = "opacity 0.4s ease, transform 0.4s ease";
-          div.style.opacity = "1";
-          div.style.transform = "translateY(0)";
-        });
-        idx++;
-        const delay = msg.from === "caller" ? 1800 : 2200;
-        demoTimeout = setTimeout(showNext, delay);
+        i++;
+        setTimeout(showNext, 1500 + Math.random() * 800);
       }
       showNext();
     }
 
-    // Auto-launch dental demo on page load if in view
-    const demoSection = document.getElementById("demo");
-    if (demoSection) {
-      const demoObserver = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          demoObserver.disconnect();
-          setTimeout(() => {
-            const dentalBtn = document.querySelector(".demo-btn");
-            if (dentalBtn) dentalBtn.click();
-          }, 500);
+    // Auto-play dental demo on load
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => playDemo('dental'), 1000);
+    });
+
+    /* Smooth scroll for anchor links */
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, { threshold: 0.3 });
-      demoObserver.observe(demoSection);
-    }
-    // ===== YEAR =====
-    document.getElementById('year').textContent = new Date().getFullYear();
+      });
+    });
   </script>
 </body>
 </html>
-
-
-
