@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Receptionist — Never Miss Another Customer Call | Built for South Africa</title>
-  <meta name="description" content="AI receptionist for South African businesses. Speaks 11 languages, POPIA compliant, pay-per-answer. Books appointments, answers calls 24/7.">
+  <title>AI Receptionist ? Never Miss Another Customer Call | Built for South Africa</title>
+  <meta name="description" content="AI receptionist for South African businesses. Pay-per-answer, legal calling hours, SMS fallback. Books appointments, answers calls 24/7.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -863,6 +863,443 @@
         grid-template-columns: 1fr;
       }
     }
+  
+    /* ===== DASHBOARD PREVIEW ===== */
+    .dashboard-preview { padding: 6rem 0; position: relative; z-index: 2; }
+    .dashboard-mockup {
+      max-width: 1000px;
+      margin: 3rem auto 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.08));
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+    .dashboard-topbar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-glass);
+      margin-bottom: 1.5rem;
+    }
+    .dash-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dash-dot.red { background: #ff5f57; }
+    .dash-dot.yellow { background: #febc2e; }
+    .dash-dot.green { background: #28c840; }
+    .dashboard-topbar-title {
+      margin-left: 1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-mini {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+    .stat-mini-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .stat-mini-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-mini-delta {
+      font-size: 0.8rem;
+      color: #10b981;
+      margin-top: 0.25rem;
+    }
+    .feed-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .feed-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    .feed-item:hover {
+      background: rgba(99, 102, 241, 0.05);
+      transform: translateX(6px);
+    }
+    .feed-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .feed-body { flex: 1; }
+    .feed-title { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); }
+    .feed-sub { font-size: 0.8rem; color: var(--text-muted); }
+    .feed-tag {
+      padding: 0.3rem 0.7rem;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-1);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .feed-tag.booked { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .feed-tag.calling { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    @media (max-width: 768px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ===== ROI COMPARISON ===== */
+    .roi-section { padding: 6rem 0; position: relative; z-index: 2; }
+    .roi-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 2rem;
+      margin-top: 3rem;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+      align-items: stretch;
+    }
+    .roi-card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 20px;
+      padding: 2.5rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .roi-card.hero-card {
+      border-color: var(--accent-1);
+      background: linear-gradient(180deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.04));
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+    }
+    .roi-card.hero-card::before {
+      content: 'RECOMMENDED';
+      position: absolute;
+      top: 1rem; right: -2rem;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+      color: white;
+      padding: 0.3rem 2.5rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      transform: rotate(35deg);
+    }
+    .roi-icon {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .roi-icon.ai { background: linear-gradient(135deg, var(--accent-1), var(--accent-3)); box-shadow: 0 0 30px var(--glow-blue); }
+    .roi-icon.human { background: rgba(255, 255, 255, 0.08); }
+    .roi-card h3 { font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700; }
+    .roi-price-line { font-size: 3rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .roi-price-line.gradient {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .roi-price-sub { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .roi-divider { height: 1px; background: var(--border-glass); margin: 1.5rem 0; }
+    .roi-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+    .roi-list li {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.95rem;
+    }
+    .roi-check { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+    .roi-check.yes { background: linear-gradient(135deg, #10b981, #06b6d4); color: white; }
+    .roi-check.no { background: rgba(255, 255, 255, 0.1); color: #f43f5e; }
+    .roi-vs {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 800;
+      color: var(--text-muted);
+      padding: 0 0.5rem;
+    }
+    @media (max-width: 768px) {
+      .roi-wrap { grid-template-columns: 1fr; }
+      .roi-vs { transform: rotate(90deg); padding: 1rem 0; }
+    }
+
+    /* ===== FAQ ACCORDION ===== */
+    .faq-section {
+      padding: 6rem 0;
+      position: relative;
+      z-index: 2;
+    }
+    .faq-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .faq-item {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    .faq-item:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .faq-question {
+      padding: 1.5rem 2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+    .faq-question:hover { color: var(--accent-1); }
+    .faq-icon {
+      font-size: 1.5rem;
+      transition: transform 0.3s ease;
+      color: var(--accent-1);
+      flex-shrink: 0;
+      margin-left: 1rem;
+    }
+    .faq-item.active .faq-icon { transform: rotate(45deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 2rem;
+    }
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+      padding: 0 2rem 1.5rem 2rem;
+    }
+    .faq-answer p {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+    @media (max-width: 768px) {
+      .faq-question { font-size: 0.95rem; padding: 1.2rem 1.5rem; }
+      .faq-answer { padding: 0 1.5rem; }
+      .faq-item.active .faq-answer { padding: 0 1.5rem 1.2rem 1.5rem; }
+    }
+
+    /* ===== PHONE CALL DEMO ===== */
+    .phone-demo-section {
+      padding: 6rem 0;
+      position: relative;
+      z-index: 2;
+    }
+    .phone-container {
+      max-width: 420px;
+      margin: 3rem auto 0;
+      perspective: 1000px;
+    }
+    .phone-frame {
+      background: linear-gradient(145deg, #1a1a2e, #0f0f1e);
+      border-radius: 40px;
+      padding: 1rem 1.5rem 2rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 60px rgba(99, 102, 241, 0.2);
+      border: 2px solid rgba(99, 102, 241, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .phone-notch {
+      width: 120px;
+      height: 22px;
+      background: #000;
+      border-radius: 20px;
+      margin: 0 auto 1.5rem;
+    }
+    .phone-header { text-align: center; margin-bottom: 1.5rem; }
+    .caller-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 2rem;
+      animation: pulse-ring 2s infinite;
+    }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+      70% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+    .caller-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+    .caller-business { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .call-status {
+      font-size: 0.85rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .conversation-area {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 1.25rem;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .phone-msg {
+      max-width: 85%;
+      padding: 0.75rem 1rem;
+      border-radius: 14px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: message-appear 0.4s forwards;
+    }
+    @keyframes message-appear {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .phone-msg.customer {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .phone-msg.customer::before {
+      content: "?? Customer";
+      display: block;
+      font-size: 0.7rem;
+      color: #10b981;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+    .phone-msg.ai {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.08));
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--text-primary);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .phone-msg.ai::before {
+      content: "?? AI Receptionist";
+      display: block;
+      font-size: 0.7rem;
+      color: var(--accent-1);
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+    .msg-typing {
+      display: flex;
+      gap: 4px;
+      padding: 0.75rem 1rem;
+      align-self: flex-start;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.08));
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 14px;
+      border-bottom-left-radius: 4px;
+    }
+    .typing-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent-1);
+      animation: typing-bounce 1.4s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing-bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-8px); opacity: 1; }
+    }
+    .demo-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .demo-btn {
+      padding: 0.7rem 1.3rem;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+    }
+    .demo-btn:hover, .demo-btn.active {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+      color: white;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+    }
+
+    /* ===== TRIAL BANNER ===== */
+    .trial-banner {
+      margin-top: 2rem;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.08));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: #6ee7b7;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
   </style>
 </head>
 <body>
@@ -878,7 +1315,7 @@
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="#home" class="logo">
-        <div class="logo-icon">📞</div>
+        <div class="logo-icon">??</div>
         <span>AI Receptionist</span>
       </a>
       <ul class="nav-links" id="nav-links">
@@ -900,20 +1337,20 @@
     <div class="hero-content">
       <div class="hero-badge">
         <span class="dot"></span>
-        Built for South Africa · POPIA Compliant · 11 Languages
+        Built for South Africa ? Pay Per Answer ? WhatsApp & SMS ? 24/7 AI
       </div>
       <h1 class="hero-title">
         Never Miss Another<br><span class="gradient-text">Customer Call</span>
       </h1>
       <p class="hero-subtitle">
-        Your AI Receptionist calls leads, answers every call, books appointments, and follows up automatically — in English, Afrikaans, Zulu, Xhosa, and 7 more languages. Pay only when calls are answered.
+        Your AI Receptionist calls leads, answers every call, books appointments via WhatsApp, and follows up automatically. Pay only when calls are answered ? no monthly fees, no wasted budget on voicemails.
       </p>
       <div class="hero-buttons">
         <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary">
-          📞 Book a Free Demo
+          ?? Book a Free Demo
         </a>
         <a href="#how-it-works" class="btn btn-ghost">
-          See How It Works →
+          See How It Works ?
         </a>
       </div>
     </div>
@@ -922,23 +1359,25 @@
   <!-- Marquee -->
   <div class="marquee-section">
     <div class="marquee-track">
-      <div class="marquee-item"><span class="dot"></span>POPIA Compliant</div>
-      <div class="marquee-item"><span class="dot"></span>11 SA Languages</div>
       <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
-      <div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>
-      <div class="marquee-item"><span class="dot"></span>SMS Fallback</div>
-      <div class="marquee-item"><span class="dot"></span>24/7 Call Answering</div>
-      <div class="marquee-item"><span class="dot"></span>Automated Lead Follow-Up</div>
-      <div class="marquee-item"><span class="dot"></span>Instant Setup</div>
+      <div class="marquee-item"><span class="dot"></span>AI Calling</div>
+<div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>
+<div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
+<div class="marquee-item"><span class="dot"></span>Instant Setup</div><div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>
+      
+      <div class="marquee-item"><span class="dot"></span>AI Calling</div>
+      <div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>
+      
       <!-- Duplicate for seamless loop -->
-      <div class="marquee-item"><span class="dot"></span>POPIA Compliant</div>
-      <div class="marquee-item"><span class="dot"></span>11 SA Languages</div>
       <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
-      <div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>
-      <div class="marquee-item"><span class="dot"></span>SMS Fallback</div>
-      <div class="marquee-item"><span class="dot"></span>24/7 Call Answering</div>
-      <div class="marquee-item"><span class="dot"></span>Automated Lead Follow-Up</div>
-      <div class="marquee-item"><span class="dot"></span>Instant Setup</div>
+      <div class="marquee-item"><span class="dot"></span>AI Calling</div>
+<div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>
+<div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
+<div class="marquee-item"><span class="dot"></span>Instant Setup</div><div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>
+      
+      <div class="marquee-item"><span class="dot"></span>AI Calling</div>
+      <div class="marquee-item"><span class="dot"></span>WhatsApp Automation</div>
+      
     </div>
   </div>
 
@@ -947,68 +1386,56 @@
     <div class="section-container">
       <div class="reveal">
         <div class="section-label">Features</div>
-        <h2 class="section-title">Everything a receptionist does —<br><span class="gradient-text">powered by AI</span></h2>
-        <p class="section-subtitle">From answering calls to booking appointments, your AI handles it all with a natural, human-like voice — in the language your customers prefer.</p>
+        <h2 class="section-title">Everything a receptionist does ?<br><span class="gradient-text">powered by AI</span></h2>
+        <p class="section-subtitle">From answering calls to booking appointments, your AI handles it all with a natural, human-like voice.</p>
       </div>
       <div class="features-grid">
         <div class="glass-card feature-card reveal reveal-delay-1">
-          <div class="feature-icon-wrap blue">📞</div>
+          <div class="feature-icon-wrap blue">??</div>
           <h3>Calls Leads Automatically</h3>
-          <p>Reaches out to new inquiries within seconds — before they even think about calling your competitor.</p>
+          <p>Reaches out to new inquiries within seconds ? before they even think about calling your competitor.</p>
         </div>
         <div class="glass-card feature-card reveal reveal-delay-2">
-          <div class="feature-icon-wrap purple">✨</div>
+          <div class="feature-icon-wrap purple">?</div>
           <h3>Answers Every Call</h3>
           <p>No more missed calls. Every customer gets a friendly, professional response on the first ring.</p>
         </div>
-        <div class="glass-card feature-card reveal reveal-delay-3">
-          <div class="feature-icon-wrap cyan">🗣️</div>
-          <h3>Speaks 11 SA Languages</h3>
-          <p>English, Afrikaans, Zulu, Xhosa, Sotho, Tswana, Pedi, Venda, Tsonga, Swazi, and Ndebele — just like your customers.</p>
-          <span class="feature-badge badge-new">NEW</span>
-        </div>
         <div class="glass-card feature-card reveal">
-          <div class="feature-icon-wrap emerald">📝</div>
+          <div class="feature-icon-wrap emerald">??</div>
           <h3>Collects Customer Details</h3>
-          <p>Gathers name, contact info, service needed, preferred time — everything you need, automatically.</p>
+          <p>Gathers name, contact info, service needed, preferred time ? everything you need, automatically.</p>
         </div>
         <div class="glass-card feature-card reveal reveal-delay-1">
-          <div class="feature-icon-wrap blue">📅</div>
+          <div class="feature-icon-wrap blue">??</div>
           <h3>Books Appointments</h3>
           <p>Schedules directly into your calendar and sends automatic confirmations via SMS or WhatsApp.</p>
         </div>
         <div class="glass-card feature-card reveal reveal-delay-2">
-          <div class="feature-icon-wrap purple">💬</div>
+          <div class="feature-icon-wrap purple">??</div>
           <h3>SMS Fallback</h3>
           <p>If a call can't connect, automatically sends an SMS to reschedule. No lead left behind.</p>
           <span class="feature-badge badge-new">NEW</span>
         </div>
-        <div class="glass-card feature-card reveal reveal-delay-3">
-          <div class="feature-icon-wrap cyan">🔒</div>
-          <h3>POPIA Compliant</h3>
-          <p>Fully compliant with South Africa's Protection of Personal Information Act. Your customer data is safe.</p>
-          <span class="feature-badge badge-popular">COMPLIANT</span>
-        </div>
         <div class="glass-card feature-card reveal">
-          <div class="feature-icon-wrap emerald">⏰</div>
+          <div class="feature-icon-wrap emerald">?</div>
           <h3>Legal Calling Hours</h3>
           <p>Only calls during permitted hours (Mon-Fri 9am-8pm, Sat 9am-1pm). Never on Sundays or public holidays.</p>
         </div>
         <div class="glass-card feature-card reveal reveal-delay-1">
-          <div class="feature-icon-wrap blue">💰</div>
+          <div class="feature-icon-wrap blue">??</div>
           <h3>Pay Per Answer</h3>
           <p>You only pay when calls are actually answered. No monthly fees, no wasted budget on voicemails.</p>
           <span class="feature-badge badge-popular">FAIR PRICING</span>
         </div>
         <div class="glass-card feature-card reveal reveal-delay-2">
-          <div class="feature-icon-wrap purple">📈</div>
+          <div class="feature-icon-wrap purple">??</div>
           <h3>Gets You More Customers</h3>
           <p>More calls answered = more bookings = more revenue. Without hiring another receptionist.</p>
         </div>
         <div class="glass-card feature-card reveal reveal-delay-3">
-          <div class="feature-icon-wrap cyan">🕐</div>
+          <div class="feature-icon-wrap cyan">??</div>
           <h3>Works 24/7 Non-Stop</h3>
-          <p>Day, night, weekends, holidays — your AI never takes a day off. Your business is always open.</p>
+          <p>Day, night, weekends, holidays ? your AI never takes a day off. Your business is always open.</p>
         </div>
       </div>
     </div>
@@ -1042,6 +1469,59 @@
     </div>
   </section>
 
+
+  <!-- ROI Comparison: AI vs Human -->
+  <section class="roi-section">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">Cost Comparison</div>
+        <h2 class="section-title">AI Receptionist vs <span class="gradient-text">Human Receptionist</span></h2>
+        <p class="section-subtitle mx-auto">See why businesses are switching to AI � better results, 90% less cost.</p>
+      </div>
+      <div class="roi-comparison">
+        <div class="roi-card">
+          <div class="roi-card-header">
+            <div class="roi-card-icon human">??</div>
+            <div class="roi-card-title">Human Receptionist</div>
+          </div>
+          <div class="roi-price">R35,000</div>
+          <div class="roi-period">per month</div>
+          <ul class="roi-features">
+            <li>Salary: R25,000 - R35,000/month</li>
+            <li class="weak">Works 8 hours/day, 5 days/week</li>
+            <li class="weak">Takes breaks, sick days, holidays</li>
+            <li class="weak">Can only handle 1 call at a time</li>
+            <li class="weak">Training required (2-4 weeks)</li>
+            <li class="weak">UI/UX: Phone + pen + paper</li>
+            <li class="weak">Makes mistakes under pressure</li>
+            <li class="weak">Leaves when they quit</li>
+          </ul>
+        </div>
+        <div class="roi-card highlight">
+          <div class="roi-card-header">
+            <div class="roi-card-icon ai">?</div>
+            <div class="roi-card-title">AI Receptionist</div>
+          </div>
+          <div class="roi-price gradient">R499</div>
+          <div class="roi-period">per month (Starter plan)</div>
+          <ul class="roi-features">
+            <li><strong>98% cost savings</strong> vs human</li>
+            <li>Works 24/7/365 � never sleeps</li>
+            <li>Zero sick days, zero holidays off</li>
+            <li>Handles unlimited calls simultaneously</li>
+            <li>Instant setup � no training needed</li>
+            <li>Live dashboard with real-time analytics</li>
+            <li>100% consistent, never makes mistakes</li>
+            <li>Always there � never quits</li>
+          </ul>
+          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary" style="margin-top:1.5rem;width:100%;justify-content:center;">
+            ?? Book Free Demo
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- How It Works -->
   <section class="section" id="how-it-works">
     <div class="section-container">
@@ -1054,17 +1534,17 @@
         <div class="glass-card step-card reveal">
           <div class="step-number">1</div>
           <h3>We Connect Your Number</h3>
-          <p>We set up the AI to answer your business phone line. Takes less than 5 minutes — fully plug-and-play.</p>
+          <p>We set up the AI to answer your business phone line. Takes less than 5 minutes ? fully plug-and-play.</p>
         </div>
         <div class="glass-card step-card reveal reveal-delay-1">
           <div class="step-number">2</div>
           <h3>AI Handles Everything</h3>
-          <p>Answers calls in 11 languages, makes outbound calls to leads, books appointments, and sends confirmations — all automatically.</p>
+          <p>Answers calls, makes outbound calls to leads, books appointments, and sends SMS and WhatsApp confirmations ? all automatically.</p>
         </div>
         <div class="glass-card step-card reveal reveal-delay-2">
           <div class="step-number">3</div>
           <h3>You Get Booked Appointments</h3>
-          <p>Customer name, contact details, appointment time, service needed — delivered straight to your phone or email.</p>
+          <p>Customer name, contact details, appointment time, service needed ? delivered straight to your phone or email.</p>
         </div>
       </div>
     </div>
@@ -1079,18 +1559,18 @@
         <p class="section-subtitle mx-auto">If your business answers calls and books appointments in South Africa, the AI Receptionist works for you.</p>
       </div>
       <div class="industries-grid">
-        <div class="industry-chip reveal">🦷 Dentists</div>
-        <div class="industry-chip reveal">🔧 Plumbers</div>
-        <div class="industry-chip reveal">⚡ Electricians</div>
-        <div class="industry-chip reveal">💇 Salons</div>
-        <div class="industry-chip reveal">🏋️ Gyms</div>
-        <div class="industry-chip reveal">🍽️ Restaurants</div>
-        <div class="industry-chip reveal">🚗 Car Workshops</div>
-        <div class="industry-chip reveal">💆 Spas</div>
-        <div class="industry-chip reveal">🏥 Clinics</div>
-        <div class="industry-chip reveal">🏗️ Contractors</div>
-        <div class="industry-chip reveal">🐾 Vet Clinics</div>
-        <div class="industry-chip reveal">🏠 And More</div>
+        <div class="industry-chip reveal">?? Dentists</div>
+        <div class="industry-chip reveal">?? Plumbers</div>
+        <div class="industry-chip reveal">? Electricians</div>
+        <div class="industry-chip reveal">?? Salons</div>
+        <div class="industry-chip reveal">??? Gyms</div>
+        <div class="industry-chip reveal">??? Restaurants</div>
+        <div class="industry-chip reveal">?? Car Workshops</div>
+        <div class="industry-chip reveal">?? Spas</div>
+        <div class="industry-chip reveal">?? Clinics</div>
+        <div class="industry-chip reveal">??? Contractors</div>
+        <div class="industry-chip reveal">?? Vet Clinics</div>
+        <div class="industry-chip reveal">?? And More</div>
       </div>
     </div>
   </section>
@@ -1105,72 +1585,287 @@
       </div>
       <div class="testimonials-track">
         <div class="testimonial reveal">
-          <div class="testimonial-stars">★★★★★</div>
-          <div class="testimonial-text">"I was skeptical at first, but the difference has been incredible. I used to lose 15–20% of calls when under a sink or on the road. Last month alone, the AI booked 23 emergency jobs I would have completely missed."</div>
+          <div class="testimonial-stars">?????</div>
+          <div class="testimonial-text">"I was skeptical at first, but the difference has been incredible. I used to lose 15?20% of calls when under a sink or on the road. Last month alone, the AI booked 23 emergency jobs I would have completely missed."</div>
           <div class="testimonial-author">
             <div class="testimonial-avatar">JM</div>
             <div>
               <div class="testimonial-name">James Mitchell</div>
-              <div class="testimonial-role">Owner, Mitchell Plumbing · Johannesburg</div>
+              <div class="testimonial-role">Owner, Mitchell Plumbing ? Johannesburg</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal reveal-delay-1">
-          <div class="testimonial-stars">★★★★★</div>
-          <div class="testimonial-text">"As a solo practitioner, I was constantly torn between treating patients and answering the phone. Now the AI handles everything — bookings, confirmations, even parking questions. New patient bookings are up 40%."</div>
+          <div class="testimonial-stars">?????</div>
+          <div class="testimonial-text">"As a solo practitioner, I was constantly torn between treating patients and answering the phone. Now the AI handles everything ? bookings, confirmations, even parking questions. New patient bookings are up 40%."</div>
           <div class="testimonial-author">
             <div class="testimonial-avatar">PS</div>
             <div>
               <div class="testimonial-name">Dr. Priya Sharma</div>
-              <div class="testimonial-role">BDS, Bright Smile Dental · Durban</div>
+              <div class="testimonial-role">BDS, Bright Smile Dental ? Durban</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal reveal-delay-2">
-          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-stars">?????</div>
           <div class="testimonial-text">"I work alone most days, and the phone was my enemy. I'd be mid-highlight, phone ringing, ignoring it. The AI books around my schedule and sends confirmations. 37 new clients in the first month."</div>
           <div class="testimonial-author">
             <div class="testimonial-avatar">LO</div>
             <div>
               <div class="testimonial-name">Linda O'Connor</div>
-              <div class="testimonial-role">Owner, Glow Beauty Salon · Cape Town</div>
+              <div class="testimonial-role">Owner, Glow Beauty Salon ? Cape Town</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal">
-          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-stars">?????</div>
           <div class="testimonial-text">"We have three mechanics and the phone used to ring constantly while we were under cars. Since setting up the AI, we've captured 52 leads that would have gone unanswered. Like having a receptionist who never sleeps."</div>
           <div class="testimonial-author">
             <div class="testimonial-avatar">MW</div>
             <div>
               <div class="testimonial-name">Marcus Williams</div>
-              <div class="testimonial-role">Owner, Williams Auto Workshop · Pretoria</div>
+              <div class="testimonial-role">Owner, Williams Auto Workshop ? Pretoria</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal reveal-delay-1">
-          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-stars">?????</div>
           <div class="testimonial-text">"The AI books tours, answers membership questions, and follows up with prospects. Our trial-to-member conversion jumped from 28% to 61%. Genuinely game-changing for a small gym like ours."</div>
           <div class="testimonial-author">
             <div class="testimonial-avatar">SC</div>
             <div>
               <div class="testimonial-name">Sarah Chen</div>
-              <div class="testimonial-role">Owner, Fit Life Gym · Sandton</div>
+              <div class="testimonial-role">Owner, Fit Life Gym ? Sandton</div>
             </div>
           </div>
         </div>
         <div class="testimonial reveal reveal-delay-2">
-          <div class="testimonial-stars">★★★★★</div>
-          <div class="testimonial-text">"The AI sounds natural — customers don't even realize it's not a person. I've gained about 18% more work since turning it on. I genuinely can't recommend this highly enough."</div>
+          <div class="testimonial-stars">?????</div>
+          <div class="testimonial-text">"The AI sounds natural ? customers don't even realize it's not a person. I've gained about 18% more work since turning it on. I genuinely can't recommend this highly enough."</div>
           <div class="testimonial-author">
             <div class="testimonial-avatar">RV</div>
             <div>
               <div class="testimonial-name">Roberto Vasquez</div>
-              <div class="testimonial-role">Owner, Vasquez Electrical · Bloemfontein</div>
+              <div class="testimonial-role">Owner, Vasquez Electrical ? Bloemfontein</div>
             </div>
           </div>
         </div>
     </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Preview -->
+  <section class="dashboard-preview">
+    <div class="section-container">
+      <div class="reveal">
+        <h2 class="section-title">See What Your Dashboard Captures</h2>
+        <p class="section-subtitle">Every call, booking, and lead is logged automatically. Real-time data you can act on.</p>
+      </div>
+      <div class="reveal">
+        <div class="dashboard-mockup">
+          <div class="dashboard-topbar">
+            <div class="dash-dot red"></div>
+            <div class="dash-dot yellow"></div>
+            <div class="dash-dot green"></div>
+            <div class="dashboard-topbar-title">AI Receptionist Control Panel</div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-mini">
+              <div class="stat-mini-label">Calls Today</div>
+              <div class="stat-mini-value">47</div>
+              <div class="stat-mini-delta">? 12% vs yesterday</div>
+            </div>
+            <div class="stat-mini">
+              <div class="stat-mini-label">Bookings Secured</div>
+              <div class="stat-mini-value">18</div>
+              <div class="stat-mini-delta">? 3 new today</div>
+            </div>
+            <div class="stat-mini">
+              <div class="stat-mini-label">Lead Conversion</div>
+              <div class="stat-mini-value">62%</div>
+              <div class="stat-mini-delta">? 8% this week</div>
+            </div>
+            <div class="stat-mini">
+              <div class="stat-mini-label">Avg Response Time</div>
+              <div class="stat-mini-value">0.3s</div>
+              <div class="stat-mini-delta">Instant AI reply</div>
+            </div>
+          </div>
+          <div class="feed-list">
+            <div class="feed-item">
+              <div class="feed-avatar">JM</div>
+              <div class="feed-body">
+                <div class="feed-title">James Mitchell � Plumbing inquiry</div>
+                <div class="feed-sub">Blocked drain � Urgent callback requested</div>
+              </div>
+              <div class="feed-tag booked">Booked</div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-avatar">PS</div>
+              <div class="feed-body">
+                <div class="feed-title">Dr. Sharma � Dental appointment</div>
+                <div class="feed-sub">Teeth whitening � Thursday 2pm</div>
+              </div>
+              <div class="feed-tag booked">Booked</div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-avatar">MW</div>
+              <div class="feed-body">
+                <div class="feed-title">Marcus Williams � Car service</div>
+                <div class="feed-sub">Oil change � Quote request</div>
+              </div>
+              <div class="feed-tag calling">Calling Now</div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-avatar">LO</div>
+              <div class="feed-body">
+                <div class="feed-title">Linda O'Connor � Salon booking</div>
+                <div class="feed-sub">Balayage � Next Friday</div>
+              </div>
+              <div class="feed-tag booked">Booked</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Phone Call Demo -->
+  <section class="phone-demo-section" id="demo">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">See It In Action</div>
+        <h2 class="section-title">A real conversation with the <span class="gradient-text">AI Receptionist</span></h2>
+        <p class="section-subtitle mx-auto">Watch as the AI handles a customer call � answering questions, collecting details, and booking an appointment. No scripts, no delays.</p>
+      </div>
+      
+      <div class="phone-container reveal">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-header">
+            <div class="caller-avatar">??</div>
+            <div class="caller-name" id="demoCallerName">New Call Incoming</div>
+            <div class="caller-business" id="demoCallerBusiness">Incoming call being handled by AI</div>
+            <div class="call-status">
+              <span class="status-dot"></span>
+              <span id="demoStatus">AI Active � Listening</span>
+            </div>
+          </div>
+          <div class="conversation-area" id="conversationArea">
+            <p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:2rem 0;">Select a scenario below to watch the AI handle a live call</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="demo-controls reveal">
+        <button class="demo-btn active" onclick="playDemo('dental')">?? Dental Clinic</button>
+        <button class="demo-btn" onclick="playDemo('plumber')">?? Plumbing</button>
+        <button class="demo-btn" onclick="playDemo('salon')">?? Hair Salon</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section section" id="faq">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">FAQ</div>
+        <h2 class="section-title">Questions, <span class="gradient-text">answered</span></h2>
+        <p class="section-subtitle mx-auto">Everything you need to know about getting started with the AI Receptionist.</p>
+      </div>
+      <div class="faq-container">
+        <div class="faq-item reveal">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How quickly can the AI Receptionist be set up?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Under 5 minutes. We connect the AI to your existing phone number � no new hardware, no apps to install, no complicated configuration. Your AI starts answering calls the same day you sign up.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal reveal-delay-1">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Do I need technical skills to use it?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>None at all. You tell the AI about your business in plain language � your hours, services, pricing, booking rules � and it handles the rest. No coding, no dashboards to learn, no forms to fill out. Just talk to the AI like you would a new receptionist.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal reveal-delay-2">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Can customers still reach me directly?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Absolutely. The AI answers first and handles routine calls, but you can set it to warm-transfer to your personal line whenever needed. High-value callers or urgent situations go straight through to you � the AI knows when a human touch is required.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>What happens if the AI doesn't know an answer?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>The AI is trained on your specific business information. If a question falls outside what it knows, it politely tells the customer it'll have someone follow up, captures their details, and sends you an instant WhatsApp alert. You never lose a lead.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal reveal-delay-1">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How much does it cost?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>You only pay when calls are actually answered � no monthly subscription, no setup fees, no wasted budget on voicemails or missed calls. Our 7-day free trial lets you see real results before paying anything. Plans start from R499/month with unlimited calls.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal reveal-delay-2">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Can it handle multiple calls at the same time?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes � unlimited simultaneous calls. Unlike a human receptionist who can only handle one caller at a time, the AI manages every call instantly. During your busiest hours, not a single customer gets a busy signal.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Does it work after hours and on weekends?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>24/7, 365 days a year. The AI never sleeps, never takes sick days, and never goes on holiday. Your business can capture leads at 11pm on a Sunday � something a human receptionist can't do.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal reveal-delay-1">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Can I cancel anytime?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes, cancel anytime with no penalties or hidden fees. We believe in earning your business every month. If the AI isn't bringing you value, you can stop immediately � but most clients see results within the first week.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal reveal-delay-2">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>Will the AI sound robotic to my customers?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Not at all. Our AI uses advanced natural language processing that sounds warm, friendly, and completely human. Most customers can't tell the difference. It speaks naturally, understands context, and adapts its tone to match the conversation.</p>
+          </div>
+        </div>
+        <div class="faq-item reveal">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            <span>How does the 7-day free trial work?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <p>Sign up, and your AI Receptionist goes live immediately. For 7 full days, it answers your calls, books appointments, and captures leads � completely free. No credit card required upfront. If you love the results (most do), billing starts automatically. If not, cancel with one click.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1181,12 +1876,12 @@
       <div class="reveal text-center">
         <div class="section-label" style="justify-content:center;">Get Started</div>
         <h2 class="section-title">Ready to never miss<br>another <span class="gradient-text">customer call</span>?</h2>
-        <p class="section-subtitle mx-auto" style="margin-bottom:2.5rem;">Book a free demo and see the AI Receptionist work in real time. No commitment, no credit card, no pressure — just results.</p>
+        <p class="section-subtitle mx-auto" style="margin-bottom:2.5rem;">Book a free demo and see the AI Receptionist work in real time. No commitment, no credit card, no pressure ? just results.</p>
         <div class="hero-buttons" style="margin-bottom:2rem;">
-          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary btn-large">📞 Book Your Free Demo Now</a>
+          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary btn-large">?? Book Your Free Demo Now</a>
         </div>
         <p style="color:var(--text-muted);font-size:0.9rem;">
-          ✉️ <a href="mailto:branleyf@gmail.com" style="color:var(--text-secondary);text-decoration:none;">branleyf@gmail.com</a> &nbsp;·&nbsp; 📱 <a href="tel:+27718804995" style="color:var(--text-secondary);text-decoration:none;">+27 71 880 4995</a>
+          ?? <a href="mailto:branleyf@gmail.com" style="color:var(--text-secondary);text-decoration:none;">branleyf@gmail.com</a> &nbsp;?&nbsp; ?? <a href="tel:+27718804995" style="color:var(--text-secondary);text-decoration:none;">+27 71 880 4995</a>
         </p>
       </div>
     </div>
@@ -1194,12 +1889,12 @@
 
   <!-- Footer -->
   <footer>
-    <p>&copy; <span id="year"></span> AI Receptionist · <a href="mailto:branleyf@gmail.com">branleyf@gmail.com</a> · Built with AI by Viral AI Vault</p>
-    <p style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);">POPIA Compliant · Legal Calling Hours · South Africa</p>
+    <p>&copy; <span id="year"></span> AI Receptionist ? <a href="mailto:branleyf@gmail.com">branleyf@gmail.com</a> ? Built with AI by Viral AI Vault</p>
+    <p style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);">Legal Calling Hours ? Pay Per Answer ? South Africa</p>
   </footer>
 
   <!-- WhatsApp Float -->
-  <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="whatsapp-float" target="_blank" aria-label="WhatsApp">💬</a>
+  <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="whatsapp-float" target="_blank" aria-label="WhatsApp">??</a>
 
   <script>
     // ===== PARTICLE NETWORK CANVAS =====
@@ -1363,3 +2058,5 @@
   </script>
 </body>
 </html>
+
+
