@@ -1,351 +1,487 @@
-// ===================================================================
-// WHATSAPP AI SALES ASSISTANT — MAIN JAVASCRIPT
-// Controls: Form handling, Gemini AI calls, message generation,
-//           conversation tracking, follow-ups, and CRM dashboard
-// ===================================================================
+﻿// ===== WHATSAPP AI SALES ASSISTANT =====
+// Main application logic for business analysis, message generation, and CRM management
 
-// ===== STATE MANAGEMENT =====
-// Active contact being worked on right now
+// ===== STATE =====
 let activeContact = null;
-
-// Current filter for CRM list
 let currentFilter = 'all';
+let currentAiSuggestion = null;
 
-// Current AI suggestion text (for "Use This Response" button)
-let currentAiSuggestion = '';
-
-// ===== GOOGLE GEMINI API CALLER =====
-// Central function that sends prompts to Gemini and returns the text response
-async function callGemini(prompt) {
-  const apiKey = localStorage.getItem('gemini_api_key');
-  if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
-    showToast('error', 'Please set up your free Google Gemini API key first');
-    openApiModal();
-    throw new Error('No API key');
+// ===== BUSINESS TYPE KNOWLEDGE BASE =====
+const businessKnowledge = {
+  'Dentist': {
+    challenges: ['Missing calls from patients in pain who need urgent appointments', 'After-hours inquiries going to voicemail', 'No-shows and last-minute cancellations', 'Difficulty confirming and reminding patients of appointments'],
+    benefits: ['24/7 automated appointment booking for emergency and routine visits', 'Instant SMS/WhatsApp reminders to reduce no-shows by 40%', 'Capture leads even when the clinic is closed', 'Handle multiple calls simultaneously during busy periods'],
+    painPoints: 'Dental practices lose an average of 30% of new patient calls that come in after hours or during lunch breaks. Patients in pain often call the next practice that answers.',
+    valueProposition: 'An AI Receptionist ensures every potential patient gets through, books appointments instantly, and receives confirmation - even at 2 AM.'
+  },
+  'Plumber': {
+    challenges: ['Emergency calls outside business hours', 'Difficulty answering calls while on a job', 'No-shows causing lost revenue', 'Competing with larger companies with 24/7 call centers'],
+    benefits: ['Answer emergency calls instantly at any hour', 'Book jobs and send confirmation messages automatically', 'Qualify leads by asking about the problem before dispatching', 'Never miss a high-value emergency job again'],
+    painPoints: 'Plumbing emergencies don\'t wait for business hours. A burst pipe at midnight means the customer needs help NOW, and the first plumber to answer gets the R5,000 job.',
+    valueProposition: 'Your AI Receptionist answers every emergency call immediately, books the job, and sends confirmation - so you never lose another high-value plumbing call to a competitor.'
+  },
+  'Electrician': {
+    challenges: ['Emergency calls when on-site with another client', 'After-hours inquiries going unanswered', 'Difficulty prioritizing urgent vs routine jobs', 'Missed calls during peak evening hours when most people are home'],
+    benefits: ['Answer calls instantly even when you\'re on a job', 'Automatically triage emergency vs routine requests', 'Book appointments and send arrival time confirmations', 'Capture every lead 24/7 without hiring extra staff'],
+    painPoints: 'Most electrical issues happen in the evening when homeowners notice problems. If you don\'t answer, they call the next electrician on Google.',
+    valueProposition: 'Your AI Receptionist answers every call immediately, asks the right questions to prioritize emergencies, and books jobs while you focus on the work.'
+  },
+  'Salon / Spa': {
+    challenges: ['Double bookings and scheduling conflicts', 'No-shows causing empty chairs and lost revenue', 'Calls during treatments going to voicemail', 'Difficulty managing multiple stylists\' schedules'],
+    benefits: ['Real-time appointment scheduling with availability checks', 'Automated reminders reducing no-shows by 50%', 'Book appointments even when all stylists are busy with clients', 'Handle cancellations and rescheduling automatically'],
+    painPoints: 'A typical salon loses R15,000-R30,000 per month to no-shows and missed calls during busy periods. Empty chairs cost money every minute.',
+    valueProposition: 'Your AI Receptionist books appointments, sends reminders, and fills cancellations automatically - keeping your chairs full and revenue flowing.'
+  },
+  'Gym / Fitness': {
+    challenges: ['Prospective members calling outside staff hours', 'Difficulty managing free trial sign-ups', 'Member inquiries about classes and schedules', 'High competition from chain gyms with 24/7 support'],
+    benefits: ['Capture new member sign-ups 24/7 with automated onboarding', 'Answer questions about classes, pricing, and schedules instantly', 'Book free trial sessions and send confirmation details', 'Retain members with automated check-in reminders'],
+    painPoints: 'The fitness industry is brutally competitive. Someone researching gyms at 10 PM will join the first one that responds - not the one that takes until morning.',
+    valueProposition: 'Your AI Receptionist signs up new members, books trial sessions, and answers member questions around the clock - giving you an unfair advantage over competitors.'
+  },
+  'Restaurant': {
+    challenges: ['Reservation calls during busy service hours', 'After-hours catering and private event inquiries', 'Staff struggling to answer phones during rushes', 'Lost reservations and double-bookings'],
+    benefits: ['Take reservations automatically even during the dinner rush', 'Handle catering inquiries with detailed information collection', 'Confirm reservations via WhatsApp with directions and menu links', 'Never miss a large party booking again'],
+    painPoints: 'During Friday dinner service, the last thing your staff needs is answering phones. But missing a call from a party of 20 means losing R8,000-R15,000 in revenue.',
+    valueProposition: 'Your AI Receptionist handles all reservations, catering inquiries, and customer questions - so your staff focuses on serving guests, not phones.'
+  },
+  'Real Estate': {
+    challenges: ['Lead response time - buyers call multiple agents simultaneously', 'After-hours inquiries from serious buyers', 'Difficulty qualifying leads before scheduling viewings', 'Lost opportunities from slow response times'],
+    benefits: ['Respond to new leads within seconds, 24/7', 'Qualify buyers with pre-screening questions about budget and needs', 'Book property viewings automatically on your calendar', 'Follow up with unresponsive leads automatically'],
+    painPoints: 'Real estate is a speed game. The first agent to respond gets the client. Studies show 78% of buyers go with the first agent who responds to their inquiry.',
+    valueProposition: 'Your AI Receptionist responds to every lead instantly, qualifies them, and books viewings - so you\'re always first to engage with serious buyers.'
+  },
+  'Law Firm': {
+    challenges: ['Potential clients calling after hours during legal emergencies', 'Difficulty screening and qualifying new clients', 'Missed consultations costing high-value retainers', 'Administrative burden of initial client intake'],
+    benefits: ['Answer calls 24/7 for legal emergencies and consultations', 'Pre-screen potential clients with relevant intake questions', 'Book consultations on lawyer\'s calendar automatically', 'Collect preliminary case information before first meeting'],
+    painPoints: 'Legal emergencies don\'t wait for business hours. A potential client calling at 9 PM about a DUI charge needs immediate help - and will hire the first firm that answers.',
+    valueProposition: 'Your AI Receptionist captures every potential client, screens cases, and books consultations - so you never lose a high-value retainer to slow response times.'
+  },
+  'Accountant': {
+    challenges: ['Seasonal call volume spikes during tax season', 'Difficulty scheduling consultations with busy professionals', 'Prospect inquiries outside business hours', 'Time wasted on initial qualification calls'],
+    benefits: ['Handle call volume spikes without hiring temporary staff', 'Answer prospect questions about services and pricing 24/7', 'Book tax consultation appointments automatically', 'Pre-qualify leads by asking about their situation'],
+    painPoints: 'During tax season (Jan-April), accounting firms experience 300% call volume increases. Missing calls means losing clients to competitors who answer faster.',
+    valueProposition: 'Your AI Receptionist handles unlimited calls during peak season, books consultations, and pre-qualifies prospects - so you never turn away a potential client.'
+  },
+  'Retail Store': {
+    challenges: ['Product availability questions when staff is busy', 'After-hours inquiries about store hours and locations', 'Missed opportunities from online shoppers calling for info', 'Difficulty managing multiple store locations'],
+    benefits: ['Answer product questions instantly from any location', 'Provide store hours, directions, and inventory information 24/7', 'Handle customer service inquiries without staff time', 'Capture leads for special orders and back-in-stock notifications'],
+    painPoints: 'When a customer calls to ask if you have a product in stock and you don\'t answer, they simply drive to your competitor. Every unanswered call is a lost sale.',
+    valueProposition: 'Your AI Receptionist answers every product question, provides store info, and handles customer service - keeping customers coming to you instead of competitors.'
+  },
+  'Auto / Workshop': {
+    challenges: ['Emergency breakdown calls outside hours', 'Difficulty answering phones while working on vehicles', 'Appointment scheduling conflicts', 'Lost revenue from missed calls during busy periods'],
+    benefits: ['Answer breakdown emergencies 24/7 and dispatch help', 'Book service appointments with automatic availability checks', 'Provide quotes and service information instantly', 'Never lose a R10,000 engine rebuild to a missed call'],
+    painPoints: 'When someone\'s car breaks down, they call the first workshop that answers. A missed call could mean losing a R5,000-R50,000 repair job to a competitor.',
+    valueProposition: 'Your AI Receptionist answers every call immediately, books services, and provides quotes - so you never lose another high-value repair to a competitor who answered faster.'
+  },
+  'Home Services': {
+    challenges: ['Emergency calls for urgent repairs (locks, plumbing, electrical)', 'Difficulty answering calls while on a job site', 'Competing with national companies with call centers', 'Lost jobs from slow response times'],
+    benefits: ['Respond to emergency calls instantly, any time of day', 'Book jobs and send confirmation details automatically', 'Qualify leads by asking about the specific problem', 'Compete with large companies on response speed'],
+    painPoints: 'Home service emergencies are won by speed. The first company to answer gets the job. National companies have 24/7 call centers - now you can compete.',
+    valueProposition: 'Your AI Receptionist gives you the same 24/7 response capability as national companies, at a fraction of the cost - so you win more emergency jobs.'
+  },
+  'Healthcare': {
+    challenges: ['Patient appointment scheduling outside clinic hours', 'Medication and treatment inquiries', 'Difficulty managing multiple practitioner schedules', 'Missed calls during consultations'],
+    benefits: ['Book patient appointments 24/7 with automated reminders', 'Answer common health questions and direct to appropriate resources', 'Handle prescription refill requests and scheduling', 'Reduce no-shows with automated confirmation messages'],
+    painPoints: 'Healthcare practices lose patients to clinics that are easier to book with. Patients expect modern, instant scheduling - not voicemail and callbacks.',
+    valueProposition: 'Your AI Receptionist books appointments, sends reminders, and handles patient inquiries around the clock - improving patient experience and reducing no-shows.'
+  },
+  'Education': {
+    challenges: ['Enrollment inquiries outside office hours', 'Parent questions about programs and fees', 'Difficulty managing campus tour bookings', 'Prospective student follow-ups falling through cracks'],
+    benefits: ['Answer enrollment questions 24/7 with detailed program information', 'Book campus tours and interviews automatically', 'Follow up with prospective students who showed interest', 'Handle parent inquiries about fees, schedules, and requirements'],
+    painPoints: 'Education decisions are time-sensitive. A parent researching schools will contact the first institution that responds comprehensively to their questions.',
+    valueProposition: 'Your AI Receptionist handles all enrollment inquiries, books tours, and follows up with prospects - so you never lose a student to a faster-responding competitor.'
+  },
+  'Tech / IT': {
+    challenges: ['Support calls from existing clients outside business hours', 'New client inquiries about services and pricing', 'Difficulty qualifying leads before technical consultations', 'Competition from large MSPs with 24/7 support'],
+    benefits: ['Provide 24/7 support for common IT issues and password resets', 'Qualify new leads by asking about their tech stack and needs', 'Book technical consultations with appropriate specialists', 'Respond to RFPs and inquiries instantly'],
+    painPoints: 'IT support is expected to be available 24/7. If you don\'t answer, clients will find an MSP that does. Every missed call is a potential client churn.',
+    valueProposition: 'Your AI Receptionist provides instant 24/7 support, qualifies new leads, and books consultations - giving you enterprise-level responsiveness at small-business cost.'
+  },
+  'Marketing Agency': {
+    challenges: ['New client inquiries about services and case studies', 'Difficulty qualifying leads before pitch meetings', 'Responding to RFPs and proposal requests quickly', 'After-hours inquiries from urgent client needs'],
+    benefits: ['Respond to new client inquiries within seconds, any time', 'Qualify leads by asking about budget, timeline, and goals', 'Book pitch meetings and send relevant case studies automatically', 'Never lose a R50,000 monthly retainer to a slow response'],
+    painPoints: 'Marketing decisions move fast. A business needing urgent help will hire the first agency that responds with confidence and relevant examples.',
+    valueProposition: 'Your AI Receptionist responds to every inquiry instantly, qualifies leads, and books pitch meetings - so you win more clients with faster response times.'
+  },
+  'Construction': {
+    challenges: ['Emergency repair calls for urgent issues', 'Difficulty quoting projects while on-site', 'Subcontractor and supplier coordination calls', 'New project inquiries outside office hours'],
+    benefits: ['Answer emergency calls 24/7 and dispatch help immediately', 'Book site visits and consultations on your calendar', 'Handle supplier calls and coordinate deliveries', 'Capture new project leads even when you\'re on a job site'],
+    painPoints: 'Construction emergencies and new projects don\'t wait for business hours. A R2 million building project goes to the contractor who responds first.',
+    valueProposition: 'Your AI Receptionist handles emergency calls, books site visits, and captures new project leads - so you never miss a high-value construction opportunity.'
+  },
+  'Other': {
+    challenges: ['Missing calls outside business hours', 'Difficulty managing call volume during busy periods', 'Lost opportunities from slow response times', 'Competing with businesses that have dedicated reception staff'],
+    benefits: ['Answer every call 24/7 without hiring additional staff', 'Book appointments and send confirmations automatically', 'Qualify leads and capture contact information', 'Never lose a customer to a competitor who answered faster'],
+    painPoints: 'Every missed call is a missed opportunity. In today\'s market, customers expect instant responses - not voicemail and callbacks.',
+    valueProposition: 'Your AI Receptionist ensures you never miss another customer call, books appointments automatically, and qualifies leads - all at a fraction of the cost of a human receptionist.'
   }
+};
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-  const body = {
-    contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 2048
-    }
-  };
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API error ${response.status}`);
-  }
-
-  const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error('Empty response from AI');
-  return text;
-}
-
-// ===== ANALYSE THE BUSINESS =====
-// Sends business info to Gemini and gets back a detailed analysis
-async function analyseBusiness() {
-  const data = getFormData();
-  if (!data) return null;
-
-  // Try to fetch website content for richer analysis
-  let websiteContext = '';
-  if (data.website) {
-    try {
-      const siteText = await fetchWebsiteSummary(data.website);
-      if (siteText) {
-        websiteContext = `\n\nWebsite content summary:\n${siteText}`;
-      }
-    } catch (e) {
-      websiteContext = ` (Could not fetch website content)`;
-    }
-  }
-
-  const prompt = `You are an expert B2B sales analyst. Analyse this business and identify how an AI Receptionist service could help them.
-
-BUSINESS DETAILS:
-- Name: ${data.businessName}
-- Contact Person: ${data.contactPerson}
-- Phone: ${data.phone}
-- Website: ${data.website || 'None provided'}
-- Industry/Type: ${data.businessType}
-- Notes: ${data.notes || 'None'}${websiteContext}
-
-Provide a structured analysis with these sections (use **bold** for headings):
-
-**What They Do:**
-2-3 sentences about what this business likely does based on their industry.
-
-**Likely Challenges:**
-Bullet list of 3-5 challenges common to this industry (missed calls, after-hours inquiries, lead follow-up, admin workload, etc.)
-
-**How AI Receptionist Helps:**
-Bullet list of 3-5 specific ways our AI Receptionist (never miss calls, 24/7 availability, auto booking, lead capture, follow-up) solves their specific problems.
-
-**Key Benefits for Them:**
-Bullet list of 3-4 measurable benefits (more revenue, saved time, better service, etc.) that would resonate with a ${data.businessType} business owner.`;
-
-  const result = await callGemini(prompt);
-  return result;
-}
-
-// ===== GENERATE SALES STRATEGY =====
-async function generateSalesStrategy(analysis) {
-  const data = getFormData();
-  if (!data) return null;
-
-  const prompt = `You are a senior sales strategist. Based on this business analysis, create a sales approach:
-
-BUSINESS: ${data.businessName} (${data.businessType})
-CONTACT: ${data.contactPerson}
-
-ANALYSIS:
-${analysis}
-
-Provide a structured sales strategy with these sections (use **bold** for headings):
-
-**Key Talking Points:**
-3-5 bullet points for the opening conversation — specific to this business, not generic.
-
-**Likely Objections & Responses:**
-For each of these common objections, write a polite, confident response:
-1. "We already have someone handling calls"
-2. "We can't afford it right now"
-3. "I don't trust AI to represent our business"
-4. "Our customers prefer talking to humans"
-Format: "Objection:" then "Response:" for each.
-
-**Questions to Ask:**
-3-4 open-ended questions that uncover their pain points and build rapport.
-
-**Next Steps:**
-How to guide them toward a free demo call with our team (don't push — make it feel natural and low-pressure).`;
-
-  const result = await callGemini(prompt);
-  return result;
-}
-
-// ===== GENERATE WHATSAPP MESSAGE =====
-async function generateWhatsAppMessage(analysis) {
-  const data = getFormData();
-  if (!data) return null;
-
-  const prompt = `You are writing a WhatsApp sales message on behalf of an AI Receptionist company. Write the message from the perspective of a friendly WhatsApp AI assistant reaching out to a potential client.
-
-TARGET BUSINESS: ${data.businessName}
-CONTACT: ${data.contactPerson}
-INDUSTRY: ${data.businessType}
-WEBSITE: ${data.website || 'Not provided'}
-
-ANALYSIS:
-${analysis}
-
-Write a WhatsApp message that:
-1. Opens with a warm, personalised greeting using their name/business
-2. Honestly introduces you as a WhatsApp AI assistant reaching out on behalf of AI Receptionist
-3. Shows you understand their specific business (mention their industry, what they do)
-4. Explains how the AI receptionist could help THEM specifically (2-3 key benefits)
-5. Asks a genuine question about their current process
-6. Is professional yet warm and conversational
-7. Is between 150-250 words
-8. Uses line breaks for readability on WhatsApp
-9. Uses 1-2 subtle emojis max
-10. Does NOT use aggressive sales language or make false claims
-11. Ends with a soft call-to-action
-
-The message should sound like a highly experienced, friendly sales rep — not a robot, not pushy.`;
-
-  const result = await callGemini(prompt);
-  return result;
-}
-
-// ===== GENERATE AI FOLLOW-UP SUGGESTION =====
-async function generateFollowUpSuggestion(conversationHistory) {
-  const data = getFormData();
-  if (!data) return null;
-
-  const historyText = conversationHistory
-    .map(m => {
-      const label = m.role === 'us' ? 'You' : data.contactPerson || 'Client';
-      return `${label}: ${m.text}`;
-    })
-    .join('\n\n');
-
-  const prompt = `You are a senior sales coach. Here is the conversation so far with ${data.contactPerson} from ${data.businessName} (${data.businessType}):
-
-CONVERSATION HISTORY:
-${historyText}
-
-Based on the conversation:
-1. What is their current interest level? (High / Medium / Low / Not Interested)
-2. What objection or concern did they raise (if any)?
-3. Write a suggested follow-up response (80-150 words) that:
-   - Acknowledges their point respectfully
-   - Addresses their concern with a specific solution or proof
-   - Moves toward booking a demo or next step
-   - Sounds friendly and professional
-   - Uses 0-1 emoji
-   - Is suitable for WhatsApp
-
-Format your response as:
-**Interest Level:** [High/Medium/Low/Not Interested]
-**Objection:** [What they said or "None"]
-**Suggested Response:**
-[Your response here]`;
-
-  const result = await callGemini(prompt);
-  return result;
-}
-
-// ===== FETCH WEBSITE CONTENT SUMMARY =====
-// Lightweight: use a public service to get text from URLs
-async function fetchWebsiteSummary(url) {
-  try {
-    // Use r.jina.ai as a text extraction proxy (free, no key needed)
-    const resp = await fetch(`https://r.jina.ai/${url}`, {
-      headers: { 'X-Return-Format': 'text' }
-    });
-    if (!resp.ok) return null;
-    const text = await resp.text();
-    // Take first 1500 chars to keep the prompt small
-    return text.substring(0, 1500).replace(/\s+/g, ' ').trim();
-  } catch {
-    return null;
-  }
-}
-
-// ===== FORM HANDLING =====
-function getFormData() {
+// ===== FORM VALIDATION =====
+function validateForm() {
   const businessName = document.getElementById('business-name').value.trim();
   const phone = document.getElementById('phone-number').value.trim();
   const businessType = document.getElementById('business-type').value;
 
-  if (!businessName || !phone || !businessType) {
-    showToast('error', 'Please fill in Business Name, Phone Number, and Business Type');
+  if (!businessName) {
+    showToast('error', 'Please enter the business name');
+    document.getElementById('business-name').focus();
+    return null;
+  }
+
+  if (!phone) {
+    showToast('error', 'Please enter the WhatsApp number');
+    document.getElementById('phone-number').focus();
+    return null;
+  }
+
+  if (!businessType) {
+    showToast('error', 'Please select a business type');
+    document.getElementById('business-type').focus();
     return null;
   }
 
   return {
     businessName,
     contactPerson: document.getElementById('contact-person').value.trim(),
-    phone: phone.replace(/[\s\-\(\)]/g, ''),
+    phone,
     website: document.getElementById('website-url').value.trim(),
     businessType,
     notes: document.getElementById('notes').value.trim()
   };
 }
 
-// ===== MAIN: ANALYSE & GENERATE (called from "Analyse" button) =====
-async function analyseAndGenerate() {
+function getFormData() {
+  return validateForm();
+}
+
+// ===== BUSINESS ANALYSIS (TEMPLATE-BASED) =====
+async function fetchBusinessInfo(data) {
+  const knowledge = businessKnowledge[data.businessType] || businessKnowledge['Other'];
+  
+  return {
+    businessName: data.businessName,
+    contactPerson: data.contactPerson,
+    phone: data.phone,
+    website: data.website,
+    businessType: data.businessType,
+    notes: data.notes,
+    analysis: {
+      whatTheyDo: `${data.businessName} is a ${data.businessType.toLowerCase()} business${data.website ? ` with a website at ${data.website}` : ''}.`,
+      services: `Core services include standard ${data.businessType.toLowerCase()} offerings. ${data.notes ? `Additional notes: ${data.notes}` : ''}`,
+      challenges: knowledge.challenges,
+      howAIHelps: knowledge.benefits,
+      industryBenefits: knowledge.benefits.slice(0, 3).join(', '),
+      painPoints: knowledge.painPoints,
+      valueProposition: knowledge.valueProposition,
+      competitors: `Other ${data.businessType.toLowerCase()} businesses in the area who may not offer 24/7 call answering`,
+      marketPosition: `As a ${data.businessType.toLowerCase()} business, being available 24/7 gives a significant competitive advantage`
+    }
+  };
+}
+
+function displayAnalysis(analysis) {
+  const output = document.getElementById('analysis-output');
+  if (!output) return;
+
+  const html = `
+    <div class="analysis-section">
+      <div class="analysis-header">
+        <div class="analysis-icon">ðŸŽ¯</div>
+        <h4>${escapeHtml(analysis.businessName)} - Business Analysis</h4>
+      </div>
+      <div class="analysis-content">
+        <div class="analysis-row">
+          <div class="analysis-label">Business Type</div>
+          <div class="analysis-value">${escapeHtml(analysis.businessType)}</div>
+        </div>
+        ${analysis.website ? `
+        <div class="analysis-row">
+          <div class="analysis-label">Website</div>
+          <div class="analysis-value"><a href="${escapeHtml(analysis.website)}" target="_blank" style="color:#a5b4fc">${escapeHtml(analysis.website)}</a></div>
+        </div>` : ''}
+        ${analysis.notes ? `
+        <div class="analysis-row">
+          <div class="analysis-label">Notes</div>
+          <div class="analysis-value">${escapeHtml(analysis.notes)}</div>
+        </div>` : ''}
+      </div>
+    </div>
+
+    <div class="analysis-section">
+      <h4>âš¡ Key Challenges</h4>
+      <ul class="analysis-list">
+        ${analysis.challenges.map(c => `<li>${escapeHtml(c)}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="analysis-section">
+      <h4>ðŸŽ¯ How AI Receptionist Helps</h4>
+      <ul class="analysis-list">
+        ${analysis.benefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="analysis-section">
+      <h4>ðŸ’¡ Industry-Specific Benefits</h4>
+      <p class="analysis-text">${escapeHtml(analysis.painPoints)}</p>
+      <p class="analysis-text" style="color:#a5b4fc;font-weight:500">${escapeHtml(analysis.valueProposition)}</p>
+    </div>
+  `;
+
+  output.innerHTML = html;
+  setOutputStatus('analysis-status', 'active', 'Analysis Complete');
+}
+
+// ===== SALES STRATEGY GENERATION =====
+async function generateSalesStrategy(analysis, formData) {
+  const talkingPoints = [
+    `"Every call you miss is money left on the table. How many calls do you miss each week?"`,
+    `"What happens when a potential customer calls at 10 PM and gets voicemail?"`,
+    `"Your competitors are answering calls 24/7 - are you?"`,
+    `"How much revenue do you lose to no-shows and missed appointments?"`,
+    `"What's the lifetime value of a customer you never got to speak with?"`
+  ];
+
+  const objections = [
+    { objection: '"I already have reception staff"', response: '"That\'s great for during business hours. But what about after 5 PM? Weekends? Emergencies? AI handles the overflow so your staff can focus on in-person customers."' },
+    { objection: '"It\'s too expensive"', response: '"An AI Receptionist costs less than R1000/month - less than one day of a part-time receptionist. And it works 24/7/365."' },
+    { objection: '"I\'m not sure it will work for my industry"', response: `"'${escapeHtml(formData.businessType)}' is actually one of our most successful industries. [Industry-specific example]. Can I show you a quick demo?"' },
+    { objection: '"I\'m happy with how things are"', response: '"That\'s understandable. Quick question - how many calls go to voicemail each week? Even 5 missed calls could be worth R10,000+ in lost business."' },
+    { objection: '"I need to think about it"', response: '"Of course! No pressure at all. Can I send you a quick 2-minute demo showing exactly how it works for ${escapeHtml(formData.businessType)}s?"' }
+  ];
+
+  const closingQuestions = [
+    `"Would you like me to arrange a free 15-minute demo showing exactly how this works for ${escapeHtml(formData.businessType)}s?"`,
+    `"What would it be worth to never miss another customer call again?"`,
+    `"Can I show you a quick example of how the AI handles a typical ${escapeHtml(formData.businessType)} call?"`,
+    `"Would next Tuesday or Thursday work better for a quick demo call?"`
+  ];
+
+  return {
+    talkingPoints,
+    objections,
+    closingQuestions,
+    approach: `Focus on the cost of missed calls in the ${formData.businessType} industry. Emphasize 24/7 availability and instant response times. Use industry-specific examples to build credibility.`,
+    nextSteps: `If interested: Offer to send a voice demo or schedule a live 15-minute demo call. If hesitant: Offer a 30-day trial or money-back guarantee to reduce risk.`
+  };
+}
+
+function displaySalesStrategy(strategy) {
+  const output = document.getElementById('sales-strategy-output');
+  if (!output) return;
+
+  const html = `
+    <div class="strategy-section">
+      <div class="strategy-header">
+        <div class="strategy-icon">ðŸ’¼</div>
+        <h4>Sales Strategy</h4>
+      </div>
+      <div class="strategy-content">
+        <p style="color:var(--text-secondary);margin-bottom:1rem">${escapeHtml(strategy.approach)}</p>
+      </div>
+    </div>
+
+    <div class="strategy-section">
+      <h4>ðŸŽ¤ Opening Questions</h4>
+      <ul class="strategy-list">
+        ${strategy.talkingPoints.map(tp => `<li>${escapeHtml(tp)}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="strategy-section">
+      <h4>ï¸ Common Objections & Responses</h4>
+      <div class="objection-list">
+        ${strategy.objections.map(o => `
+          <div class="objection-item">
+            <div class="objection-text">${escapeHtml(o.objection)}</div>
+            <div class="objection-response">${escapeHtml(o.response)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="strategy-section">
+      <h4> Closing Questions</h4>
+      <ul class="strategy-list">
+        ${strategy.closingQuestions.map(cq => `<li>${escapeHtml(cq)}</li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="strategy-section">
+      <h4>ðŸ“‹ Next Steps</h4>
+      <p style="color:var(--text-secondary)">${escapeHtml(strategy.nextSteps)}</p>
+    </div>
+  `;
+
+  output.innerHTML = html;
+  setOutputStatus('sales-strategy-status', 'active', 'Strategy Generated');
+}
+
+// ===== WHATSAPP MESSAGE GENERATION =====
+async function generateWhatsAppMessage(analysisText) {
   const data = getFormData();
+  if (!data) return null;
+
+  const knowledge = businessKnowledge[data.businessType] || businessKnowledge['Other'];
+  const contactName = data.contactPerson ? data.contactPerson : 'there';
+
+  const messages = {
+    'Dentist': `Hi ${contactName}, this is [Your Name] from [Your Company]. I noticed you run ${data.businessName}, and I wanted to reach out about something that could really help your practice.
+
+We help dental clinics like yours answer every patient call instantly - even at 2 AM when someone's in pain and needs an emergency appointment. Our AI Receptionist books appointments, sends reminders (reducing no-shows by 40%), and captures every lead that would otherwise go to voicemail.
+
+Quick question - how many calls do you typically miss during lunch breaks or after hours each week?
+
+Would you be open to a quick 2-minute voice demo showing exactly how it sounds? No pressure at all.`,
+
+    'Plumber': `Hi ${contactName}, this is [Your Name] from [Your Company]. I'm reaching out because I help plumbing businesses like ${data.businessName} capture every emergency call - even at midnight.
+
+When a pipe bursts at 11 PM, the customer calls the first plumber who answers. Our AI Receptionist answers instantly, books the job, and sends you all the details - so you never lose another R5,000 emergency call to a competitor.
+
+How many calls would you say go to voicemail each week, especially during busy jobs?
+
+I can send you a quick 2-minute demo showing how it handles emergency calls. Interested?`,
+
+    'Electrician': `Hi ${contactName}, [Your Name] here from [Your Company]. I help electricians like you answer every call immediately - even when you're on-site with another client.
+
+Most electrical emergencies happen in the evening when homeowners are home. If you don't answer, they call the next electrician on Google. Our AI Receptionist answers instantly, asks the right questions to triage emergencies, and books jobs automatically.
+
+How many calls would you estimate you miss during peak evening hours?
+
+Would you like to hear a 2-minute demo of how it handles emergency calls?`,
+
+    'Salon / Spa': `Hi ${contactName}, this is [Your Name] from [Your Company]. I help salons and spas like ${data.businessName} keep their chairs full by eliminating no-shows and capturing every booking call.
+
+Our AI Receptionist handles all appointment bookings, sends automated reminders (reducing no-shows by 50%), and fills last-minute cancellations - even when all your stylists are busy with clients.
+
+How much revenue would you say you lose to no-shows and missed calls each month?
+
+I can show you a quick demo of how it books appointments and reduces no-shows. Would that be helpful?`,
+
+    'default': `Hi ${contactName}, this is [Your Name] from [Your Company]. I'm reaching out because I help ${data.businessType.toLowerCase()} businesses like ${data.businessName} never miss another customer call.
+
+Our AI Receptionist answers every call 24/7, books appointments, and qualifies leads - so you never lose another opportunity to a competitor who answered faster.
+
+${knowledge.painPoints}
+
+Quick question - how many calls would you say go to voicemail each week?
+
+I'd love to show you a quick 2-minute demo of how it works for ${data.businessType.toLowerCase()} businesses. Would you be open to that?`
+  };
+
+  return messages[data.businessType] || messages['default'];
+}
+
+function displayWhatsAppMessage(message) {
+  const textarea = document.getElementById('message-editor-textarea');
+  if (!textarea) return;
+
+  textarea.value = message;
+  autoResizeTextarea(textarea);
+  setOutputStatus('message-status', 'active', 'Message Ready');
+}
+
+// ===== FOLLOW-UP SUGGESTION =====
+async function generateFollowUpSuggestion(conversations) {
+  const lastCustomerMsg = conversations.filter(c => c.role === 'them').slice(-1)[0];
+  
+  if (!lastCustomerMsg) {
+    return `This is a new prospect from ${getFormData()?.businessName || 'the business'}. Start with a friendly introduction and ask about their biggest challenge with missed calls.`;
+  }
+
+  const msg = lastCustomerMsg.text.toLowerCase();
+  
+  if (msg.includes('interested') || msg.includes('yes') || msg.includes('tell me more')) {
+    return `**Interest Level: High - They're showing interest**
+
+**Suggested Response:**
+"Great! I'd love to show you exactly how it works. Can I send you a 2-minute voice demo so you can hear how naturally the AI handles ${getFormData()?.businessType || ''} calls? And would Tuesday or Thursday work better for a quick 15-minute demo call?"`;
+  }
+  
+  if (msg.includes('price') || msg.includes('cost') || msg.includes('expensive') || msg.includes('how much')) {
+    return `**Interest Level: Medium - They're asking about pricing**
+
+**Suggested Response:**
+"Fair question! Our Starter plan is R499/month - that's less than one day of a part-time receptionist, and it works 24/7/365. Most businesses see ROI from capturing just 2-3 missed calls per month. Can I show you a quick breakdown of what you'd get?"`;
+  }
+  
+  if (msg.includes('no') || msg.includes('not interested') || msg.includes('don\'t need') || msg.includes('busy')) {
+    return `**Interest Level: Low - They're not interested right now**
+
+**Suggested Response:**
+"No worries at all, I completely understand! If things change down the road or you start noticing missed calls costing you business, feel free to reach out. I'll send you our info just in case. Have a great day!"`;
+  }
+  
+  if (msg.includes('maybe') || msg.includes('think about') || msg.includes('later')) {
+    return `**Interest Level: Medium - They want to think about it**
+
+**Suggested Response:**
+"Of course! No pressure at all. To help you decide, can I send you a quick 2-minute voice demo so you can hear how it sounds? And I'll check back next week - would that be okay?"`;
+  }
+
+  // Default follow-up for unclear responses
+  return `**Interest Level: Unclear - Need more information**
+
+**Suggested Response:**
+"I understand! Quick question - how many calls would you estimate go to voicemail each week? Even getting a sense of that number might help determine if this could be valuable for ${getFormData()?.businessName || 'the business'}."`;
+}
+
+// ===== ANALYSE BUTTON HANDLER =====
+
+async function analyseAndGenerate()() {
+  const data = validateForm();
   if (!data) return;
 
-  // Check API key
-  const apiKey = localStorage.getItem('gemini_api_key');
-  if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
-    showToast('error', 'Please set up your free Google Gemini API key first');
-    openApiModal();
-    return;
-  }
+  // Show loading state
+  setOutputStatus('analysis-status', 'loading', 'Analysing business...');
+  setOutputStatus('sales-strategy-status', 'loading', 'Generating strategy...');
+  setOutputStatus('message-status', 'loading', 'Crafting message...');
 
-  // Show loading states
-  setOutputStatus('analysis-status', 'loading', 'Analysing...');
-  setOutputStatus('strategy-status', 'loading', 'Waiting...');
-
-  const analyseBtn = document.getElementById('analyse-btn');
-  analyseBtn.disabled = true;
-  analyseBtn.innerHTML = '<span class="spinner"></span> Analysing Business...';
+  // Disable button
+  const btn = document.getElementById('analyse-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Analysing...';
 
   try {
-    // Step 1: Analyse the business
-    const analysis = await analyseBusiness();
-    if (analysis) {
-      displayAnalysis(analysis);
-      setOutputStatus('analysis-status', 'active', 'Complete');
+    // Step 1: Business Analysis (instant)
+    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate processing
+    const analysis = await fetchBusinessInfo(data);
+    displayAnalysis(analysis.analysis);
+
+    // Step 2: Sales Strategy (instant)
+    await new Promise(resolve => setTimeout(resolve, 600));
+    const strategy = await generateSalesStrategy(analysis.analysis, data);
+    displaySalesStrategy(strategy);
+
+    // Step 3: WhatsApp Message (instant)
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const message = await generateWhatsAppMessage();
+    displayWhatsAppMessage(message);
+
+    // Create contact and save to CRM
+    if (!activeContact) {
+      activeContact = createContactFromForm();
+      saveContactToStorage(activeContact);
+      refreshCRMStats();
+      renderCRMList();
     }
 
-    // Step 2: Generate sales strategy
-    setOutputStatus('strategy-status', 'loading', 'Generating...');
-    const strategy = await generateSalesStrategy(analysis);
-    if (strategy) {
-      displayStrategy(strategy);
-      setOutputStatus('strategy-status', 'active', 'Complete');
-    }
-
-    // Step 3: Generate WhatsApp message
-    const message = await generateWhatsAppMessage(analysis);
-    if (message) {
-      displayWhatsAppMessage(message);
-      document.getElementById('send-whatsapp-btn').disabled = false;
-    }
-
-    // Save/update contact in CRM
-    saveOrUpdateContact();
-
-    showToast('success', 'Analysis complete! Review the message and send when ready.');
+    showToast('success', 'Business analysed and message generated!');
+    
+    // Scroll to message section
+    document.getElementById('message-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   } catch (err) {
-    console.error('Generate error:', err);
-    showToast('error', 'Error generating analysis: ' + err.message);
+    showToast('error', 'Error: ' + err.message);
+    setOutputStatus('analysis-status', 'error', 'Error: ' + err.message);
+    setOutputStatus('sales-strategy-status', 'error', 'Error: ' + err.message);
+    setOutputStatus('message-status', 'error', 'Error: ' + err.message);
   } finally {
-    analyseBtn.disabled = false;
-    analyseBtn.innerHTML = '🧠 Analyse Business & Generate Message';
+    btn.disabled = false;
+    btn.innerHTML = 'ðŸ§  Analyse Business & Generate Message';
   }
-}
-
-// ===== DISPLAY FUNCTIONS =====
-function displayAnalysis(text) {
-  const output = document.getElementById('analysis-output');
-  output.innerHTML = `<div class="analysis-content">${formatMarkdown(text)}</div>`;
-}
-
-function displayStrategy(text) {
-  const output = document.getElementById('strategy-output');
-  output.innerHTML = `<div class="strategy-content">${formatMarkdown(text)}</div>`;
-}
-
-function displayWhatsAppMessage(text) {
-  const preview = document.getElementById('whatsapp-message-preview');
-  preview.innerHTML = `<div class="wa-message-text">${escapeHtml(text)}</div>`;
-
-  const textarea = document.getElementById('message-editor-textarea');
-  textarea.value = text;
-  autoResizeTextarea(textarea);
-}
-
-// ===== MARKDOWN FORMATTER (lightweight) =====
-function formatMarkdown(text) {
-  let html = escapeHtml(text);
-  // Bold **text**
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  // Headings ### and ##
-  html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
-  html = html.replace(/^## (.+)$/gm, '<h4>$1</h4>');
-  // Bullets
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-  // Paragraphs
-  html = html.replace(/\n\n/g, '</p><p>');
-  html = html.replace(/\n/g, '<br>');
-  // Wrap list items
-  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>');
-  // Clean up nested <ul>
-  html = html.replace(/<\/ul>\s*<ul>/g, '');
-  return `<p>${html}</p>`;
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }
 
 // ===== STATUS INDICATORS =====
@@ -399,14 +535,10 @@ async function regenerateMessage() {
   const data = getFormData();
   if (!data) return;
 
-  const apiKey = localStorage.getItem('gemini_api_key');
-  if (!apiKey) { openApiModal(); return; }
-
   showToast('info', 'Generating new message...');
 
   try {
-    const analysis = document.getElementById('analysis-output').innerText;
-    const message = await generateWhatsAppMessage(analysis);
+    const message = await generateWhatsAppMessage();
     if (message) {
       displayWhatsAppMessage(message);
       showToast('success', 'New message generated!');
@@ -425,7 +557,6 @@ function copyMessage() {
   navigator.clipboard.writeText(message).then(() => {
     showToast('success', 'Message copied to clipboard!');
   }).catch(() => {
-    // Fallback
     textarea.select();
     document.execCommand('copy');
     showToast('success', 'Message copied!');
@@ -435,7 +566,6 @@ function copyMessage() {
 // ===== CONVERSATION MANAGEMENT =====
 function addConversationEntry(role, text) {
   if (!activeContact) {
-    // Create a new contact from the form
     activeContact = createContactFromForm();
   }
 
@@ -457,7 +587,7 @@ function renderConversationThread() {
   if (!activeContact || !activeContact.conversations || activeContact.conversations.length === 0) {
     container.innerHTML = `
       <div class="conv-placeholder">
-        <div class="placeholder-icon">💬</div>
+        <div class="placeholder-icon">ðŸ’¬</div>
         <p>Once you send a WhatsApp message, log the customer's response here. The AI will suggest follow-ups and help handle objections.</p>
       </div>`;
     countEl.textContent = '0 messages';
@@ -470,7 +600,7 @@ function renderConversationThread() {
   container.innerHTML = msgs.map(m => {
     const isUs = m.role === 'us';
     const avatarClass = isUs ? 'ai' : 'customer';
-    const avatarText = isUs ? '🤖' : '👤';
+    const avatarText = isUs ? 'ðŸ¤–' : 'ðŸ‘¤';
     const time = new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const tag = m.category ? `<span class="conv-msg-tag ${m.category}">${m.categoryLabel || m.category}</span>` : '';
 
@@ -516,8 +646,6 @@ function logResponse() {
 
   addConversationEntry('them', text, type, categoryLabels[type]);
   replyInput.value = '';
-
-  // Update interest level and contact status
   updateInterestFromType(type);
 
   showToast('success', 'Response logged');
@@ -551,7 +679,6 @@ function updateInterestFromType(type) {
   level = Math.max(0, Math.min(100, level + (points[type] || 0)));
   activeContact.interestLevel = level;
 
-  // Update status
   if (type === 'closed') activeContact.status = 'customer';
   else if (type === 'meeting') activeContact.status = 'interested';
   else if (type === 'not-interested') activeContact.status = 'lost';
@@ -569,22 +696,19 @@ function updateInterestBar(level) {
   if (!fill || !value) return;
 
   fill.style.width = level + '%';
-  if (level >= 80) value.textContent = '🔥 Hot';
-  else if (level >= 50) value.textContent = '✅ Warm';
-  else if (level >= 25) value.textContent = '🤔 Cool';
-  else if (level > 0) value.textContent = '❄️ Cold';
-  else value.textContent = '—';
+  if (level >= 80) value.textContent = 'ðŸ”¥ Hot';
+  else if (level >= 50) value.textContent = 'âœ… Warm';
+  else if (level >= 25) value.textContent = 'ðŸ¤” Cool';
+  else if (level > 0) value.textContent = 'â„ï¸ Cold';
+  else value.textContent = 'â€”';
 }
 
-// ===== AI FOLLOW-UP SUGGESTION =====
+// ===== AI FOLLOW-UP SUGGESTION (TEMPLATE-BASED) =====
 async function getAiSuggestion() {
   if (!activeContact || !activeContact.conversations || activeContact.conversations.length === 0) {
     showToast('error', 'Log a customer response first, then ask for AI suggestions');
     return;
   }
-
-  const apiKey = localStorage.getItem('gemini_api_key');
-  if (!apiKey) { openApiModal(); return; }
 
   const box = document.getElementById('ai-suggestion-box');
   const textEl = document.getElementById('ai-suggestion-text');
@@ -595,7 +719,6 @@ async function getAiSuggestion() {
     const suggestion = await generateFollowUpSuggestion(activeContact.conversations);
     currentAiSuggestion = suggestion;
 
-    // Parse the structured response
     const interestMatch = suggestion.match(/\*\*Interest Level:\*\*\s*(.+)/i);
     const responseMatch = suggestion.match(/\*\*Suggested Response:\*\*\s*([\s\S]*)/i);
 
@@ -619,12 +742,9 @@ function useAiSuggestion() {
   const responseMatch = currentAiSuggestion.match(/\*\*Suggested Response:\*\*\s*([\s\S]*)/i);
   const text = responseMatch ? responseMatch[1].trim() : currentAiSuggestion.trim();
 
-  // Put it in the textarea so user can edit before sending
   const textarea = document.getElementById('message-editor-textarea');
   textarea.value = text;
   autoResizeTextarea(textarea);
-
-  // Log as our response
   addConversationEntry('us', text);
 
   box_hide();
@@ -659,7 +779,6 @@ function scheduleFollowup() {
 
   saveContactToStorage(activeContact);
 
-  // Show confirmation
   const display = document.getElementById('followup-display');
   const text = document.getElementById('followup-text');
   const d = new Date(date + 'T' + (time || '09:00'));
@@ -755,10 +874,8 @@ function renderCRMList() {
   const container = document.getElementById('crm-list');
   let contacts = getAllContacts();
 
-  // Sort by most recently updated
   contacts.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
-  // Apply filter
   if (currentFilter !== 'all') {
     if (currentFilter === 'followup') {
       contacts = contacts.filter(c => c.status === 'followup');
@@ -770,7 +887,7 @@ function renderCRMList() {
   if (contacts.length === 0) {
     container.innerHTML = `
       <div class="crm-empty glass-card">
-        <div class="placeholder-icon">📂</div>
+        <div class="placeholder-icon">ðŸ“‚</div>
         <h3>${currentFilter === 'all' ? 'No contacts yet' : 'No ' + currentFilter + ' contacts'}</h3>
         <p>${currentFilter === 'all' ? 'Start by entering a business contact above and sending your first WhatsApp message.' : 'No contacts match this filter.'}</p>
       </div>`;
@@ -804,14 +921,14 @@ function renderCRMList() {
           <div class="crm-name">${escapeHtml(c.businessName)}</div>
           <div class="crm-meta">
             <span>${escapeHtml(c.businessType)}</span>
-            ${followupStr ? `<span>📅 ${followupStr}</span>` : ''}
+            ${followupStr ? `<span> ${followupStr}</span>` : ''}
             <span>${c.conversations?.length || 0} msgs</span>
           </div>
         </div>
         <span class="crm-status-badge ${c.status}">${statusLabel}</span>
         <div class="crm-actions-col">
-          <button class="crm-action-btn" onclick="event.stopPropagation(); openContactDetail(${c.id})" title="View details">🔍</button>
-          <button class="crm-action-btn delete" onclick="event.stopPropagation(); confirmDeleteContact(${c.id})" title="Delete">🗑️</button>
+          <button class="crm-action-btn" onclick="event.stopPropagation(); openContactDetail(${c.id})" title="View details">ðŸ”</button>
+          <button class="crm-action-btn delete" onclick="event.stopPropagation(); confirmDeleteContact(${c.id})" title="Delete">ï¸</button>
         </div>
       </div>`;
   }).join('');
@@ -825,7 +942,6 @@ function loadContact(id) {
 
   activeContact = contact;
 
-  // Fill in the form
   document.getElementById('business-name').value = contact.businessName || '';
   document.getElementById('contact-person').value = contact.contactPerson || '';
   document.getElementById('phone-number').value = contact.phone || '';
@@ -833,13 +949,11 @@ function loadContact(id) {
   document.getElementById('business-type').value = contact.businessType || '';
   document.getElementById('notes').value = contact.notes || '';
 
-  // Render conversation
   renderConversationThread();
   updateInterestBar(contact.interestLevel || 0);
 
-  // Show follow-up if exists
   if (contact.followUps && contact.followUps.length > 0) {
-    const last = contact.followUps[contact.followUps.length - 0 - 1];
+    const last = contact.followUps[contact.followUps.length - 1];
     const display = document.getElementById('followup-display');
     const text = document.getElementById('followup-text');
     const d = new Date(last.date + 'T' + (last.time || '09:00'));
@@ -847,9 +961,7 @@ function loadContact(id) {
     display.classList.remove('hidden');
   }
 
-  // Scroll to conversation section
   document.getElementById('conversation-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
   renderCRMList();
   showToast('info', `Loaded: ${contact.businessName}`);
 }
@@ -870,10 +982,10 @@ function openContactDetail(id) {
   let convHtml = '';
   if (c.conversations && c.conversations.length > 0) {
     convHtml = c.conversations.map(m => {
-      const label = m.role === 'us' ? '🤖 You' : `👤 ${c.contactPerson || 'Client'}`;
+      const label = m.role === 'us' ? 'ðŸ¤– You' : `ðŸ‘¤ ${c.contactPerson || 'Client'}`;
       const time = new Date(m.time).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
       return `<div style="margin-bottom:0.75rem;padding:0.6rem;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--border-glass)">
-        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.3rem">${label} · ${time}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.3rem">${label} Â· ${time}</div>
         <div style="font-size:0.85rem;color:var(--text-secondary);white-space:pre-wrap">${escapeHtml(m.text)}</div>
       </div>`;
     }).join('');
@@ -885,7 +997,7 @@ function openContactDetail(id) {
   if (c.followUps && c.followUps.length > 0) {
     followupHtml = c.followUps.map(f => {
       const d = new Date(f.date + 'T' + (f.time || '09:00'));
-      return `<div style="font-size:0.85rem">📅 ${d.toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>`;
+      return `<div style="font-size:0.85rem">ðŸ“… ${d.toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>`;
     }).join('');
   } else {
     followupHtml = '<p style="color:var(--text-muted);font-size:0.85rem">No follow-ups scheduled</p>';
@@ -897,43 +1009,43 @@ function openContactDetail(id) {
       <div class="detail-avatar ${c.status}">${initials}</div>
       <div class="detail-title">
         <h3>${escapeHtml(c.businessName)}</h3>
-        <p>${escapeHtml(c.businessType)} · ${escapeHtml(c.phone)}</p>
+        <p>${escapeHtml(c.businessType)} Â· ${escapeHtml(c.phone)}</p>
       </div>
     </div>
 
     <div class="detail-grid">
       <div class="detail-section">
-        <h4>👤 Contact Person</h4>
+        <h4>ðŸ‘¤ Contact Person</h4>
         <p>${escapeHtml(c.contactPerson || 'Not provided')}</p>
       </div>
       <div class="detail-section">
-        <h4>🌐 Website</h4>
+        <h4>ðŸŒ Website</h4>
         <p>${c.website ? `<a href="${escapeHtml(c.website)}" target="_blank" style="color:#a5b4fc">${escapeHtml(c.website)}</a>` : 'Not provided'}</p>
       </div>
       <div class="detail-section">
-        <h4>📊 Status</h4>
+        <h4>ðŸ“Š Status</h4>
         <p><span class="crm-status-badge ${c.status}">${statusLabel}</span></p>
       </div>
       <div class="detail-section">
-        <h4>💡 Interest Level</h4>
+        <h4> Interest Level</h4>
         <p>${c.interestLevel || 0}%</p>
       </div>
     </div>
 
-    ${c.notes ? `<div class="detail-section"><h4>📝 Notes</h4><p>${escapeHtml(c.notes)}</p></div>` : ''}
+    ${c.notes ? `<div class="detail-section"><h4>ðŸ“ Notes</h4><p>${escapeHtml(c.notes)}</p></div>` : ''}
 
     <div class="detail-section">
-      <h4>💬 Conversation History</h4>
+      <h4>ðŸ’¬ Conversation History</h4>
       ${convHtml}
     </div>
 
     <div class="detail-section">
-      <h4>📅 Follow-ups</h4>
+      <h4>ðŸ“… Follow-ups</h4>
       ${followupHtml}
     </div>
 
     <div class="detail-section">
-      <h4>⚡ Update Status</h4>
+      <h4>âš¡ Update Status</h4>
       <div class="detail-status-control">
         ${['new','contacted','interested','followup','customer','lost'].map(s => `
           <button class="status-btn ${c.status === s ? 'active-status' : ''}" onclick="updateContactStatus(${c.id}, '${s}')">${s.charAt(0).toUpperCase() + s.slice(1)}</button>
@@ -958,7 +1070,7 @@ function updateContactStatus(id, newStatus) {
   saveContactToStorage(contact);
   refreshCRMStats();
   renderCRMList();
-  openContactDetail(id); // Re-render modal
+  openContactDetail(id);
   showToast('success', `Status updated to ${newStatus}`);
 }
 
@@ -979,32 +1091,23 @@ function autoResizeTextarea(el) {
   el.style.height = Math.min(el.scrollHeight, 200) + 'px';
 }
 
-// Listen for textarea input
-document.addEventListener('DOMContentLoaded', () => {
-  const textarea = document.getElementById('message-editor-textarea');
-  if (textarea) {
-    textarea.addEventListener('input', () => autoResizeTextarea(textarea));
-  }
-});
-
 // ===== TOAST NOTIFICATIONS =====
 function showToast(type, message) {
   const container = document.getElementById('toast-container');
   if (!container) return;
 
-  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  const icons = { success: 'âœ…', error: '', info: 'â„¹ï¸', warning: 'âš ï¸' };
 
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `
-    <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+    <span class="toast-icon">${icons[type] || 'ï¸'}</span>
     <span class="toast-text">${escapeHtml(message)}</span>
-    <button class="toast-close" onclick="this.parentElement.style.animation='toastOut 0.3s ease forwards'; setTimeout(() => this.parentElement.remove(), 300)">×</button>
+    <button class="toast-close" onclick="this.parentElement.style.animation='toastOut 0.3s ease forwards'; setTimeout(() => this.parentElement.remove(), 300)">Ã—</button>
   `;
 
   container.appendChild(toast);
 
-  // Auto-remove after 4 seconds
   setTimeout(() => {
     if (toast.parentElement) {
       toast.style.animation = 'toastOut 0.3s ease forwards';
@@ -1013,65 +1116,11 @@ function showToast(type, message) {
   }, 4000);
 }
 
-// ===== API KEY MODAL =====
-function openApiModal() {
-  const modal = document.getElementById('api-modal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    const input = document.getElementById('api-key-input');
-    if (input) {
-      const existing = localStorage.getItem('gemini_api_key');
-      if (existing && existing !== 'YOUR_GEMINI_API_KEY_HERE') {
-        input.value = existing;
-      }
-    }
-  }
-}
-
-function closeApiModal() {
-  document.getElementById('api-modal')?.classList.add('hidden');
-}
-
-function toggleApiKeyVisibility() {
-  const input = document.getElementById('api-key-input');
-  if (input) {
-    input.type = input.type === 'password' ? 'text' : 'password';
-  }
-}
-
-function saveApiKey() {
-  const input = document.getElementById('api-key-input');
-  if (!input) return;
-
-  const key = input.value.trim();
-  if (!key) {
-    showToast('error', 'Please enter an API key');
-    return;
-  }
-
-  if (!key.startsWith('AIza')) {
-    showToast('error', 'API key should start with "AIza". Please check your key.');
-    return;
-  }
-
-  localStorage.setItem('gemini_api_key', key);
-  closeApiModal();
-  updateApiKeyStatus();
-  showToast('success', 'API key saved! You can now use AI features.');
-}
-
-function updateApiKeyStatus() {
-  const key = localStorage.getItem('gemini_api_key');
-  const connected = document.getElementById('api-status-banner');
-  const needed = document.getElementById('api-needed-banner');
-
-  if (key && key !== 'YOUR_GEMINI_API_KEY_HERE') {
-    connected?.classList.remove('hidden');
-    needed?.classList.add('hidden');
-  } else {
-    connected?.classList.add('hidden');
-    needed?.classList.remove('hidden');
-  }
+// ===== HTML ESCAPE =====
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // ===== NAVBAR SCROLL EFFECT =====
@@ -1094,8 +1143,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ===== INITIALISE ON PAGE LOAD =====
+// ===== INITIALIZE ON PAGE LOAD =====
 document.addEventListener('DOMContentLoaded', () => {
-  updateApiKeyStatus();
+  // Attach analyse button handler
+  const analyseBtn = document.getElementById('analyse-btn');
+  if (analyseBtn) {
+    analyseBtn.onclick = handleAnalyse;
+  }
+
+  // Attach send WhatsApp button
+  const sendBtn = document.getElementById('send-whatsapp-btn');
+  if (sendBtn) {
+    sendBtn.onclick = sendViaWhatsApp;
+  }
+
+  // Load CRM data
   loadCRMData();
 });

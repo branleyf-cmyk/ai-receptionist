@@ -13,35 +13,22 @@
 </head>
 <body class="sales-page">
 
-  <!-- Animated Background -->
+  <canvas id="hero-canvas"></canvas>
   <div class="bg-grid"></div>
-  <div class="bg-orbs">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
 
-  <!-- Navigation -->
-  <nav class="navbar scrolled" id="navbar">
-    <div class="nav-container">
-      <a href="index.html" class="logo">
-        <div class="logo-icon">🤖</div>
-        <span>AI Receptionist</span>
-      </a>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="index.html#features">What It Does</a></li>
-        <li><a href="index.html#how-it-works">How It Works</a></li>
-        <li><a href="#sales-assistant" class="active">AI Sales Tool</a></li>
-        <li><a href="#crm-dashboard">CRM</a></li>
-        <li><a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="nav-cta">Book Demo</a></li>
-      </ul>
-      <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+  <nav class="nav-container" id="navbar">
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="index.html#pricing">Pricing</a></li>
+      <li><a href="#sales-assistant" class="active">AI Sales Tool</a></li>
+      <li><a href="#crm-dashboard">CRM</a></li>
+    </ul>
+    <button id="mobile-toggle" aria-label="Menu">
+      <div class="hamburger"></div>
+    </button>
   </nav>
 
-  <!-- Hero Section -->
   <section class="sales-hero" id="sales-assistant">
     <canvas id="hero-canvas"></canvas>
     <div class="hero-content">
@@ -59,127 +46,102 @@
         <a href="#contact-form-section" class="btn btn-primary">
           💬 Start Selling
         </a>
-        <a href="#crm-dashboard" class="btn btn-ghost">
-          📊 Open CRM Dashboard
+        <a href="#sales-strategy" class="btn btn-secondary">
+          📊 See How It Works
         </a>
       </div>
-      <!-- API Key Status -->
-      <div id="api-status-banner" class="api-status-banner hidden">
-        <span class="api-status-icon">⚡</span>
-        <span id="api-status-text">Google Gemini AI connected — ready to analyse businesses</span>
-        <button id="change-api-key-btn" class="api-change-btn" onclick="openApiModal()">Change</button>
-      </div>
-      <div id="api-needed-banner" class="api-needed-banner">
-        <span>🔑</span> First time?
-        <button onclick="openApiModal()" class="api-setup-link">Set up your free AI key</button>
-        <span class="api-note">— takes 30 seconds, 100% free</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================== HOW IT WORKS STEPS ================== -->
-  <section class="sales-steps-section">
-    <div class="section-container">
-      <div class="reveal">
-        <div class="section-label">How It Works</div>
-        <h2 class="section-title">Three steps to <span class="gradient-text">smarter outreach</span></h2>
-      </div>
-      <div class="steps-grid">
-        <div class="step-card glass-card reveal reveal-delay-1">
-          <div class="step-number">01</div>
-          <div class="step-icon-wrap green">📝</div>
-          <h3>Enter Business Details</h3>
-          <p>Tell us about the business — their name, website, industry, phone number. The AI does the rest.</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Free Forever</div>
         </div>
-        <div class="step-card glass-card reveal reveal-delay-2">
-          <div class="step-number">02</div>
-          <div class="step-icon-wrap blue">🧠</div>
-          <h3>AI Analyses & Generates</h3>
-          <p>Our AI researches the business, identifies pain points, and crafts a personalised sales strategy and WhatsApp message.</p>
+        <div class="stat">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Unlimited Messages</div>
         </div>
-        <div class="step-card glass-card reveal">
-          <div class="step-number">03</div>
-          <div class="step-icon-wrap purple">🚀</div>
-          <h3>Send & Track</h3>
-          <p>Send via WhatsApp with one tap. Track conversations, log interest levels, and schedule follow-ups from the CRM.</p>
+        <div class="stat">
+          <div class="stat-number">🔒</div>
+          <div class="stat-label">Private & Secure</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ================== CONTACT FORM ================== -->
-  <section class="contact-form-section" id="contact-form-section">
+  <section class="sales-strategy" id="sales-strategy">
     <div class="section-container">
       <div class="reveal">
         <div class="section-label">Step 1</div>
-        <h2 class="section-title">Enter <span class="gradient-text">Business Details</span></h2>
-        <p class="section-subtitle">Fill in the business info below. The more details you provide, the better the AI can personalise the message.</p>
+        <h2 class="section-title">Research & Personalise</h2>
+        <p class="section-subtitle">Enter any business details and let the AI analyse their website, identify challenges, and craft a tailored sales approach.</p>
       </div>
 
-      <div class="form-workspace">
-        <!-- Left: Form -->
-        <div class="form-panel glass-card reveal reveal-delay-1">
-          <div class="form-header">
-            <span class="form-header-icon">📋</span>
-            <h3>Business Contact Details</h3>
+      <div class="strategy-grid">
+        <div class="glass-card input-panel reveal reveal-delay-1" id="contact-form-section">
+          <div class="panel-header">
+            <span class="panel-icon">📝</span>
+            <h3>Business Details</h3>
           </div>
-          <form id="contact-form" onsubmit="return false;">
+
+          <form onsubmit="return false;">
             <div class="form-group">
-              <label for="business-name">Business Name <span class="required">*</span></label>
-              <input type="text" id="business-name" placeholder="e.g. Smith's Plumbing" required>
+              <label for="business-name">Business Name *</label>
+              <input type="text" id="business-name" placeholder="e.g. Joe's Plumbing" required>
             </div>
-            <div class="form-group">
-              <label for="contact-person">Contact Person <span class="optional">(optional)</span></label>
-              <input type="text" id="contact-person" placeholder="e.g. John Smith">
-            </div>
+
             <div class="form-row">
               <div class="form-group">
-                <label for="phone-number">WhatsApp Number <span class="required">*</span></label>
-                <input type="tel" id="phone-number" placeholder="e.g. +27 71 880 4995" required>
+                <label for="contact-person">Contact Person <span class="optional">(optional)</span></label>
+                <input type="text" id="contact-person" placeholder="e.g. John Smith">
               </div>
+
               <div class="form-group">
-                <label for="business-type">Business Type <span class="required">*</span></label>
-                <select id="business-type" required>
-                  <option value="">Select industry...</option>
-                  <option value="Dentist">Dentist</option>
-                  <option value="Plumber">Plumber</option>
-                  <option value="Electrician">Electrician</option>
-                  <option value="Salon / Spa">Salon / Spa</option>
-                  <option value="Gym / Fitness">Gym / Fitness</option>
-                  <option value="Restaurant">Restaurant</option>
-                  <option value="Auto / Workshop">Auto / Workshop</option>
-                  <option value="Real Estate">Real Estate</option>
-                  <option value="Law Firm">Law Firm</option>
-                  <option value="Accountant">Accountant</option>
-                  <option value="Retail Store">Retail Store</option>
-                  <option value="Home Services">Home Services</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Education">Education</option>
-                  <option value="Tech / IT">Tech / IT</option>
-                  <option value="Marketing Agency">Marketing Agency</option>
-                  <option value="Construction">Construction</option>
-                  <option value="Other">Other</option>
-                </select>
+                <label for="phone-number">WhatsApp Number *</label>
+                <input type="tel" id="phone-number" placeholder="+27 71 880 4995" required>
               </div>
             </div>
+
+            <div class="form-group">
+              <label for="business-type">Business Type *</label>
+              <select id="business-type" required>
+                <option value="">Select industry...</option>
+                <option value="Dentist">Dentist</option>
+                <option value="Plumber">Plumber</option>
+                <option value="Electrician">Electrician</option>
+                <option value="Salon / Spa">Salon / Spa</option>
+                <option value="Gym / Fitness">Gym / Fitness</option>
+                <option value="Restaurant">Restaurant</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="Law Firm">Law Firm</option>
+                <option value="Accountant">Accountant</option>
+                <option value="Retail Store">Retail Store</option>
+                <option value="Home Services">Home Services</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Education">Education</option>
+                <option value="Tech / IT">Tech / IT</option>
+                <option value="Marketing Agency">Marketing Agency</option>
+                <option value="Construction">Construction</option>
+                <option value="Auto / Workshop">Auto / Workshop</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
             <div class="form-group">
               <label for="website-url">Website URL <span class="optional">(optional)</span></label>
               <input type="url" id="website-url" placeholder="e.g. https://example.com">
             </div>
+
             <div class="form-group">
               <label for="notes">Notes <span class="optional">(optional)</span></label>
               <textarea id="notes" rows="3" placeholder="Any extra details — e.g. 'They currently use a call centre and want to automate' or 'Heard about us from a referral'"></textarea>
             </div>
+
             <button type="button" id="analyse-btn" class="btn btn-primary btn-full" onclick="analyseAndGenerate()">
               🧠 Analyse Business & Generate Message
             </button>
-            <div id="form-error" class="form-error hidden"></div>
           </form>
         </div>
 
-        <!-- Right: AI Output -->
         <div class="output-panel reveal reveal-delay-2">
-          <!-- AI Analysis -->
           <div class="glass-card output-card" id="analysis-card">
             <div class="output-header">
               <span class="output-icon blue">🎯</span>
@@ -194,14 +156,13 @@
             </div>
           </div>
 
-          <!-- Sales Strategy -->
           <div class="glass-card output-card" id="strategy-card">
             <div class="output-header">
               <span class="output-icon purple">💼</span>
               <h3>Sales Strategy</h3>
-              <span class="output-status" id="strategy-status">Waiting...</span>
+              <span class="output-status" id="sales-strategy-status">Waiting...</span>
             </div>
-            <div class="output-body" id="strategy-output">
+            <div class="output-body" id="sales-strategy-output">
               <div class="output-placeholder">
                 <div class="placeholder-icon">📊</div>
                 <p>After analysis, the AI will create a tailored sales approach — key talking points, likely objections, and how to handle them.</p>
@@ -213,7 +174,6 @@
     </div>
   </section>
 
-  <!-- ================== WHATSAPP MESSAGE GENERATOR ================== -->
   <section class="message-section" id="message-section">
     <div class="section-container">
       <div class="reveal">
@@ -223,7 +183,6 @@
       </div>
 
       <div class="message-workspace">
-        <!-- Message Editor -->
         <div class="glass-card message-editor reveal reveal-delay-1">
           <div class="editor-header">
             <span class="editor-icon">💬</span>
@@ -247,23 +206,19 @@
                   <p>Your personalised WhatsApp message will appear here after the AI generation step.</p>
                 </div>
               </div>
-              <div class="wa-message wa-outgoing" id="reply-preview">
-                <!-- Customer replies go here -->
-              </div>
             </div>
             <div class="wa-input-area">
               <textarea id="message-editor-textarea" class="wa-input" placeholder="Your AI message appears above — you can edit it here too..." rows="4"></textarea>
             </div>
           </div>
           <div class="send-area">
-            <button id="send-whatsapp-btn" class="btn btn-whatsapp btn-full" onclick="sendViaWhatsApp()" disabled>
+            <button id="send-whatsapp-btn" class="btn btn-whatsapp btn-full" onclick="sendViaWhatsApp()">
               💬 Send via WhatsApp
             </button>
             <p class="send-note">Opens WhatsApp with the message pre-filled — you review before sending</p>
           </div>
         </div>
 
-        <!-- Conversation Manager -->
         <div class="glass-card conversation-panel reveal reveal-delay-2" id="conversation-panel">
           <div class="conv-header">
             <span class="conv-icon">🗨️</span>
@@ -299,7 +254,6 @@
               <div id="ai-suggestion-text"></div>
               <button class="btn-sm btn-use-suggestion" onclick="useAiSuggestion()">Use This Response</button>
             </div>
-            <!-- Interest Level Indicator -->
             <div class="interest-tracker" id="interest-tracker">
               <span class="interest-label">Interest Level:</span>
               <div class="interest-bar">
@@ -309,7 +263,6 @@
             </div>
           </div>
 
-          <!-- Follow-up Scheduler -->
           <div class="followup-section">
             <h4>📅 Schedule Follow-up</h4>
             <div class="followup-row">
@@ -326,7 +279,6 @@
     </div>
   </section>
 
-  <!-- ================== CRM DASHBOARD ================== -->
   <section class="crm-section" id="crm-dashboard">
     <div class="section-container">
       <div class="reveal">
@@ -335,7 +287,6 @@
         <p class="section-subtitle">Track all your contacts, conversations, interest levels, and follow-ups in one place.</p>
       </div>
 
-      <!-- CRM Stats -->
       <div class="crm-stats reveal">
         <div class="crm-stat-card glass-card">
           <div class="crm-stat-number" id="stat-total">0</div>
@@ -355,7 +306,6 @@
         </div>
       </div>
 
-      <!-- CRM Filter Bar -->
       <div class="crm-filters glass-card reveal">
         <button class="filter-btn active" data-filter="all" onclick="filterCRM('all')">All</button>
         <button class="filter-btn" data-filter="new" onclick="filterCRM('new')">🆕 New</button>
@@ -366,7 +316,6 @@
         <button class="filter-btn" data-filter="lost" onclick="filterCRM('lost')">❌ Not Interested</button>
       </div>
 
-      <!-- CRM Contact List -->
       <div class="crm-list reveal" id="crm-list">
         <div class="crm-empty">
           <div class="placeholder-icon">📂</div>
@@ -377,7 +326,6 @@
     </div>
   </section>
 
-  <!-- ================== CONTACT DETAIL MODAL ================== -->
   <div class="modal-overlay hidden" id="contact-modal">
     <div class="modal-content glass-card">
       <button class="modal-close" onclick="closeContactModal()">&times;</button>
@@ -385,57 +333,8 @@
     </div>
   </div>
 
-  <!-- ================== API KEY MODAL ================== -->
-  <div class="modal-overlay hidden" id="api-modal">
-    <div class="modal-content glass-card api-modal">
-      <button class="modal-close" onclick="closeApiModal()">&times;</button>
-      <div class="api-modal-header">
-        <span class="api-modal-icon">🔑</span>
-        <h2>Set Up Your Free AI Key</h2>
-        <p>Connect Google Gemini AI to power your sales assistant. It takes 30 seconds and is 100% free.</p>
-      </div>
-
-      <div class="api-steps">
-        <div class="api-step">
-          <div class="api-step-num">1</div>
-          <div class="api-step-content">
-            <h4>Go to Google AI Studio</h4>
-            <p>Click the button below to open Google AI Studio (free with any Google account).</p>
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="btn btn-sm btn-ghost">
-              🔗 Open Google AI Studio →
-            </a>
-          </div>
-        </div>
-        <div class="api-step">
-          <div class="api-step-num">2</div>
-          <div class="api-step-content">
-            <h4>Create an API Key</h4>
-            <p>Click "Create API Key" — it's instant and free. Copy the key (it starts with <code>AIza...</code>).</p>
-          </div>
-        </div>
-        <div class="api-step">
-          <div class="api-step-num">3</div>
-          <div class="api-step-content">
-            <h4>Paste it below</h4>
-            <div class="api-key-input-row">
-              <input type="password" id="api-key-input" placeholder="Paste your API key here (AIza...)" autocomplete="off">
-              <button class="btn-sm btn-show" onclick="toggleApiKeyVisibility()">👁️</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button id="save-api-key-btn" class="btn btn-primary btn-full" onclick="saveApiKey()">
-        ⚡ Connect & Start Using AI
-      </button>
-      <p class="api-privacy-note">🔒 Your key is stored only in your browser — never sent anywhere except Google's API. You can delete it anytime.</p>
-    </div>
-  </div>
-
-  <!-- ================== TOAST NOTIFICATIONS ================== -->
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- Floating WhatsApp Button -->
   <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20the%20AI%20Receptionist" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
     <span>💬</span>
   </a>
