@@ -4,376 +4,448 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WhatsApp AI Sales Assistant — AI Receptionist</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="sales.css">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    :root{
-      --bg-primary:#0a0a1a;--bg-secondary:rgba(255,255,255,0.04);
-      --bg-card:rgba(255,255,255,0.06);--text-primary:#fff;--text-secondary:#9ca3af;
-      --accent-primary:#10b981;--accent-secondary:#6366f1;--accent-warm:#f59e0b;
-      --border-color:rgba(255,255,255,0.1);--shadow-glow:0 0 30px rgba(16,185,129,.2);
+    /* API Key Banner */
+    .api-banner {
+      background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1));
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
-    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;min-height:100vh}
-    body::before{content:'';position:fixed;top:0;left:0;width:50%;height:50%;background:radial-gradient(circle,rgba(16,185,129,.07),transparent);pointer-events:none;z-index:0}
-    body::after{content:'';position:fixed;bottom:0;right:0;width:40%;height:40%;background:radial-gradient(circle,rgba(99,102,241,.05),transparent);pointer-events:none;z-index:0}
+    .api-banner-icon {
+      font-size: 1.5rem;
+    }
+    .api-banner-text {
+      flex: 1;
+      min-width: 200px;
+    }
+    .api-banner-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+    .api-banner-desc {
+      font-size: 0.82rem;
+      opacity: 0.75;
+    }
+    .api-banner-input {
+      padding: 0.6rem 1rem;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: white;
+      font-size: 0.85rem;
+      min-width: 280px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .api-banner-input:focus {
+      border-color: rgba(99,102,241,0.6);
+    }
+    .api-banner-btn {
+      padding: 0.6rem 1.25rem;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .api-banner-btn:hover {
+      transform: translateY(-1px);
+    }
+    .api-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .api-status.active {
+      background: rgba(16,185,129,0.15);
+      color: #10b981;
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+    .api-status.inactive {
+      background: rgba(245,158,11,0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+    .api-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .api-status.active .api-status-dot { background: #10b981; }
+    .api-status.inactive .api-status-dot { background: #f59e0b; }
 
-    .nav{position:sticky;top:0;z-index:100;background:rgba(10,10,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border-color);padding:0 2rem}
-    .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:70px}
-    .nav-logo{display:flex;align-items:center;gap:.75rem;font-size:1.25rem;font-weight:800;text-decoration:none;color:var(--text-primary)}
-    .nav-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
-    .nav-links{display:flex;gap:2rem}
-    .nav-links a{color:var(--text-secondary);text-decoration:none;font-size:.95rem;transition:color .2s}
-    .nav-links a:hover{color:var(--accent-primary)}
-
-    .container{max-width:1000px;margin:0 auto;padding:2rem;position:relative;z-index:1}
-    .hero{text-align:center;padding:3rem 0 1.5rem}
-    .hero-badge{display:inline-block;background:rgba(16,185,129,.12);color:var(--accent-primary);padding:.4rem 1.2rem;border-radius:50px;font-size:.85rem;font-weight:600;border:1px solid rgba(16,185,129,.25);margin-bottom:1.25rem}
-    .hero h1{font-size:2.5rem;font-weight:800;background:linear-gradient(135deg,#fff,var(--accent-primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.75rem}
-    .hero p{color:var(--text-secondary);font-size:1.05rem;max-width:560px;margin:0 auto}
-
-    .page-grid{display:grid;grid-template-columns:1fr 380px;gap:2rem;margin-top:1.5rem}
-
-    .panel{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:1.75rem;margin-bottom:1.5rem;backdrop-filter:blur(10px)}
-    .panel-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem}
-    .panel-icon{width:34px;height:34px;border-radius:8px;background:rgba(16,185,129,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
-    .panel-title{font-size:1.15rem;font-weight:700}
-    .panel-subtitle{font-size:.8rem;color:var(--text-secondary)}
-
-    .form-group{margin-bottom:1rem}
-    label{display:block;font-size:.85rem;font-weight:600;color:var(--text-secondary);margin-bottom:.35rem}
-    .optional{font-weight:400;opacity:.5;font-size:.75rem}
-    input,select,textarea{width:100%;padding:.7rem 1rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;color:var(--text-primary);font-size:.9rem;font-family:inherit;transition:border-color .2s,box-shadow .2s;outline:none}
-    input:focus,select:focus,textarea:focus{border-color:var(--accent-primary);box-shadow:0 0 0 3px rgba(16,185,129,.1)}
-    textarea{min-height:70px;resize:vertical}
-    select option{background:#1a1a2e;color:#fff}
-
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;font-family:inherit}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
-    .btn-wa{background:var(--accent-primary);color:#fff;width:100%;padding:.9rem;font-size:1rem}
-    .btn-wa:hover:not(:disabled){background:#059669;transform:translateY(-1px);box-shadow:0 4px 15px rgba(16,185,129,.3)}
-    .btn-outline{background:transparent;border:1px solid var(--border-color);color:var(--text-secondary)}
-    .btn-outline:hover{border-color:var(--accent-primary);color:var(--accent-primary)}
-    .btn-save{background:rgba(99,102,241,.15);color:var(--accent-secondary);border:1px solid rgba(99,102,241,.3)}
-    .btn-save:hover{background:rgba(99,102,241,.25)}
-    .btn-sm{padding:.45rem .9rem;font-size:.8rem;border-radius:8px}
-    .btn-row{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap}
-
-    .output-section{display:none;margin-top:1rem}
-    .output-section.active{display:block}
-    .output-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);margin-bottom:.5rem;font-weight:600}
-    .output-box{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px;padding:1rem;font-size:.88rem;line-height:1.7;white-space:pre-wrap;color:#d1fae5;font-family:inherit}
-    .strategy-list{list-style:none;padding:0}
-    .strategy-list li{padding:.45rem 0;border-bottom:1px solid var(--border-color);font-size:.88rem;display:flex;gap:.5rem;line-height:1.5}
-    .strategy-list li:last-child{border:none}
-    .copy-btn{background:none;border:1px solid var(--border-color);color:var(--text-secondary);padding:.3rem .7rem;border-radius:6px;font-size:.75rem;cursor:pointer;transition:all .2s;font-family:inherit}
-    .copy-btn:hover{border-color:var(--accent-primary);color:var(--accent-primary)}
-
-    /* CRM Section */
-    .crm-container{padding-bottom:3rem}
-    .crm-header{margin-bottom:2rem;padding:0 2rem}
-    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem;max-width:1000px;margin-left:auto;margin-right:auto;padding:0 2rem}
-    .stat-card{background:rgba(255,255,255,.04);border:1px solid var(--border-color);border-radius:16px;padding:1.5rem;text-align:center}
-    .stat-card-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(16,185,129,.05));display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto .75rem}
-    .stat-card-value{font-size:1.75rem;font-weight:800;color:#fff}
-    .stat-card-label{font-size:.8rem;color:var(--text-secondary);margin-top:.25rem}
-
-    .crm-main{max-width:1000px;margin:0 auto;padding:0 2rem}
-    .crm-toolbar{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap}
-    .search-box{flex:1;position:relative}
-    .search-box input{padding-left:2.5rem;width:100%}
-    .search-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:.9rem}
-    .filter-select{min-width:140px}
-
-    .contact-table{width:100%;border-collapse:collapse;background:var(--bg-card);border:1px solid var(--border-color);border-radius:14px;overflow:hidden}
-    .contact-table thead th{padding:.85rem 1rem;text-align:left;font-size:.75rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border-color)}
-    .contact-table tbody tr{cursor:pointer;transition:background .15s}
-    .contact-table tbody tr:hover{background:rgba(255,255,255,.03)}
-    .contact-table td{padding:.85rem 1rem;font-size:.88rem;border-bottom:1px solid rgba(255,255,255,.04)}
-    .contact-table tr:last-child td{border-bottom:none}
-    .name-cell strong{color:#fff;display:block;font-size:.9rem}
-    .name-cell small{color:var(--text-secondary);font-size:.75rem}
-
-    .interest-badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:600}
-    .interest-high{background:rgba(16,185,129,.15);color:#10b981}
-    .interest-medium{background:rgba(245,158,11,.15);color:#f59e0b}
-    .interest-low{background:rgba(239,68,68,.15);color:#ef4444}
-    .status-badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:600}
-    .status-new{background:rgba(59,130,246,.15);color:#3b82f6}
-    .status-contacted{background:rgba(245,158,11,.15);color:#f59e0b}
-    .status-interested{background:rgba(16,185,129,.15);color:#10b981}
-    .status-converted{background:rgba(139,92,246,.15);color:#8b5cf6}
-    .status-not-interested{background:rgba(239,68,68,.15);color:#ef4444}
-
-    .delete-btn{background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;padding:.3rem;border-radius:6px;transition:all .15s}
-    .delete-btn:hover{color:#ef4444;background:rgba(239,68,68,.1)}
-
-    .empty-state{text-align:center;padding:3rem 1rem;background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px}
-    .empty-state-icon{width:56px;height:56px;border-radius:16px;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center;font-size:1.75rem;margin:0 auto 1rem}
-    .empty-state-title{font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:.4rem}
-    .empty-state-desc{font-size:.85rem;color:var(--text-secondary);margin-bottom:1.25rem}
-
-    /* CRM Modal */
-    .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:2rem}
-    .modal.active{display:flex}
-    .modal-box{background:#12122a;border:1px solid var(--border-color);border-radius:16px;padding:1.75rem;max-width:520px;width:100%;max-height:80vh;overflow-y:auto}
-    .modal-title{font-size:1.1rem;font-weight:700;margin-bottom:1rem}
-    .detail-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);margin-bottom:.25rem;font-weight:600}
-    .detail-value{font-size:.9rem;color:#fff;margin-bottom:.75rem;padding:.5rem .75rem;background:rgba(255,255,255,.04);border-radius:8px;word-break:break-word}
-    .detail-notes{white-space:pre-wrap;font-size:.85rem!important;background:rgba(16,185,129,.06)!important;border:1px solid rgba(16,185,129,.1)!important;max-height:80px;overflow-y:auto}
-    .detail-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
-
-    .toast{position:fixed;bottom:2rem;right:2rem;background:var(--accent-primary);color:#fff;padding:.75rem 1.5rem;border-radius:10px;font-weight:600;z-index:2000;transform:translateY(100px);opacity:0;transition:all .3s;font-size:.9rem}
-    .toast.show{transform:translateY(0);opacity:1}
-
-    @media(max-width:820px){
-      .page-grid{grid-template-columns:1fr}
-      .stats-grid{grid-template-columns:repeat(2,1fr)}
-      .nav-links{gap:1rem}
-      .hero h1{font-size:1.75rem}
+    /* Loading Spinner */
+    .analyse-btn.loading {
+      position: relative;
+      color: transparent !important;
+    }
+    .analyse-btn.loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
-  <nav class="nav">
-    <div class="nav-inner">
+  <!-- NAV -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
       <a href="index.html" class="nav-logo">
-        <span class="nav-logo-icon">AI</span> Receptionist
+        <span class="logo-icon">📞</span>
+        <span>AI Receptionist</span>
       </a>
-      <div class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="#crm-section" class="crm-nav-link">My Contacts</a>
-      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#industries">Industries</a></li>
+        <li><a href="sales.html" class="active">AI Sales Assistant</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" onclick="toggleNav()">☰</button>
     </div>
   </nav>
 
-  <!-- ============ MAIN TOOL VIEW ============ -->
-  <div id="tool-view">
-    <div class="container">
-      <div class="hero">
-        <span class="hero-badge">WhatsApp AI Sales Assistant</span>
-        <h1>Send Personalised WhatsApp Messages</h1>
-        <p>Enter a business, get an AI-analysed strategy and a ready-to-send WhatsApp message.</p>
+  <!-- HERO -->
+  <section class="hero" style="min-height:30vh;display:flex;align-items:center;padding-top:100px">
+    <div class="hero-container">
+      <div class="hero-badge">🚀 WhatsApp AI Sales Assistant</div>
+      <h1 class="hero-title" style="font-size:clamp(2rem,5vw,3.5rem)">
+        AI-Powered <span class="gradient-text">Sales Outreach</span>
+      </h1>
+      <p class="hero-subtitle">
+        Analyse any business, generate personalised WhatsApp sales messages, and manage your entire sales pipeline — all in one place.
+      </p>
+    </div>
+  </section>
+
+  <!-- API KEY + TOOL VIEW -->
+  <section class="sales-tool-section" id="tool-view">
+    <div class="tool-container" style="max-width:900px;margin:0 auto;padding:0 1.5rem">
+
+      <!-- API Key Banner (optional Gemini) -->
+      <div class="api-banner" id="apiBanner">
+        <div class="api-banner-icon">🧠</div>
+        <div class="api-banner-text">
+          <div class="api-banner-title">
+            Google Gemini AI
+            <span class="api-status" id="apiStatus">
+              <span class="api-status-dot"></span>
+              <span id="apiStatusText">Not connected</span>
+            </span>
+          </div>
+          <div class="api-banner-desc">Optional — enhances analysis & messages with AI. Works without it too!</div>
+        </div>
+        <input type="password" class="api-banner-input" id="apiKeyInput" placeholder="Paste your Gemini API key (optional)">
+        <button class="api-banner-btn" id="apiKeySaveBtn" onclick="saveApiKeyFromUI()">Save Key</button>
+        <div style="width:100%;font-size:0.78rem;opacity:0.6">
+          Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#818cf8">aistudio.google.com/apikey</a>
+        </div>
       </div>
 
-      <div class="page-grid">
-        <!-- LEFT COLUMN -->
-        <div>
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-icon">&#x1F4AC;</div>
-              <div>
-                <div class="panel-title">Contact Information</div>
-                <div class="panel-subtitle">Enter the business details below</div>
-              </div>
-            </div>
-
-            <form id="sales-form">
-              <div class="form-group">
-                <label for="businessName">Business Name *</label>
-                <input type="text" id="businessName" name="businessName" placeholder="e.g. Smile Dental Clinic" required>
-              </div>
-
-              <div class="form-group">
-                <label for="contactPerson">Contact Person <span class="optional">(optional)</span></label>
-                <input type="text" id="contactPerson" name="contactPerson" placeholder="e.g. John Smith">
-              </div>
-
-              <div class="form-group">
-                <label for="phoneNumber">Phone Number *</label>
-                <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="e.g. +27 71 234 5678" required>
-              </div>
-
-              <div class="form-group">
-                <label for="websiteUrl">Website URL</label>
-                <input type="url" id="websiteUrl" name="websiteUrl" placeholder="e.g. https://smiledental.co.za">
-              </div>
-
-              <div class="form-group">
-                <label for="businessType">Business Type *</label>
-                <select id="businessType" name="businessType" required>
-                  <option value="">Select an industry</option>
-                  <option value="dental">Dental Practice</option>
-                  <option value="medical">Medical / Clinic</option>
-                  <option value="beauty">Beauty Salon / Spa</option>
-                  <option value="restaurant">Restaurant</option>
-                  <option value="fitness">Fitness / Gym</option>
-                  <option value="home-services">Home Services (Plumbing, Cleaning, etc)</option>
-                  <option value="real-estate">Real Estate / Rental</option>
-                  <option value="legal">Law Firm</option>
-                  <option value="retail">Retail Store</option>
-                  <option value="auto">Auto Mechanic / Dealer</option>
-                  <option value="education">Education / Tutoring</option>
-                  <option value="tech">Tech / IT Services</option>
-                  <option value="consulting">Consulting</option>
-                  <option value="other">Other (see notes)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="notes">Notes</label>
-                <textarea id="notes" name="notes" placeholder="Anything specific you know about the business..."></textarea>
-              </div>
-
-              <button type="submit" id="analyse-btn" class="btn btn-wa">Analyse Business</button>
-            </form>
-          </div>
-
-          <!-- Business Analysis -->
-          <div class="panel output-section" id="analysis-panel">
-            <div class="panel-header">
-              <div class="panel-icon">&#x1F50D;</div>
-              <div>
-                <div class="panel-title">Business Analysis</div>
-                <div class="panel-subtitle">What the AI found about this business</div>
-              </div>
-            </div>
-            <p id="analysis-what-they-do"></p>
-            <div class="output-label" style="margin-top:1rem">Services Identified</div>
-            <p id="analysis-services" style="color:#d1fae5;font-size:.88rem"></p>
-            <div class="output-label" style="margin-top:1rem">Likely Challenges</div>
-            <div id="analysis-challenges"></div>
-          </div>
-
-          <!-- Sales Strategy -->
-          <div class="panel output-section" id="strategy-panel">
-            <div class="panel-header">
-              <div class="panel-icon">&#x1F3AF;</div>
-              <div>
-                <div class="panel-title">Sales Strategy</div>
-                <div class="panel-subtitle">Personalised approach for this business</div>
-              </div>
-            </div>
-            <ul class="strategy-list" id="strategy-list"></ul>
+      <!-- CONTACT FORM -->
+      <div class="form-card">
+        <div class="form-header">
+          <span class="form-icon">📋</span>
+          <div>
+            <h2 class="form-title">Business Information</h2>
+            <p class="form-subtitle">Enter the details of the business you want to reach out to</p>
           </div>
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <div>
-          <div class="panel">
-            <div class="panel-header">
-              <div class="panel-icon">&#x1F4E8;</div>
-              <div>
-                <div class="panel-title">Your WhatsApp Message</div>
-                <div class="panel-subtitle">Edit before sending</div>
-              </div>
+        <form id="salesForm" class="sales-form" autocomplete="off">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="businessName">Business Name *</label>
+              <input type="text" id="businessName" class="form-input" placeholder="e.g. Smile Dental Care" required>
             </div>
-            <textarea id="message-text" class="message-text" placeholder="Your AI-generated message will appear here..."></textarea>
-            <button id="copy-btn" class="copy-btn" style="width:100%;margin-top:.5rem;padding:.5rem">&#x1F4CB; Copy Message</button>
+            <div class="form-group">
+              <label class="form-label" for="contactPerson">Contact Person</label>
+              <input type="text" id="contactPerson" class="form-input" placeholder="e.g. Dr. Sarah Johnson (optional)">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phoneNumber">WhatsApp Number *</label>
+              <input type="tel" id="phoneNumber" class="form-input" placeholder="e.g. +27 71 880 4995" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="websiteUrl">Website URL</label>
+              <input type="url" id="websiteUrl" class="form-input" placeholder="e.g. https://smiledental.co.za (optional)">
+            </div>
           </div>
 
-          <div class="btn-row">
-            <button type="button" id="send-btn" class="btn btn-wa" style="flex:1" onclick="sendViaWhatsApp()">&#x1F4E9; Send via WhatsApp</button>
-            <button type="button" class="btn btn-save" style="flex:1" onclick="saveContact()">&#x1F4BE; Save Contact</button>
+          <div class="form-group">
+            <label class="form-label" for="businessType">Business Type *</label>
+            <select id="businessType" class="form-input" required>
+              <option value="">Select business type...</option>
+              <option value="dental">🦷 Dental Practice</option>
+              <option value="medical">🏥 Medical / Clinic</option>
+              <option value="beauty">💅 Beauty Salon / Spa</option>
+              <option value="restaurant">🍽️ Restaurant</option>
+              <option value="fitness">🏋️ Fitness / Gym</option>
+              <option value="home-services">🔧 Home Services (Plumber, Electrician, etc.)</option>
+              <option value="real-estate">🏠 Real Estate / Rental</option>
+              <option value="legal">⚖️ Law Firm</option>
+              <option value="retail">🛍️ Retail Store</option>
+              <option value="auto">🔩 Auto Mechanic / Dealer</option>
+              <option value="education">📚 Education / Tutoring</option>
+              <option value="tech">💻 Tech / IT Services</option>
+              <option value="consulting">📊 Consulting</option>
+              <option value="other">📦 Other</option>
+            </select>
           </div>
 
-          <div class="panel output-section" id="followup-panel" style="margin-top:1rem">
-            <div class="panel-header">
-              <div class="panel-icon">&#x1F4CC;</div>
+          <div class="form-group">
+            <label class="form-label" for="notes">Additional Notes</label>
+            <textarea id="notes" class="form-input form-textarea" rows="3" placeholder="e.g. They mentioned having trouble with missed calls after hours, or any other context..."></textarea>
+          </div>
+
+          <button type="submit" class="analyse-btn btn-gradient">
+            🚀 Analyse & Generate WhatsApp Message
+          </button>
+        </form>
+      </div>
+
+      <!-- RESULTS -->
+      <div id="resultsSection" style="display:none;margin-top:2rem">
+
+        <!-- Two Column Results -->
+        <div class="results-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem">
+
+          <!-- LEFT: Analysis -->
+          <div class="result-card" id="analysisSection" style="display:block">
+            <div class="result-header">
+              <span class="result-icon">🔍</span>
               <div>
-                <div class="panel-title">Follow-Up Suggestions</div>
-                <div class="panel-subtitle">Keep the conversation going</div>
+                <div class="result-title">Business Analysis</div>
+                <div class="result-subtitle">AI-generated insights</div>
               </div>
             </div>
-            <ul class="strategy-list" id="followup-list"></ul>
+            <div id="analysisContent"></div>
+          </div>
+
+          <!-- RIGHT: Message + Strategy -->
+          <div>
+            <!-- Strategy -->
+            <div class="result-card" style="margin-bottom:1.5rem">
+              <div class="result-header">
+                <span class="result-icon">🎯</span>
+                <div>
+                  <div class="result-title">Sales Strategy</div>
+                  <div class="result-subtitle">Personalised approach</div>
+                </div>
+              </div>
+              <div id="strategyContent"></div>
+            </div>
+
+            <!-- Follow-ups -->
+            <div class="result-card">
+              <div class="result-header">
+                <span class="result-icon">📌</span>
+                <div>
+                  <div class="result-title">Follow-Up Plan</div>
+                  <div class="result-subtitle">Keep the conversation going</div>
+                </div>
+              </div>
+              <div id="followUpsContent"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WhatsApp Message (full width) -->
+        <div class="result-card" style="background:linear-gradient(135deg,rgba(37,211,102,0.08),rgba(37,211,102,0.02));border-color:rgba(37,211,102,0.2)">
+          <div class="result-header">
+            <span class="result-icon" style="background:rgba(37,211,102,0.15)">💬</span>
+            <div>
+              <div class="result-title">Your WhatsApp Message</div>
+              <div class="result-subtitle">Copy and send via WhatsApp</div>
+            </div>
+          </div>
+          <textarea id="messageTextarea" class="form-input" style="width:100%;min-height:200px;resize:vertical;font-size:0.95rem;line-height:1.7;margin:1rem 0;background:rgba(0,0,0,0.2);border-color:rgba(37,211,102,0.2);color:white" placeholder="Your AI-generated message will appear here..."></textarea>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+            <button type="button" class="btn-gradient" style="flex:1;padding:0.875rem" onclick="copyMessage()">📋 Copy Message</button>
+            <button type="button" class="btn-gradient" style="flex:1;padding:0.875rem;background:linear-gradient(135deg,#25d366,#128c7e)" onclick="sendViaWhatsApp()">📤 Send via WhatsApp</button>
+            <button type="button" class="btn-gradient" style="flex:1;padding:0.875rem;background:linear-gradient(135deg,#6366f1,#8b5cf6)" onclick="saveContact()">💾 Save Contact</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- ============ CRM VIEW ============ -->
-  <div id="crm-view" style="display:none">
-    <div class="crm-container" style="padding-top:2rem">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-card-icon">&#x1F465;</div>
-          <div class="stat-card-value" id="stat-total">0</div>
-          <div class="stat-card-label">Total Contacts</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-icon" style="background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(245,158,11,.05))">&#x1F4AC;</div>
-          <div class="stat-card-value" id="stat-interested">0</div>
-          <div class="stat-card-label">Interested</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-icon" style="background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(139,92,246,.05))">&#x2705;</div>
-          <div class="stat-card-value" id="stat-converted">0</div>
-          <div class="stat-card-label">Converted</div>
-        </div>
+  <!-- CRM SECTION -->
+  <section class="crm-section" id="crmSection" style="padding:4rem 1.5rem;max-width:1200px;margin:0 auto">
+    <div class="crm-header" style="text-align:center;margin-bottom:2.5rem">
+      <h2 style="font-size:2rem;margin-bottom:0.5rem">📊 Sales Pipeline</h2>
+      <p style="opacity:0.7;max-width:500px;margin:0 auto">Track your outreach, follow-ups, and conversions in real time</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem">
+      <div class="stat-card" style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:1.25rem;text-align:center">
+        <div class="stat-value" id="stat-total" style="font-size:2rem;font-weight:800;color:#818cf8">0</div>
+        <div class="stat-label" style="font-size:0.85rem;opacity:0.7;margin-top:0.25rem">Total Contacts</div>
       </div>
-
-      <div class="crm-main">
-        <div class="crm-toolbar">
-          <div class="search-box">
-            <span class="search-icon">&#x1F50D;</span>
-            <input type="text" id="crm-search" placeholder="Search contacts...">
-          </div>
-          <select id="crm-filter" class="filter-select">
-            <option value="all">All Contacts</option>
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-            <option value="interested">Interested</option>
-            <option value="not-interested">Not Interested</option>
-            <option value="converted">Converted</option>
-          </select>
-          <button id="back-to-tool-btn" class="btn btn-sm btn-outline">&#x2190; Back to Tool</button>
-        </div>
-
-        <div id="contacts-list"></div>
+      <div class="stat-card" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:1.25rem;text-align:center">
+        <div class="stat-value" id="stat-interested" style="font-size:2rem;font-weight:800;color:#10b981">0</div>
+        <div class="stat-label" style="font-size:0.85rem;opacity:0.7;margin-top:0.25rem">Interested</div>
+      </div>
+      <div class="stat-card" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:1.25rem;text-align:center">
+        <div class="stat-value" id="stat-converted" style="font-size:2rem;font-weight:800;color:#8b5cf6">0</div>
+        <div class="stat-label" style="font-size:0.85rem;opacity:0.7;margin-top:0.25rem">Converted</div>
       </div>
     </div>
-  </div>
 
-  <!-- CRM DETAIL MODAL -->
-  <div class="modal" id="contact-modal">
-    <div class="modal-box">
-      <div class="panel-header">
-        <div class="panel-icon">&#x1F4CB;</div>
-        <div>
-          <div class="panel-title" id="modal-business">Business Name</div>
-          <div class="panel-subtitle" id="modal-contact">Contact info</div>
-        </div>
-      </div>
-
-      <div class="detail-label">Phone</div>
-      <div class="detail-value" id="modal-phone"></div>
-
-      <div class="detail-label">Website</div>
-      <div class="detail-value" id="modal-website"></div>
-
-      <div class="detail-label">Industry</div>
-      <div class="detail-value" id="modal-type"></div>
-
-      <div class="detail-label">WhatsApp Summary</div>
-      <div class="detail-value detail-notes" id="modal-summary"></div>
-
-      <div class="detail-label">Objections Raised</div>
-      <div class="detail-value" id="modal-objections"></div>
-
-      <div class="detail-row">
-        <div>
-          <div class="detail-label">Interest Level</div>
-          <div class="detail-value" id="modal-interest"></div>
-        </div>
-        <div>
-          <div class="detail-label">Follow-up Date</div>
-          <div class="detail-value" id="modal-followup"></div>
-        </div>
-      </div>
-
-      <div class="detail-label">Status</div>
-      <div id="modal-status" style="margin:1rem 0"></div>
-
-      <div class="btn-row">
-        <button class="btn btn-sm btn-outline" id="modal-edit-btn" style="flex:1">Edit</button>
-        <button class="btn btn-sm btn-wa" id="modal-followup-btn" style="flex:1">Schedule Follow-up</button>
-      </div>
-      <button class="btn btn-sm btn-outline" id="modal-close-btn" style="width:100%;margin-top:.75rem">Close</button>
+    <!-- Search & Filter -->
+    <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+      <input type="text" id="searchInput" class="form-input" placeholder="🔍 Search contacts..." style="flex:2;min-width:200px">
+      <select id="filterSelect" class="form-input" style="flex:1;min-width:150px">
+        <option value="all">All Statuses</option>
+        <option value="new">New</option>
+        <option value="contacted">Contacted</option>
+        <option value="interested">Interested</option>
+        <option value="not-interested">Not Interested</option>
+        <option value="converted">Converted</option>
+      </select>
+      <button type="button" class="btn-gradient" onclick="resetFilter()" style="padding:0.75rem 1.5rem">Reset</button>
+      <button type="button" class="btn-gradient" onclick="exportContacts()" style="padding:0.75rem 1.5rem;background:linear-gradient(135deg,#10b981,#059669)">📥 Export CSV</button>
     </div>
-  </div>
 
-  <div class="toast" id="toast">Saved!</div>
+    <!-- Contacts List -->
+    <div id="contactsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem"></div>
+  </section>
+
+  <!-- Contact Modal -->
+  <div id="contactModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;backdrop-filter:blur(8px);align-items:center;justify-content:center"></div>
 
   <script src="sales.js"></script>
+  <script>
+    // ===== API KEY MANAGEMENT =====
+    function saveApiKeyFromUI() {
+      const input = document.getElementById('apiKeyInput');
+      const key = input.value.trim();
+      setApiKey(key);
+      updateApiStatus();
+      if (key) {
+        showToast('🧠 Gemini AI connected! Your messages will be AI-enhanced.');
+      } else {
+        showToast('📝 API key cleared. Using built-in templates.');
+      }
+    }
+
+    function updateApiStatus() {
+      const key = getApiKey();
+      const status = document.getElementById('apiStatus');
+      const text = document.getElementById('apiStatusText');
+      const input = document.getElementById('apiKeyInput');
+
+      if (key) {
+        status.className = 'api-status active';
+        text.textContent = 'Connected';
+        input.value = ''; // Don't show the key
+        input.placeholder = 'API key saved ✓ (paste new key to change)';
+      } else {
+        status.className = 'api-status inactive';
+        text.textContent = 'Not connected';
+        input.placeholder = 'Paste your Gemini API key (optional)';
+      }
+    }
+
+    // Simple toast
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;padding:1rem 1.5rem;border-radius:12px;font-size:0.9rem;font-weight:600;z-index:10000;box-shadow:0 8px 32px rgba(99,102,241,0.4);animation:slideUp 0.3s ease';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'slideUp 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // WhatsApp send
+    function sendViaWhatsApp() {
+      const message = document.getElementById('messageTextarea').value.trim();
+      if (!message) {
+        showToast('⚠️ No message to send');
+        return;
+      }
+      const phone = document.getElementById('phoneNumber').value.trim().replace(/[\s\-()]/g, '');
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+
+    // Copy message
+    function copyMessage() {
+      const message = document.getElementById('messageTextarea').value.trim();
+      if (!message) {
+        showToast('⚠️ No message to copy');
+        return;
+      }
+      navigator.clipboard.writeText(message).then(() => {
+        showToast('✅ Message copied to clipboard!');
+      }).catch(() => {
+        // Fallback
+        const ta = document.getElementById('messageTextarea');
+        ta.select();
+        document.execCommand('copy');
+        showToast('✅ Message copied!');
+      });
+    }
+
+    // Override the generateWhatsAppMessage call to show loading
+    const originalHandleSubmit = handleFormSubmit;
+
+    // Show results section when analysis is done
+    const origRenderAnalysis = renderAnalysis;
+    renderAnalysis = function(data, analysis) {
+      document.getElementById('resultsSection').style.display = 'block';
+      origRenderAnalysis(data, analysis);
+    };
+
+    // Initialize API status on load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateApiStatus();
+    });
+  </script>
+
+  <style>
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @media (max-width: 768px) {
+      .results-grid { grid-template-columns: 1fr !important; }
+      .api-banner { flex-direction: column; }
+      .api-banner-input { min-width: 100%; }
+    }
+  </style>
+
 </body>
 </html>
