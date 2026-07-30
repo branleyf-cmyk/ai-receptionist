@@ -4,340 +4,265 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WhatsApp AI Sales Assistant — AI Receptionist</title>
-  <meta name="description" content="AI-powered WhatsApp sales assistant for reaching out to businesses. Generate personalized messages, track conversations, and close deals.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="sales.css">
 </head>
-<body class="sales-page">
+<body>
 
-  <canvas id="hero-canvas"></canvas>
-  <div class="bg-grid"></div>
-
-  <nav class="nav-container" id="navbar">
-    <ul class="nav-links" id="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="index.html#features">Features</a></li>
-      <li><a href="index.html#pricing">Pricing</a></li>
-      <li><a href="#sales-assistant" class="active">AI Sales Tool</a></li>
-      <li><a href="#crm-dashboard">CRM</a></li>
-    </ul>
-    <button id="mobile-toggle" aria-label="Menu">
-      <div class="hamburger"></div>
-    </button>
+  <!-- ========== NAVIGATION ========== -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">A</span> AI Receptionist
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#how-it-works">How It Works</a>
+        <a href="index.html#testimonials">Reviews</a>
+      </div>
+      <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">&#9776;</button>
+    </div>
   </nav>
 
-  <section class="sales-hero" id="sales-assistant">
-    <canvas id="hero-canvas"></canvas>
-    <div class="hero-content">
-      <div class="hero-badge">
-        <span class="dot"></span> AI-Powered WhatsApp Sales &bull; Free Forever &bull; Smart CRM
-      </div>
-      <h1 class="hero-title">
-        WhatsApp<br>
-        <span class="gradient-text">AI Sales Assistant</span>
-      </h1>
-      <p class="hero-subtitle">
-        Research any business, generate personalised WhatsApp sales messages, track conversations, and close deals — all powered by AI. No fees, no limits.
-      </p>
-      <div class="hero-buttons">
-        <a href="#contact-form-section" class="btn btn-primary">
-          💬 Start Selling
-        </a>
-        <a href="#sales-strategy" class="btn btn-secondary">
-          📊 See How It Works
-        </a>
-      </div>
-      <div class="hero-stats">
-        <div class="stat">
-          <div class="stat-number">100%</div>
-          <div class="stat-label">Free Forever</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number">∞</div>
-          <div class="stat-label">Unlimited Messages</div>
-        </div>
-        <div class="stat">
-          <div class="stat-number">🔒</div>
-          <div class="stat-label">Private & Secure</div>
-        </div>
-      </div>
+  <!-- ========== HEADER ========== -->
+  <header class="sales-hero">
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+    <div class="container">
+      <div class="badge">WhatsApp AI Sales Assistant</div>
+      <h1 class="hero-title">Smart WhatsApp <span class="gradient-text">Sales Tool</span></h1>
+      <p class="hero-subtitle">Analyse any business, generate a personalised WhatsApp sales message, and track every conversation — all from one place.</p>
     </div>
-  </section>
+  </header>
 
-  <section class="sales-strategy" id="sales-strategy">
-    <div class="section-container">
-      <div class="reveal">
-        <div class="section-label">Step 1</div>
-        <h2 class="section-title">Research & Personalise</h2>
-        <p class="section-subtitle">Enter any business details and let the AI analyse their website, identify challenges, and craft a tailored sales approach.</p>
-      </div>
+  <!-- ========== MAIN WORKSPACE ========== -->
+  <main class="workspace container">
 
-      <div class="strategy-grid">
-        <div class="glass-card input-panel reveal reveal-delay-1" id="contact-form-section">
-          <div class="panel-header">
-            <span class="panel-icon">📝</span>
-            <h3>Business Details</h3>
-          </div>
-
-          <form onsubmit="return false;">
-            <div class="form-group">
-              <label for="business-name">Business Name *</label>
-              <input type="text" id="business-name" placeholder="e.g. Joe's Plumbing" required>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="contact-person">Contact Person <span class="optional">(optional)</span></label>
-                <input type="text" id="contact-person" placeholder="e.g. John Smith">
-              </div>
-
-              <div class="form-group">
-                <label for="phone-number">WhatsApp Number *</label>
-                <input type="tel" id="phone-number" placeholder="+27 71 880 4995" required>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="business-type">Business Type *</label>
-              <select id="business-type" required>
-                <option value="">Select industry...</option>
-                <option value="Dentist">Dentist</option>
-                <option value="Plumber">Plumber</option>
-                <option value="Electrician">Electrician</option>
-                <option value="Salon / Spa">Salon / Spa</option>
-                <option value="Gym / Fitness">Gym / Fitness</option>
-                <option value="Restaurant">Restaurant</option>
-                <option value="Real Estate">Real Estate</option>
-                <option value="Law Firm">Law Firm</option>
-                <option value="Accountant">Accountant</option>
-                <option value="Retail Store">Retail Store</option>
-                <option value="Home Services">Home Services</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Education">Education</option>
-                <option value="Tech / IT">Tech / IT</option>
-                <option value="Marketing Agency">Marketing Agency</option>
-                <option value="Construction">Construction</option>
-                <option value="Auto / Workshop">Auto / Workshop</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="website-url">Website URL <span class="optional">(optional)</span></label>
-              <input type="url" id="website-url" placeholder="e.g. https://example.com">
-            </div>
-
-            <div class="form-group">
-              <label for="notes">Notes <span class="optional">(optional)</span></label>
-              <textarea id="notes" rows="3" placeholder="Any extra details — e.g. 'They currently use a call centre and want to automate' or 'Heard about us from a referral'"></textarea>
-            </div>
-
-            <button type="button" id="analyse-btn" class="btn btn-primary btn-full" onclick="analyseAndGenerate()">
-              🧠 Analyse Business & Generate Message
-            </button>
-          </form>
-        </div>
-
-        <div class="output-panel reveal reveal-delay-2">
-          <div class="glass-card output-card" id="analysis-card">
-            <div class="output-header">
-              <span class="output-icon blue">🎯</span>
-              <h3>Business Analysis</h3>
-              <span class="output-status" id="analysis-status">Waiting...</span>
-            </div>
-            <div class="output-body" id="analysis-output">
-              <div class="output-placeholder">
-                <div class="placeholder-icon">🔍</div>
-                <p>Fill in the business details and click "Analyse" — the AI will research their business, identify challenges, and suggest how your AI Receptionist can help.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="glass-card output-card" id="strategy-card">
-            <div class="output-header">
-              <span class="output-icon purple">💼</span>
-              <h3>Sales Strategy</h3>
-              <span class="output-status" id="sales-strategy-status">Waiting...</span>
-            </div>
-            <div class="output-body" id="sales-strategy-output">
-              <div class="output-placeholder">
-                <div class="placeholder-icon">📊</div>
-                <p>After analysis, the AI will create a tailored sales approach — key talking points, likely objections, and how to handle them.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- CRM Stats Bar -->
+    <div class="crm-stats-bar">
+      <div class="stat-item"><span class="stat-number" id="stat-total">0</span><span class="stat-label">Total Contacts</span></div>
+      <div class="stat-item"><span class="stat-number" id="stat-interested">0</span><span class="stat-label">Interested</span></div>
+      <div class="stat-item"><span class="stat-number" id="stat-followups">0</span><span class="stat-label">Follow-ups</span></div>
+      <div class="stat-item stat-good"><span class="stat-number" id="stat-closed">0</span><span class="stat-label">Won</span></div>
     </div>
-  </section>
 
-  <section class="message-section" id="message-section">
-    <div class="section-container">
-      <div class="reveal">
-        <div class="section-label">Step 2</div>
-        <h2 class="section-title">Your AI-Crafted <span class="gradient-text">WhatsApp Message</span></h2>
-        <p class="section-subtitle">Review and edit the message, then send it directly via WhatsApp.</p>
-      </div>
-
-      <div class="message-workspace">
-        <div class="glass-card message-editor reveal reveal-delay-1">
-          <div class="editor-header">
-            <span class="editor-icon">💬</span>
-            <h3>Message Preview</h3>
-            <div class="editor-actions">
-              <button class="btn-sm btn-regenerate" onclick="regenerateMessage()">🔄 Regenerate</button>
-              <button class="btn-sm btn-copy" onclick="copyMessage()">📋 Copy</button>
-            </div>
-          </div>
-          <div class="whatsapp-mockup">
-            <div class="wa-header">
-              <div class="wa-avatar">AI</div>
-              <div class="wa-info">
-                <span class="wa-name">Your Sales Message</span>
-                <span class="wa-status">Online</span>
-              </div>
-            </div>
-            <div class="wa-body">
-              <div class="wa-message" id="whatsapp-message-preview">
-                <div class="wa-placeholder">
-                  <p>Your personalised WhatsApp message will appear here after the AI generation step.</p>
-                </div>
-              </div>
-            </div>
-            <div class="wa-input-area">
-              <textarea id="message-editor-textarea" class="wa-input" placeholder="Your AI message appears above — you can edit it here too..." rows="4"></textarea>
-            </div>
-          </div>
-          <div class="send-area">
-            <button id="send-whatsapp-btn" class="btn btn-whatsapp btn-full" onclick="sendViaWhatsApp()">
-              💬 Send via WhatsApp
-            </button>
-            <p class="send-note">Opens WhatsApp with the message pre-filled — you review before sending</p>
-          </div>
-        </div>
-
-        <div class="glass-card conversation-panel reveal reveal-delay-2" id="conversation-panel">
-          <div class="conv-header">
-            <span class="conv-icon">🗨️</span>
-            <h3>Conversation Thread</h3>
-            <span class="conv-count" id="conv-count">0 messages</span>
-          </div>
-          <div class="conv-body" id="conversation-thread">
-            <div class="conv-placeholder">
-              <div class="placeholder-icon">💬</div>
-              <p>Once you send a WhatsApp message, log the customer's response here. The AI will suggest follow-ups and help handle objections.</p>
-            </div>
-          </div>
-          <div class="conv-actions">
-            <div class="conv-input-row">
-              <select id="response-type" class="conv-type-select">
-                <option value="customer">Customer replied</option>
-                <option value="interested">Interested</option>
-                <option value="objection">Raised objection</option>
-                <option value="not-interested">Not interested</option>
-                <option value="meeting">Booked meeting</option>
-                <option value="closed">Deal closed</option>
-              </select>
-            </div>
-            <textarea id="customer-reply" class="conv-input" placeholder="Type the customer's reply or summarize what they said..." rows="2"></textarea>
-            <div class="conv-btn-row">
-              <button class="btn-sm btn-log" onclick="logResponse()">📝 Log Response</button>
-              <button class="btn-sm btn-ai-suggest" onclick="getAiSuggestion()">🧠 Get AI Follow-up Suggestion</button>
-            </div>
-            <div id="ai-suggestion-box" class="ai-suggestion-box hidden">
-              <div class="ai-suggestion-header">
-                <span>🤖</span> AI Suggested Response:
-              </div>
-              <div id="ai-suggestion-text"></div>
-              <button class="btn-sm btn-use-suggestion" onclick="useAiSuggestion()">Use This Response</button>
-            </div>
-            <div class="interest-tracker" id="interest-tracker">
-              <span class="interest-label">Interest Level:</span>
-              <div class="interest-bar">
-                <div class="interest-fill" id="interest-fill" style="width: 0%"></div>
-              </div>
-              <span class="interest-value" id="interest-value">—</span>
-            </div>
-          </div>
-
-          <div class="followup-section">
-            <h4>📅 Schedule Follow-up</h4>
-            <div class="followup-row">
-              <input type="date" id="followup-date" class="followup-input">
-              <input type="time" id="followup-time" class="followup-input">
-              <button class="btn-sm btn-schedule" onclick="scheduleFollowup()">Set Reminder</button>
-            </div>
-            <div id="followup-display" class="followup-display hidden">
-              <span>📌 Next follow-up: <strong id="followup-text"></strong></span>
-            </div>
-          </div>
+    <!-- ===== SECTION 1: CONTACT FORM ===== -->
+    <section class="glass-card section-card">
+      <div class="section-header">
+        <div class="section-icon">&#128196;</div>
+        <div>
+          <h2>Business Contact</h2>
+          <p>Enter the business details you want to reach out to.</p>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section class="crm-section" id="crm-dashboard">
-    <div class="section-container">
-      <div class="reveal">
-        <div class="section-label">CRM Dashboard</div>
-        <h2 class="section-title">Your <span class="gradient-text">Sales Pipeline</span></h2>
-        <p class="section-subtitle">Track all your contacts, conversations, interest levels, and follow-ups in one place.</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="businessName">Business Name *</label>
+          <input type="text" id="businessName" placeholder="e.g. Smile Dental Clinic">
+        </div>
+        <div class="form-group">
+          <label for="contactPerson">Contact Person <span class="optional">(optional)</span></label>
+          <input type="text" id="contactPerson" placeholder="e.g. John Smith">
+        </div>
+        <div class="form-group">
+          <label for="phoneNumber">WhatsApp Number *</label>
+          <input type="tel" id="phoneNumber" placeholder="e.g. 071 234 5678">
+        </div>
+        <div class="form-group">
+          <label for="websiteUrl">Website URL <span class="optional">(optional)</span></label>
+          <input type="url" id="websiteUrl" placeholder="e.g. https://example.com">
+        </div>
+        <div class="form-group">
+          <label for="businessType">Business Type *</label>
+          <select id="businessType">
+            <option value="">-- Select --</option>
+            <option>Dentist</option>
+            <option>Plumber</option>
+            <option>Electrician</option>
+            <option>Salon / Spa</option>
+            <option>Gym / Fitness</option>
+            <option>Restaurant</option>
+            <option>Real Estate</option>
+            <option>Law Firm</option>
+            <option>Accountant</option>
+            <option>Retail Store</option>
+            <option>Auto / Workshop</option>
+            <option>Home Services</option>
+            <option>Healthcare</option>
+            <option>Education</option>
+            <option>Tech / IT</option>
+            <option>Marketing Agency</option>
+            <option>Construction</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group form-group-full">
+          <label for="notes">Notes <span class="optional">(optional)</span></label>
+          <textarea id="notes" rows="3" placeholder="Anything specific about the business, recent news, personal context..."></textarea>
+        </div>
       </div>
+      <button id="analyseBtn" class="btn btn-primary btn-full">
+        <span class="btn-icon">&#9889;</span> Analyse & Generate Message
+      </button>
+    </section>
 
-      <div class="crm-stats reveal">
-        <div class="crm-stat-card glass-card">
-          <div class="crm-stat-number" id="stat-total">0</div>
-          <div class="crm-stat-label">Total Contacts</div>
+    <!-- ===== SECTION 2: ANALYSIS ===== -->
+    <section class="glass-card section-card" id="analysis-section" style="display:none">
+      <div class="section-header">
+        <div class="section-icon">&#128269;</div>
+        <div>
+          <h2>Business Analysis</h2>
+          <p>AI-powered insights about how your AI Receptionist can help.</p>
         </div>
-        <div class="crm-stat-card glass-card">
-          <div class="crm-stat-number" id="stat-interested">0</div>
-          <div class="crm-stat-label">Interested</div>
+      </div>
+      <div id="analysis-output"></div>
+    </section>
+
+    <!-- ===== SECTION 3: SALES STRATEGY ===== -->
+    <section class="glass-card section-card" id="strategy-section" style="display:none">
+      <div class="section-header">
+        <div class="section-icon">&#127919;</div>
+        <div>
+          <h2>Sales Strategy</h2>
+          <p>Handle objections, close deals, and follow up with confidence.</p>
         </div>
-        <div class="crm-stat-card glass-card">
-          <div class="crm-stat-number" id="stat-followups">0</div>
-          <div class="crm-stat-label">Pending Follow-ups</div>
+      </div>
+      <div id="strategy-output"></div>
+    </section>
+
+    <!-- ===== SECTION 4: WHATSAPP MESSAGE ===== -->
+    <section class="glass-card section-card" id="message-section" style="display:none">
+      <div class="section-header">
+        <div class="section-icon">&#128172;</div>
+        <div>
+          <h2>WhatsApp Message</h2>
+          <p>Edit the AI-generated message, then send directly via WhatsApp.</p>
         </div>
-        <div class="crm-stat-card glass-card">
-          <div class="crm-stat-number" id="stat-closed">0</div>
-          <div class="crm-stat-label">Deals Closed</div>
+      </div>
+      <textarea id="messageEditor" rows="8" placeholder="Your personalised message will appear here..."></textarea>
+      <div class="message-actions">
+        <button id="sendWhatsappBtn" class="btn btn-whatsapp" disabled>
+          <span class="btn-icon">&#128242;</span> Send via WhatsApp
+        </button>
+        <button id="copyMsgBtn" class="btn btn-secondary" disabled>Copy</button>
+        <button id="regenMsgBtn" class="btn btn-secondary" disabled>Regenerate</button>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 5: CONVERSATION & FOLLOW-UP ===== -->
+    <section class="glass-card section-card" id="conversation-section" style="display:none">
+      <div class="section-header">
+        <div class="section-icon">&#128172;</div>
+        <div>
+          <h2>Conversation Tracker</h2>
+          <p>Log replies, track interest, and get AI follow-up suggestions.</p>
+        </div>
+        <!-- Interest Level Bar -->
+        <div class="interest-bar-container" id="interestBarContainer" style="display:none">
+          <div class="interest-bar-label">Interest Level</div>
+          <div class="interest-bar"><div class="interest-bar-fill" id="interestFill"></div></div>
+          <div class="interest-bar-value" id="interestValue">--</div>
         </div>
       </div>
 
-      <div class="crm-filters glass-card reveal">
+      <!-- Conversation Thread -->
+      <div class="conversation-thread" id="conversationThread">
+        <div class="conv-placeholder">
+          <div class="placeholder-icon">&#128172;</div>
+          <p>Log customer responses below. The AI will suggest follow-ups and help handle objections.</p>
+        </div>
+      </div>
+
+      <!-- Log Customer Response -->
+      <div class="log-response-row">
+        <select id="responseType" class="response-type-select">
+          <option value="reply">Customer Reply</option>
+          <option value="interested">Interested</option>
+          <option value="objection">Objection</option>
+          <option value="not-interested">Not Interested</option>
+          <option value="meeting">Meeting Booked</option>
+          <option value="closed">Deal Closed</option>
+        </select>
+        <input type="text" id="customerReply" placeholder="Type the customer's reply..." class="customer-reply-input">
+        <button id="logResponseBtn" class="btn btn-secondary">&#10003; Log</button>
+      </div>
+
+      <!-- AI Follow-Up Suggestion -->
+      <div class="ai-suggestion" id="aiSuggestionBox" style="display:none">
+        <div class="suggestion-header">
+          <span class="suggestion-icon">&#129302;</span> AI Follow-Up Suggestion
+        </div>
+        <div class="suggestion-text" id="aiSuggestionText"></div>
+        <div class="suggestion-actions">
+          <button id="useSuggestionBtn" class="btn btn-primary btn-sm">Use This Response</button>
+          <button id="dismissSuggestionBtn" class="btn btn-secondary btn-sm">Dismiss</button>
+        </div>
+      </div>
+
+      <!-- Follow-Up Scheduler -->
+      <div class="followup-scheduler">
+        <h4>&#128197; Schedule Follow-Up</h4>
+        <div class="followup-row">
+          <input type="date" id="followupDate" class="followup-date">
+          <input type="time" id="followupTime" class="followup-time" value="09:00">
+          <button id="scheduleFollowupBtn" class="btn btn-secondary btn-sm">Schedule</button>
+        </div>
+        <div id="followupDisplay" class="followup-scheduled" style="display:none"></div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 6: CRM DASHBOARD ===== -->
+    <section class="glass-card section-card">
+      <div class="section-header">
+        <div class="section-icon">&#128203;</div>
+        <div>
+          <h2>Contact Dashboard</h2>
+          <p>Manage all your business contacts, track status, and view history.</p>
+        </div>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="filter-bar">
         <button class="filter-btn active" data-filter="all" onclick="filterCRM('all')">All</button>
-        <button class="filter-btn" data-filter="new" onclick="filterCRM('new')">🆕 New</button>
-        <button class="filter-btn" data-filter="contacted" onclick="filterCRM('contacted')">💬 Contacted</button>
-        <button class="filter-btn" data-filter="interested" onclick="filterCRM('interested')">⭐ Interested</button>
-        <button class="filter-btn" data-filter="followup" onclick="filterCRM('followup')">📅 Follow-up</button>
-        <button class="filter-btn" data-filter="customer" onclick="filterCRM('customer')">✅ Customers</button>
-        <button class="filter-btn" data-filter="lost" onclick="filterCRM('lost')">❌ Not Interested</button>
+        <button class="filter-btn" data-filter="new" onclick="filterCRM('new')">New</button>
+        <button class="filter-btn" data-filter="contacted" onclick="filterCRM('contacted')">Contacted</button>
+        <button class="filter-btn" data-filter="interested" onclick="filterCRM('interested')">Interested</button>
+        <button class="filter-btn" data-filter="followup" onclick="filterCRM('followup')">Follow-up</button>
+        <button class="filter-btn" data-filter="customer" onclick="filterCRM('customer')">Customers</button>
+        <button class="filter-btn" data-filter="lost" onclick="filterCRM('lost')">Lost</button>
       </div>
 
-      <div class="crm-list reveal" id="crm-list">
+      <!-- CRM List -->
+      <div id="crmList" class="crm-list">
         <div class="crm-empty">
-          <div class="placeholder-icon">📂</div>
+          <div class="placeholder-icon">&#128194;</div>
           <h3>No contacts yet</h3>
-          <p>Start by entering a business contact above and sending your first WhatsApp message. All your contacts and conversations will appear here.</p>
+          <p>Enter a business contact above to get started.</p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <div class="modal-overlay hidden" id="contact-modal">
-    <div class="modal-content glass-card">
-      <button class="modal-close" onclick="closeContactModal()">&times;</button>
-      <div id="contact-modal-body"></div>
+  <!-- ========== FOOTER ========== -->
+  <footer>
+    <p>&copy; 2026 AI Receptionist. All rights reserved.</p>
+    <p>Contact: <a href="mailto:branleyf@gmail.com">branleyf@gmail.com</a></p>
+  </footer>
+
+  <!-- ========== CONTACT DETAIL MODAL ========== -->
+  <div id="contactModal" class="modal-overlay" style="display:none">
+    <div class="modal-box glass-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Contact Details</h3>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
 
-  <div id="toast-container" class="toast-container"></div>
-
-  <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20the%20AI%20Receptionist" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
-    <span>💬</span>
-  </a>
+  <!-- ========== TOAST CONTAINER ========== -->
+  <div id="toastContainer" class="toast-container"></div>
 
   <script src="sales.js"></script>
 </body>
