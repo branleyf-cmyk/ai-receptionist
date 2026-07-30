@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Receptionist — Never Miss Another Customer Call</title>
-  <meta name="description" content="AI-powered virtual receptionist that calls leads, answers 24/7, books appointments, and follows up automatically. Built for small businesses.">
+  <title>AI Receptionist — Never Miss Another Customer Call | Built for South Africa</title>
+  <meta name="description" content="AI receptionist for South African businesses. Speaks 11 languages, POPIA compliant, pay-per-answer. Books appointments, answers calls 24/7.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -499,6 +499,27 @@
       line-height: 1.7;
     }
 
+    .feature-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-new {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+
+    .badge-popular {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+    }
+
     /* ===== STATS SECTION ===== */
     .stats-section {
       background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.03), transparent);
@@ -570,94 +591,6 @@
       font-size: 0.95rem;
     }
 
-    /* ===== AI CALL DEMO ===== */
-    .demo-section {
-      background: linear-gradient(180deg, transparent, rgba(139, 92, 246, 0.03), transparent);
-    }
-
-    .demo-box {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 3rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      border-radius: 24px;
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .demo-box::before {
-      content: '';
-      position: absolute;
-      top: -1px; left: -1px;
-      right: -1px; bottom: -1px;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), transparent, rgba(6, 182, 212, 0.2));
-      border-radius: 24px;
-      z-index: -1;
-    }
-
-    .demo-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border-glass);
-    }
-
-    .demo-avatar {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-    }
-
-    .demo-name {
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-
-    .demo-status {
-      font-size: 0.8rem;
-      color: #10b981;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .demo-status::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: #10b981;
-      border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    .demo-message {
-      background: rgba(99, 102, 241, 0.08);
-      border: 1px solid rgba(99, 102, 241, 0.15);
-      border-radius: 16px;
-      border-top-left-radius: 4px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-      line-height: 1.7;
-      color: var(--text-primary);
-    }
-
-    .demo-note {
-      margin-top: 2rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border-glass);
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      text-align: center;
-    }
-
     /* ===== INDUSTRIES ===== */
     .industries-grid {
       display: grid;
@@ -685,116 +618,6 @@
       border-color: rgba(99, 102, 241, 0.3);
       transform: translateY(-3px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    /* ===== PRICING ===== */
-    .pricing-section {
-      background: linear-gradient(180deg, transparent, rgba(6, 182, 212, 0.02), transparent);
-    }
-
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .price-card {
-      padding: 2.5rem;
-      border-radius: 24px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-glass);
-      backdrop-filter: blur(10px);
-      transition: all 0.4s;
-      position: relative;
-    }
-
-    .price-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-
-    .price-card.featured {
-      border-color: rgba(245, 158, 11, 0.4);
-      background: linear-gradient(180deg, rgba(245, 158, 11, 0.05), var(--bg-card));
-      box-shadow: 0 0 40px rgba(245, 158, 11, 0.1);
-    }
-
-    .price-badge {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #fff;
-      padding: 0.4rem 1.25rem;
-      border-radius: 100px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .price-tier {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: var(--text-primary);
-    }
-
-    .price-amount {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 3rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-    }
-
-    .price-amount span {
-      font-size: 1rem;
-      font-weight: 400;
-      color: var(--text-secondary);
-    }
-
-    .price-card.featured .price-amount {
-      background: linear-gradient(135deg, #f59e0b, #fbbf24);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .price-desc {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 2rem;
-    }
-
-    .price-features {
-      list-style: none;
-      margin-bottom: 2rem;
-    }
-
-    .price-features li {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.6rem 0;
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-    }
-
-    .price-features li::before {
-      content: '✓';
-      color: var(--accent-3);
-      font-weight: 700;
-      font-size: 0.85rem;
-    }
-
-    .price-card .btn {
-      width: 100%;
-      justify-content: center;
     }
 
     /* ===== TESTIMONIALS ===== */
@@ -984,26 +807,10 @@
     .reveal-delay-1 { transition-delay: 0.1s; }
     .reveal-delay-2 { transition-delay: 0.2s; }
     .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
 
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ===== WAVE DIVIDER ===== */
-    .wave-divider {
-      position: relative;
-      z-index: 2;
-      height: 80px;
-      overflow: hidden;
-    }
-
-    .wave-divider svg {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 80px;
     }
 
     /* ===== RESPONSIVE ===== */
@@ -1042,20 +849,6 @@
       .testimonials-track {
         grid-template-columns: 1fr;
       }
-
-      .pricing-grid {
-        grid-template-columns: 1fr;
-        max-width: 400px;
-        margin: 0 auto;
-      }
-
-      .price-card.featured {
-        transform: none;
-      }
-
-      .price-card.featured:hover {
-        transform: translateY(-8px);
-      }
     }
 
     @media (max-width: 480px) {
@@ -1069,36 +862,6 @@
       .stats-grid {
         grid-template-columns: 1fr;
       }
-    }
-
-    /* ===== SOUND WAVE ANIMATION ===== */
-    .sound-waves {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      height: 30px;
-      margin: 1.5rem auto;
-      width: fit-content;
-    }
-
-    .sound-bar {
-      width: 3px;
-      background: linear-gradient(180deg, var(--accent-1), var(--accent-3));
-      border-radius: 3px;
-      animation: soundWave 1.2s ease-in-out infinite;
-    }
-
-    .sound-bar:nth-child(1) { height: 10px; animation-delay: 0s; }
-    .sound-bar:nth-child(2) { height: 20px; animation-delay: 0.1s; }
-    .sound-bar:nth-child(3) { height: 15px; animation-delay: 0.2s; }
-    .sound-bar:nth-child(4) { height: 25px; animation-delay: 0.3s; }
-    .sound-bar:nth-child(5) { height: 18px; animation-delay: 0.4s; }
-    .sound-bar:nth-child(6) { height: 22px; animation-delay: 0.5s; }
-    .sound-bar:nth-child(7) { height: 12px; animation-delay: 0.6s; }
-
-    @keyframes soundWave {
-      0%, 100% { transform: scaleY(1); }
-      50% { transform: scaleY(2.5); }
     }
   </style>
 </head>
@@ -1121,6 +884,7 @@
       <ul class="nav-links" id="nav-links">
         <li><a href="#features">What It Does</a></li>
         <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#industries">Industries</a></li>
         <li><a href="#testimonials">Reviews</a></li>
         <li><a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="nav-cta">Book Demo</a></li>
       </ul>
@@ -1136,13 +900,13 @@
     <div class="hero-content">
       <div class="hero-badge">
         <span class="dot"></span>
-        AI-Powered · Works 24/7 · Instant Setup
+        Built for South Africa · POPIA Compliant · 11 Languages
       </div>
       <h1 class="hero-title">
         Never Miss Another<br><span class="gradient-text">Customer Call</span>
       </h1>
       <p class="hero-subtitle">
-        Your AI Receptionist calls leads, answers every call, books appointments, and follows up automatically — day and night, weekends and holidays.
+        Your AI Receptionist calls leads, answers every call, books appointments, and follows up automatically — in English, Afrikaans, Zulu, Xhosa, and 7 more languages. Pay only when calls are answered.
       </p>
       <div class="hero-buttons">
         <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary">
@@ -1158,23 +922,23 @@
   <!-- Marquee -->
   <div class="marquee-section">
     <div class="marquee-track">
+      <div class="marquee-item"><span class="dot"></span>POPIA Compliant</div>
+      <div class="marquee-item"><span class="dot"></span>11 SA Languages</div>
+      <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
+      <div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>
+      <div class="marquee-item"><span class="dot"></span>SMS Fallback</div>
       <div class="marquee-item"><span class="dot"></span>24/7 Call Answering</div>
       <div class="marquee-item"><span class="dot"></span>Automated Lead Follow-Up</div>
-      <div class="marquee-item"><span class="dot"></span>Appointment Booking</div>
-      <div class="marquee-item"><span class="dot"></span>Natural Human-Like Voice</div>
-      <div class="marquee-item"><span class="dot"></span>Customer Details Collection</div>
-      <div class="marquee-item"><span class="dot"></span>Outbound Calling</div>
-      <div class="marquee-item"><span class="dot"></span>Instant Response</div>
-      <div class="marquee-item"><span class="dot"></span>Zero Missed Calls</div>
+      <div class="marquee-item"><span class="dot"></span>Instant Setup</div>
       <!-- Duplicate for seamless loop -->
+      <div class="marquee-item"><span class="dot"></span>POPIA Compliant</div>
+      <div class="marquee-item"><span class="dot"></span>11 SA Languages</div>
+      <div class="marquee-item"><span class="dot"></span>Pay Per Answer</div>
+      <div class="marquee-item"><span class="dot"></span>Legal Calling Hours</div>
+      <div class="marquee-item"><span class="dot"></span>SMS Fallback</div>
       <div class="marquee-item"><span class="dot"></span>24/7 Call Answering</div>
       <div class="marquee-item"><span class="dot"></span>Automated Lead Follow-Up</div>
-      <div class="marquee-item"><span class="dot"></span>Appointment Booking</div>
-      <div class="marquee-item"><span class="dot"></span>Natural Human-Like Voice</div>
-      <div class="marquee-item"><span class="dot"></span>Customer Details Collection</div>
-      <div class="marquee-item"><span class="dot"></span>Outbound Calling</div>
-      <div class="marquee-item"><span class="dot"></span>Instant Response</div>
-      <div class="marquee-item"><span class="dot"></span>Zero Missed Calls</div>
+      <div class="marquee-item"><span class="dot"></span>Instant Setup</div>
     </div>
   </div>
 
@@ -1184,7 +948,7 @@
       <div class="reveal">
         <div class="section-label">Features</div>
         <h2 class="section-title">Everything a receptionist does —<br><span class="gradient-text">powered by AI</span></h2>
-        <p class="section-subtitle">From answering calls to booking appointments, your AI handles it all with a natural, human-like voice.</p>
+        <p class="section-subtitle">From answering calls to booking appointments, your AI handles it all with a natural, human-like voice — in the language your customers prefer.</p>
       </div>
       <div class="features-grid">
         <div class="glass-card feature-card reveal reveal-delay-1">
@@ -1199,10 +963,11 @@
         </div>
         <div class="glass-card feature-card reveal reveal-delay-3">
           <div class="feature-icon-wrap cyan">🗣️</div>
-          <h3>Speaks Naturally</h3>
-          <p>Human-like voice that's warm and professional. Customers genuinely enjoy talking to it.</p>
+          <h3>Speaks 11 SA Languages</h3>
+          <p>English, Afrikaans, Zulu, Xhosa, Sotho, Tswana, Pedi, Venda, Tsonga, Swazi, and Ndebele — just like your customers.</p>
+          <span class="feature-badge badge-new">NEW</span>
         </div>
-        <div class="glass-card feature-card reveal reveal-delay-4">
+        <div class="glass-card feature-card reveal">
           <div class="feature-icon-wrap emerald">📝</div>
           <h3>Collects Customer Details</h3>
           <p>Gathers name, contact info, service needed, preferred time — everything you need, automatically.</p>
@@ -1210,22 +975,40 @@
         <div class="glass-card feature-card reveal reveal-delay-1">
           <div class="feature-icon-wrap blue">📅</div>
           <h3>Books Appointments</h3>
-          <p>Schedules directly into your calendar and sends automatic confirmations to customers.</p>
+          <p>Schedules directly into your calendar and sends automatic confirmations via SMS or WhatsApp.</p>
         </div>
         <div class="glass-card feature-card reveal reveal-delay-2">
           <div class="feature-icon-wrap purple">💬</div>
-          <h3>Follows Up Automatically</h3>
-          <p>Sends messages to prospects who didn't book, turning more leads into paying customers.</p>
+          <h3>SMS Fallback</h3>
+          <p>If a call can't connect, automatically sends an SMS to reschedule. No lead left behind.</p>
+          <span class="feature-badge badge-new">NEW</span>
+        </div>
+        <div class="glass-card feature-card reveal reveal-delay-3">
+          <div class="feature-icon-wrap cyan">🔒</div>
+          <h3>POPIA Compliant</h3>
+          <p>Fully compliant with South Africa's Protection of Personal Information Act. Your customer data is safe.</p>
+          <span class="feature-badge badge-popular">COMPLIANT</span>
+        </div>
+        <div class="glass-card feature-card reveal">
+          <div class="feature-icon-wrap emerald">⏰</div>
+          <h3>Legal Calling Hours</h3>
+          <p>Only calls during permitted hours (Mon-Fri 9am-8pm, Sat 9am-1pm). Never on Sundays or public holidays.</p>
+        </div>
+        <div class="glass-card feature-card reveal reveal-delay-1">
+          <div class="feature-icon-wrap blue">💰</div>
+          <h3>Pay Per Answer</h3>
+          <p>You only pay when calls are actually answered. No monthly fees, no wasted budget on voicemails.</p>
+          <span class="feature-badge badge-popular">FAIR PRICING</span>
+        </div>
+        <div class="glass-card feature-card reveal reveal-delay-2">
+          <div class="feature-icon-wrap purple">📈</div>
+          <h3>Gets You More Customers</h3>
+          <p>More calls answered = more bookings = more revenue. Without hiring another receptionist.</p>
         </div>
         <div class="glass-card feature-card reveal reveal-delay-3">
           <div class="feature-icon-wrap cyan">🕐</div>
           <h3>Works 24/7 Non-Stop</h3>
           <p>Day, night, weekends, holidays — your AI never takes a day off. Your business is always open.</p>
-        </div>
-        <div class="glass-card feature-card reveal reveal-delay-4">
-          <div class="feature-icon-wrap emerald">📈</div>
-          <h3>Gets You More Customers</h3>
-          <p>More calls answered = more bookings = more revenue. Without hiring another receptionist.</p>
         </div>
       </div>
     </div>
@@ -1264,19 +1047,19 @@
     <div class="section-container">
       <div class="reveal text-center">
         <div class="section-label" style="justify-content:center;">Process</div>
-        <h2 class="section-title">Up and running in <span class="gradient-text">24 hours</span></h2>
-        <p class="section-subtitle mx-auto">No complicated setup. No new hardware. Just connect and let the AI handle the rest.</p>
+        <h2 class="section-title">Up and running in <span class="gradient-text">5 minutes</span></h2>
+        <p class="section-subtitle mx-auto">No complicated setup. No new hardware. Just connect your number and let the AI handle the rest.</p>
       </div>
       <div class="steps-container">
         <div class="glass-card step-card reveal">
           <div class="step-number">1</div>
           <h3>We Connect Your Number</h3>
-          <p>We set up the AI to answer your business phone line. Takes less than 24 hours — fully plug-and-play.</p>
+          <p>We set up the AI to answer your business phone line. Takes less than 5 minutes — fully plug-and-play.</p>
         </div>
         <div class="glass-card step-card reveal reveal-delay-1">
           <div class="step-number">2</div>
           <h3>AI Handles Everything</h3>
-          <p>Answers calls, makes outbound calls to leads, books appointments, and sends confirmations — all automatically.</p>
+          <p>Answers calls in 11 languages, makes outbound calls to leads, books appointments, and sends confirmations — all automatically.</p>
         </div>
         <div class="glass-card step-card reveal reveal-delay-2">
           <div class="step-number">3</div>
@@ -1293,7 +1076,7 @@
       <div class="reveal text-center">
         <div class="section-label" style="justify-content:center;">Industries</div>
         <h2 class="section-title">Works with <span class="gradient-text">any business</span> that takes calls</h2>
-        <p class="section-subtitle mx-auto">If your business answers calls and books appointments, the AI Receptionist works for you.</p>
+        <p class="section-subtitle mx-auto">If your business answers calls and books appointments in South Africa, the AI Receptionist works for you.</p>
       </div>
       <div class="industries-grid">
         <div class="industry-chip reveal">🦷 Dentists</div>
@@ -1317,7 +1100,7 @@
     <div class="section-container">
       <div class="reveal text-center">
         <div class="section-label" style="justify-content:center;">Testimonials</div>
-        <h2 class="section-title">Trusted by business owners <span class="gradient-text">everywhere</span></h2>
+        <h2 class="section-title">Trusted by South African businesses <span class="gradient-text">everywhere</span></h2>
         <p class="section-subtitle mx-auto">Real results from real businesses using the AI Receptionist every day.</p>
       </div>
       <div class="testimonials-track">
@@ -1328,7 +1111,7 @@
             <div class="testimonial-avatar">JM</div>
             <div>
               <div class="testimonial-name">James Mitchell</div>
-              <div class="testimonial-role">Owner, Mitchell Plumbing</div>
+              <div class="testimonial-role">Owner, Mitchell Plumbing · Johannesburg</div>
             </div>
           </div>
         </div>
@@ -1339,7 +1122,7 @@
             <div class="testimonial-avatar">PS</div>
             <div>
               <div class="testimonial-name">Dr. Priya Sharma</div>
-              <div class="testimonial-role">BDS, Bright Smile Dental Clinic</div>
+              <div class="testimonial-role">BDS, Bright Smile Dental · Durban</div>
             </div>
           </div>
         </div>
@@ -1350,7 +1133,7 @@
             <div class="testimonial-avatar">LO</div>
             <div>
               <div class="testimonial-name">Linda O'Connor</div>
-              <div class="testimonial-role">Owner, Glow Beauty Salon</div>
+              <div class="testimonial-role">Owner, Glow Beauty Salon · Cape Town</div>
             </div>
           </div>
         </div>
@@ -1361,7 +1144,7 @@
             <div class="testimonial-avatar">MW</div>
             <div>
               <div class="testimonial-name">Marcus Williams</div>
-              <div class="testimonial-role">Owner, Williams Auto Workshop</div>
+              <div class="testimonial-role">Owner, Williams Auto Workshop · Pretoria</div>
             </div>
           </div>
         </div>
@@ -1372,7 +1155,7 @@
             <div class="testimonial-avatar">SC</div>
             <div>
               <div class="testimonial-name">Sarah Chen</div>
-              <div class="testimonial-role">Owner, Fit Life Gym</div>
+              <div class="testimonial-role">Owner, Fit Life Gym · Sandton</div>
             </div>
           </div>
         </div>
@@ -1383,10 +1166,11 @@
             <div class="testimonial-avatar">RV</div>
             <div>
               <div class="testimonial-name">Roberto Vasquez</div>
-              <div class="testimonial-role">Owner, Vasquez Electrical</div>
+              <div class="testimonial-role">Owner, Vasquez Electrical · Bloemfontein</div>
             </div>
           </div>
         </div>
+    </div>
     </div>
   </section>
 
@@ -1411,6 +1195,7 @@
   <!-- Footer -->
   <footer>
     <p>&copy; <span id="year"></span> AI Receptionist · <a href="mailto:branleyf@gmail.com">branleyf@gmail.com</a> · Built with AI by Viral AI Vault</p>
+    <p style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-muted);">POPIA Compliant · Legal Calling Hours · South Africa</p>
   </footer>
 
   <!-- WhatsApp Float -->
