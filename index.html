@@ -3,232 +3,1400 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Receptionist for Small Businesses — Never Miss Another Customer Call</title>
-  <meta name="description" content="AI-powered virtual receptionist that answers calls, books appointments, and follows up 24/7. Perfect for dentists, plumbers, salons, and local businesses.">
-  <link rel="stylesheet" href="style.css">
+  <title>AI Receptionist — Never Miss Another Customer Call</title>
+  <meta name="description" content="AI-powered virtual receptionist that calls leads, answers 24/7, books appointments, and follows up automatically. Built for small businesses.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #050510;
+      --bg-secondary: #0a0a1a;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-glass: rgba(255, 255, 255, 0.05);
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --text-primary: #f0f0f5;
+      --text-secondary: #8888a0;
+      --text-muted: #555570;
+      --accent-1: #6366f1;
+      --accent-2: #8b5cf6;
+      --accent-3: #06b6d4;
+      --accent-gold: #f59e0b;
+      --glow-purple: rgba(139, 92, 246, 0.3);
+      --glow-blue: rgba(6, 182, 212, 0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ===== ANIMATED BACKGROUND ===== */
+    .bg-grid {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image:
+        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .bg-orbs {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: orbFloat 20s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent 70%);
+      top: -200px; left: -100px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 70%);
+      top: 40%; right: -150px;
+      animation-delay: -7s;
+      animation-duration: 25s;
+    }
+
+    .orb-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent 70%);
+      bottom: 10%; left: 20%;
+      animation-delay: -14s;
+      animation-duration: 22s;
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(50px, -30px) scale(1.1); }
+      50% { transform: translate(-20px, 40px) scale(0.95); }
+      75% { transform: translate(30px, 20px) scale(1.05); }
+    }
+
+    /* ===== NAVIGATION ===== */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 1rem 0;
+      transition: all 0.4s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(5, 5, 16, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 0.75rem 0;
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 0 20px var(--glow-purple);
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-links a:hover { color: var(--text-primary); }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
+      color: #fff !important;
+      padding: 0.6rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+      transition: all 0.3s !important;
+    }
+
+    .nav-cta:hover {
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .nav-cta::after { display: none !important; }
+
+    .mobile-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .mobile-toggle span {
+      width: 24px; height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    #hero-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      border-radius: 100px;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .hero-badge .dot {
+      width: 8px; height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 30%, #06b6d4 60%, #6366f1 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+      color: var(--text-secondary);
+      max-width: 650px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.8;
+      animation: fadeInUp 0.8s ease 0.4s both;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s ease 0.6s both;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      color: #fff;
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.3), 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 50px rgba(99, 102, 241, 0.5), 0 15px 40px rgba(0,0,0,0.4);
+      transform: translateY(-3px);
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-primary:hover::before { left: 100%; }
+
+    .btn-ghost {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glass);
+      color: var(--text-primary);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-3px);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-gold:hover {
+      box-shadow: 0 0 50px rgba(245, 158, 11, 0.5);
+      transform: translateY(-3px);
+    }
+
+    /* ===== SECTION UTILITIES ===== */
+    .section {
+      position: relative;
+      z-index: 2;
+      padding: 7rem 2rem;
+    }
+
+    .section-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-3);
+      margin-bottom: 1rem;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 30px; height: 1px;
+      background: var(--accent-3);
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin-bottom: 3.5rem;
+    }
+
+    .text-center { text-align: center; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+
+    /* ===== GLASS CARD ===== */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 30px rgba(99, 102, 241, 0.1);
+    }
+
+    .glass-card:hover::before { opacity: 1; }
+
+    /* ===== FEATURES GRID ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      padding: 2.5rem 2rem;
+    }
+
+    .feature-icon-wrap {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .feature-icon-wrap.blue {
+      background: rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
+    }
+
+    .feature-icon-wrap.purple {
+      background: rgba(139, 92, 246, 0.1);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+    }
+
+    .feature-icon-wrap.cyan {
+      background: rgba(6, 182, 212, 0.1);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
+    }
+
+    .feature-icon-wrap.emerald {
+      background: rgba(16, 185, 129, 0.1);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+    }
+
+    .feature-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* ===== STATS SECTION ===== */
+    .stats-section {
+      background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.03), transparent);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 3rem 2rem;
+    }
+
+    .stat-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      position: relative;
+    }
+
+    .step-card {
+      text-align: center;
+      padding: 3rem 2rem;
+    }
+
+    .step-number {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 0 30px var(--glow-purple);
+    }
+
+    .step-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .step-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* ===== AI CALL DEMO ===== */
+    .demo-section {
+      background: linear-gradient(180deg, transparent, rgba(139, 92, 246, 0.03), transparent);
+    }
+
+    .demo-box {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 3rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 24px;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .demo-box::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      right: -1px; bottom: -1px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), transparent, rgba(6, 182, 212, 0.2));
+      border-radius: 24px;
+      z-index: -1;
+    }
+
+    .demo-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .demo-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .demo-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .demo-status {
+      font-size: 0.8rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .demo-status::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .demo-message {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: 16px;
+      border-top-left-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-primary);
+    }
+
+    .demo-note {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-glass);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    /* ===== INDUSTRIES ===== */
+    .industries-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .industry-chip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.3s;
+      cursor: default;
+    }
+
+    .industry-chip:hover {
+      background: rgba(99, 102, 241, 0.08);
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    /* ===== PRICING ===== */
+    .pricing-section {
+      background: linear-gradient(180deg, transparent, rgba(6, 182, 212, 0.02), transparent);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .price-card {
+      padding: 2.5rem;
+      border-radius: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(10px);
+      transition: all 0.4s;
+      position: relative;
+    }
+
+    .price-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .price-card.featured {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.05), var(--bg-card));
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.1);
+    }
+
+    .price-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      padding: 0.4rem 1.25rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .price-tier {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .price-amount {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .price-amount span {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+    }
+
+    .price-card.featured .price-amount {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .price-desc {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
+    .price-features {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .price-features li::before {
+      content: '✓';
+      color: var(--accent-3);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .price-card .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    .testimonials-track {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .testimonial {
+      padding: 2rem;
+      border-radius: 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      transition: all 0.3s;
+    }
+
+    .testimonial:hover {
+      border-color: rgba(99, 102, 241, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    .testimonial-stars {
+      color: #f59e0b;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+    }
+
+    .testimonial-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .testimonial-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .testimonial-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .testimonial-role {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== MARQUEE ===== */
+    .marquee-section {
+      padding: 3rem 0;
+      overflow: hidden;
+      border-top: 1px solid var(--border-glass);
+      border-bottom: 1px solid var(--border-glass);
+      position: relative;
+      z-index: 2;
+    }
+
+    .marquee-track {
+      display: flex;
+      animation: marquee 30s linear infinite;
+      width: max-content;
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0 3rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .marquee-item .dot {
+      width: 6px; height: 6px;
+      background: var(--accent-1);
+      border-radius: 50%;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ===== FINAL CTA ===== */
+    .cta-section {
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      filter: blur(60px);
+      pointer-events: none;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid var(--border-glass);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    footer a:hover { color: var(--text-primary); }
+
+    /* ===== WHATSAPP FLOAT ===== */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 999;
+      width: 60px; height: 60px;
+      background: #25d366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+      transition: all 0.3s;
+      text-decoration: none;
+      font-size: 1.75rem;
+      animation: floatBounce 3s ease-in-out infinite;
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
+    }
+
+    @keyframes floatBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ===== SCROLL ANIMATIONS ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== WAVE DIVIDER ===== */
+    .wave-divider {
+      position: relative;
+      z-index: 2;
+      height: 80px;
+      overflow: hidden;
+    }
+
+    .wave-divider svg {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 80px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 968px) {
+      .testimonials-track {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100vh;
+        background: rgba(5, 5, 16, 0.97);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .nav-links.open { display: flex; }
+
+      .nav-links a {
+        font-size: 1.2rem;
+      }
+
+      .mobile-toggle { display: flex; }
+
+      .hero { padding: 7rem 1.5rem 3rem; }
+
+      .section { padding: 4rem 1.5rem; }
+
+      .testimonials-track {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .price-card.featured {
+        transform: none;
+      }
+
+      .price-card.featured:hover {
+        transform: translateY(-8px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn { width: 100%; justify-content: center; }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== SOUND WAVE ANIMATION ===== */
+    .sound-waves {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 30px;
+      margin: 1.5rem auto;
+      width: fit-content;
+    }
+
+    .sound-bar {
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent-1), var(--accent-3));
+      border-radius: 3px;
+      animation: soundWave 1.2s ease-in-out infinite;
+    }
+
+    .sound-bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+    .sound-bar:nth-child(2) { height: 20px; animation-delay: 0.1s; }
+    .sound-bar:nth-child(3) { height: 15px; animation-delay: 0.2s; }
+    .sound-bar:nth-child(4) { height: 25px; animation-delay: 0.3s; }
+    .sound-bar:nth-child(5) { height: 18px; animation-delay: 0.4s; }
+    .sound-bar:nth-child(6) { height: 22px; animation-delay: 0.5s; }
+    .sound-bar:nth-child(7) { height: 12px; animation-delay: 0.6s; }
+
+    @keyframes soundWave {
+      0%, 100% { transform: scaleY(1); }
+      50% { transform: scaleY(2.5); }
+    }
+  </style>
 </head>
 <body>
+  <!-- Animated Background -->
+  <div class="bg-grid"></div>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
   <!-- Navigation -->
-  <nav class="navbar">
-    <div class="container">
-      <div class="nav-wrapper">
-        <div class="logo">AI Receptionist</div>
-        <ul class="nav-menu" id="nav-menu">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#what-it-does">What It Does</a></li>
-          <li><a href="#why-you-need-it">Why You Need It</a></li>
-          <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#contact" class="nav-cta">Book Demo</a></li>
-        </ul>
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#home" class="logo">
+        <div class="logo-icon">📞</div>
+        <span>AI Receptionist</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#features">What It Does</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Reviews</a></li>
+        <li><a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="nav-cta">Book Demo</a></li>
+      </ul>
+      <button class="mobile-toggle" id="mobile-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
-  <!-- Hero Section -->
+  <!-- Hero -->
   <section class="hero" id="home">
-    <div class="container">
-      <div class="hero-content">
-        <h1 class="hero-title">Never Miss Another Customer Call</h1>
-        <p class="hero-subtitle">AI Receptionist that calls, answers, books, and follows up automatically — 24/7</p>
-        <div class="hero-buttons">
-          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary">Book a Free Demo</a>
-          <a href="#how-it-works" class="btn btn-secondary">See How It Works</a>
-        </div>
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        AI-Powered · Works 24/7 · Instant Setup
+      </div>
+      <h1 class="hero-title">
+        Never Miss Another<br><span class="gradient-text">Customer Call</span>
+      </h1>
+      <p class="hero-subtitle">
+        Your AI Receptionist calls leads, answers every call, books appointments, and follows up automatically — day and night, weekends and holidays.
+      </p>
+      <div class="hero-buttons">
+        <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary">
+          📞 Book a Free Demo
+        </a>
+        <a href="#how-it-works" class="btn btn-ghost">
+          See How It Works →
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- What It Does -->
-  <section class="what-it-does" id="what-it-does">
-    <div class="container">
-      <h2 class="section-title">What the AI Receptionist Does</h2>
+  <!-- Marquee -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <div class="marquee-item"><span class="dot"></span>24/7 Call Answering</div>
+      <div class="marquee-item"><span class="dot"></span>Automated Lead Follow-Up</div>
+      <div class="marquee-item"><span class="dot"></span>Appointment Booking</div>
+      <div class="marquee-item"><span class="dot"></span>Natural Human-Like Voice</div>
+      <div class="marquee-item"><span class="dot"></span>Customer Details Collection</div>
+      <div class="marquee-item"><span class="dot"></span>Outbound Calling</div>
+      <div class="marquee-item"><span class="dot"></span>Instant Response</div>
+      <div class="marquee-item"><span class="dot"></span>Zero Missed Calls</div>
+      <!-- Duplicate for seamless loop -->
+      <div class="marquee-item"><span class="dot"></span>24/7 Call Answering</div>
+      <div class="marquee-item"><span class="dot"></span>Automated Lead Follow-Up</div>
+      <div class="marquee-item"><span class="dot"></span>Appointment Booking</div>
+      <div class="marquee-item"><span class="dot"></span>Natural Human-Like Voice</div>
+      <div class="marquee-item"><span class="dot"></span>Customer Details Collection</div>
+      <div class="marquee-item"><span class="dot"></span>Outbound Calling</div>
+      <div class="marquee-item"><span class="dot"></span>Instant Response</div>
+      <div class="marquee-item"><span class="dot"></span>Zero Missed Calls</div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="section-container">
+      <div class="reveal">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything a receptionist does —<br><span class="gradient-text">powered by AI</span></h2>
+        <p class="section-subtitle">From answering calls to booking appointments, your AI handles it all with a natural, human-like voice.</p>
+      </div>
       <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">📞</div>
+        <div class="glass-card feature-card reveal reveal-delay-1">
+          <div class="feature-icon-wrap blue">📞</div>
           <h3>Calls Leads Automatically</h3>
-          <p>Reaches out to new inquiries within seconds, before they call your competitor</p>
+          <p>Reaches out to new inquiries within seconds — before they even think about calling your competitor.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">✨</div>
-          <h3>Answers Incoming Calls</h3>
-          <p>Never miss a call again — every customer gets a friendly, professional response</p>
+        <div class="glass-card feature-card reveal reveal-delay-2">
+          <div class="feature-icon-wrap purple">✨</div>
+          <h3>Answers Every Call</h3>
+          <p>No more missed calls. Every customer gets a friendly, professional response on the first ring.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🗣️</div>
+        <div class="glass-card feature-card reveal reveal-delay-3">
+          <div class="feature-icon-wrap cyan">🗣️</div>
           <h3>Speaks Naturally</h3>
-          <p>Human-like voice that sounds warm, friendly, and professional — customers love it</p>
+          <p>Human-like voice that's warm and professional. Customers genuinely enjoy talking to it.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">📝</div>
+        <div class="glass-card feature-card reveal reveal-delay-4">
+          <div class="feature-icon-wrap emerald">📝</div>
           <h3>Collects Customer Details</h3>
-          <p>Gathers all the information you need: name, contact, service needed, and more</p>
+          <p>Gathers name, contact info, service needed, preferred time — everything you need, automatically.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">📅</div>
+        <div class="glass-card feature-card reveal reveal-delay-1">
+          <div class="feature-icon-wrap blue">📅</div>
           <h3>Books Appointments</h3>
-          <p>Schedules directly into your calendar with automatic confirmations sent to customers</p>
+          <p>Schedules directly into your calendar and sends automatic confirmations to customers.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">💬</div>
-          <h3>Sends Follow-Up Messages</h3>
-          <p>Automatically follows up with prospects who didn't book, turning more leads into customers</p>
+        <div class="glass-card feature-card reveal reveal-delay-2">
+          <div class="feature-icon-wrap purple">💬</div>
+          <h3>Follows Up Automatically</h3>
+          <p>Sends messages to prospects who didn't book, turning more leads into paying customers.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🕐</div>
-          <h3>Works 24/7</h3>
-          <p>Answers calls day or night, weekends and holidays — your business never sleeps</p>
+        <div class="glass-card feature-card reveal reveal-delay-3">
+          <div class="feature-icon-wrap cyan">🕐</div>
+          <h3>Works 24/7 Non-Stop</h3>
+          <p>Day, night, weekends, holidays — your AI never takes a day off. Your business is always open.</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">📈</div>
+        <div class="glass-card feature-card reveal reveal-delay-4">
+          <div class="feature-icon-wrap emerald">📈</div>
           <h3>Gets You More Customers</h3>
-          <p>Increases bookings and sales without hiring another receptionist</p>
+          <p>More calls answered = more bookings = more revenue. Without hiring another receptionist.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Why You Need It -->
-  <section class="why-you-need-it" id="why-you-need-it">
-    <div class="container">
-      <h2 class="section-title">Why Your Business Needs This</h2>
-      <div class="why-content">
-        <div class="why-text">
-          <p class="why-lead">Small businesses lose customers every single day because they miss calls, reply late, or can't answer after hours.</p>
-          
-          <p>Think about it: when a customer needs a plumber, dentist, or salon appointment, they don't leave voicemail and wait. They call the next business on Google. If you don't answer in the first ring, they're gone — and they just gave your competitor your customer.</p>
-          
-          <p>And it's not just during business hours. 40% of service searches happen after 6 PM or on weekends. If your phone goes to voicemail then, you're losing 40% of your potential revenue.</p>
-          
-          <p>The AI receptionist responds instantly — every time, 24/7. No missed calls. No late replies. No lost customers. Just more bookings, more sales, and more revenue flowing into your business.</p>
-          
-          <div class="why-stats">
-            <div class="stat">
-              <div class="stat-number">40%</div>
-              <div class="stat-label">of service searches happen after hours</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">85%</div>
-              <div class="stat-label">of customers won't leave a voicemail</div>
-            </div>
-            <div class="stat">
-              <div class="stat-number">3x</div>
-              <div class="stat-label">more bookings with instant response</div>
-            </div>
+  <!-- Stats -->
+  <section class="section stats-section">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">The Problem</div>
+        <h2 class="section-title">Your business is losing customers <span class="gradient-text">right now</span></h2>
+      </div>
+      <div class="stats-grid">
+        <div class="glass-card stat-card reveal">
+          <div class="stat-number" data-target="62">0%</div>
+          <div class="stat-label">of calls to local businesses go unanswered</div>
+        </div>
+        <div class="glass-card stat-card reveal reveal-delay-1">
+          <div class="stat-number" data-target="85">0%</div>
+          <div class="stat-label">of customers won't leave a voicemail</div>
+        </div>
+        <div class="glass-card stat-card reveal reveal-delay-2">
+          <div class="stat-number" data-target="40">0%</div>
+          <div class="stat-label">of searches happen after business hours</div>
+        </div>
+        <div class="glass-card stat-card reveal reveal-delay-3">
+          <div class="stat-number">3x</div>
+          <div class="stat-label">more bookings with instant response</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section" id="how-it-works">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">Process</div>
+        <h2 class="section-title">Up and running in <span class="gradient-text">24 hours</span></h2>
+        <p class="section-subtitle mx-auto">No complicated setup. No new hardware. Just connect and let the AI handle the rest.</p>
+      </div>
+      <div class="steps-container">
+        <div class="glass-card step-card reveal">
+          <div class="step-number">1</div>
+          <h3>We Connect Your Number</h3>
+          <p>We set up the AI to answer your business phone line. Takes less than 24 hours — fully plug-and-play.</p>
+        </div>
+        <div class="glass-card step-card reveal reveal-delay-1">
+          <div class="step-number">2</div>
+          <h3>AI Handles Everything</h3>
+          <p>Answers calls, makes outbound calls to leads, books appointments, and sends confirmations — all automatically.</p>
+        </div>
+        <div class="glass-card step-card reveal reveal-delay-2">
+          <div class="step-number">3</div>
+          <h3>You Get Booked Appointments</h3>
+          <p>Customer name, contact details, appointment time, service needed — delivered straight to your phone or email.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Call Demo -->
+  <section class="section demo-section">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">Live Demo</div>
+        <h2 class="section-title">Hear the AI <span class="gradient-text">in action</span></h2>
+        <p class="section-subtitle mx-auto">This is what a real outbound call sounds like. Natural, warm, and professional.</p>
+      </div>
+      <div class="sound-waves reveal">
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+        <div class="sound-bar"></div>
+      </div>
+      <div class="demo-box reveal">
+        <div class="demo-header">
+          <div class="demo-avatar">🤖</div>
+          <div>
+            <div class="demo-name">AI Receptionist — Live Call</div>
+            <div class="demo-status">Call in progress</div>
           </div>
+        </div>
+        <div class="demo-message">
+          "Hi, this is Sarah from Viral AI Vault. I'm calling because many local businesses are losing customers when they miss calls or reply too slowly."
+        </div>
+        <div class="demo-message">
+          "Our AI receptionist answers every call 24/7, books your appointments automatically, and follows up with customers who didn't book — so you never lose business to a competitor again."
+        </div>
+        <div class="demo-message">
+          "Would you like a quick free demo to see how it works for your business? It only takes two minutes."
+        </div>
+        <div class="demo-note">
+          <strong style="color: var(--text-primary)">Sounds natural, doesn't it?</strong><br>
+          Customers genuinely enjoy the conversation. That's the difference.
         </div>
       </div>
     </div>
   </section>
 
   <!-- Industries -->
-  <section class="industries" id="industries">
-    <div class="container">
-      <h2 class="section-title">Perfect for Local Businesses</h2>
-      <p class="section-subtitle">Works with any business that needs to answer calls and book appointments</p>
+  <section class="section" id="industries">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">Industries</div>
+        <h2 class="section-title">Works with <span class="gradient-text">any business</span> that takes calls</h2>
+        <p class="section-subtitle mx-auto">If your business answers calls and books appointments, the AI Receptionist works for you.</p>
+      </div>
       <div class="industries-grid">
-        <div class="industry-card">🦷 Dentists</div>
-        <div class="industry-card">🔧 Plumbers</div>
-        <div class="industry-card">⚡ Electricians</div>
-        <div class="industry-card">💇 Salons</div>
-        <div class="industry-card">🏋️ Gyms</div>
-        <div class="industry-card">🍽️ Restaurants</div>
-        <div class="industry-card">🚗 Car Workshops</div>
-        <div class="industry-card">🏠 And Many More</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section class="how-it-works" id="how-it-works">
-    <div class="container">
-      <h2 class="section-title">How It Works</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <h3>We Connect Your Business Number</h3>
-          <p>We set up the AI to answer your business phone line. Takes less than 24 hours. No new hardware, no complicated setup.</p>
-        </div>
-        <div class="step">
-          <div class="step-number">2</div>
-          <h3>The AI Answers and Makes Calls</h3>
-          <p>The AI handles incoming calls, makes outbound calls to leads, books appointments, and sends confirmations — all automatically.</p>
-        </div>
-        <div class="step">
-          <div class="step-number">3</div>
-          <h3>You Receive Booked Appointments</h3>
-          <p>You get all the details — customer name, contact info, appointment time, service needed — delivered to your phone or email.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Sample Sales Script -->
-  <section class="sales-script">
-    <div class="container">
-      <h2 class="section-title">Here's What the AI Sounds Like</h2>
-      <p class="section-subtitle">A real example of how the AI calls small businesses</p>
-      <div class="script-box">
-        <div class="script-header">📞 Sample Call Script</div>
-        <div class="script-content">
-          <p><strong>AI:</strong> "Hi, this is Sarah from Viral AI Vault. I'm calling because many local businesses are losing customers when they miss calls."</p>
-          <p><strong>AI:</strong> "Our AI receptionist answers calls 24/7, books appointments automatically, and follows up with customers so you don't lose business."</p>
-          <p><strong>AI:</strong> "Would you like a free demo to see how it works for your business?"</p>
-        </div>
-        <div class="script-note">
-          <p><strong>Notice how it sounds?</strong> Natural, friendly, professional. Customers don't even realize it's AI. That's the difference.</p>
-        </div>
+        <div class="industry-chip reveal">🦷 Dentists</div>
+        <div class="industry-chip reveal">🔧 Plumbers</div>
+        <div class="industry-chip reveal">⚡ Electricians</div>
+        <div class="industry-chip reveal">💇 Salons</div>
+        <div class="industry-chip reveal">🏋️ Gyms</div>
+        <div class="industry-chip reveal">🍽️ Restaurants</div>
+        <div class="industry-chip reveal">🚗 Car Workshops</div>
+        <div class="industry-chip reveal">💆 Spas</div>
+        <div class="industry-chip reveal">🏥 Clinics</div>
+        <div class="industry-chip reveal">🏗️ Contractors</div>
+        <div class="industry-chip reveal">🐾 Vet Clinics</div>
+        <div class="industry-chip reveal">🏠 And More</div>
       </div>
     </div>
   </section>
 
   <!-- Pricing -->
-  <section class="pricing" id="pricing">
-    <div class="container">
-      <h2 class="section-title">Simple, Transparent Pricing</h2>
-      <p class="section-subtitle">Choose the plan that fits your business</p>
+  <section class="section pricing-section" id="pricing">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">Pricing</div>
+        <h2 class="section-title">Simple, transparent <span class="gradient-text">pricing</span></h2>
+        <p class="section-subtitle mx-auto">No hidden fees. No long contracts. Start with a free demo.</p>
+      </div>
       <div class="pricing-grid">
-        <div class="pricing-card">
-          <div class="pricing-header">
-            <h3>Starter</h3>
-            <div class="price">R499<span>/month</span></div>
-          </div>
-          <ul class="pricing-features">
+        <div class="price-card reveal">
+          <div class="price-tier">Starter</div>
+          <div class="price-amount">R499<span>/month</span></div>
+          <div class="price-desc">Perfect for solo operators and small teams</div>
+          <ul class="price-features">
             <li>Up to 100 calls per month</li>
             <li>Basic call answering</li>
             <li>Appointment booking</li>
             <li>Email notifications</li>
             <li>Text support</li>
           </ul>
-          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20Starter%20plan" class="btn btn-secondary">Book a Free Demo</a>
+          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20Starter%20plan" class="btn btn-ghost">Book Free Demo</a>
         </div>
-        <div class="pricing-card featured">
-          <div class="pricing-badge">Most Popular</div>
-          <div class="pricing-header">
-            <h3>Growth</h3>
-            <div class="price">R999<span>/month</span></div>
-          </div>
-          <ul class="pricing-features">
+        <div class="price-card featured reveal reveal-delay-1">
+          <div class="price-badge">Most Popular</div>
+          <div class="price-tier">Growth</div>
+          <div class="price-amount">R999<span>/month</span></div>
+          <div class="price-desc">For growing businesses that need more power</div>
+          <ul class="price-features">
             <li>Up to 300 calls per month</li>
             <li>Advanced call handling</li>
             <li>Appointment booking</li>
             <li>Follow-up messages</li>
-            <li>WhatsApp + email notifications</li>
+            <li>WhatsApp & email notifications</li>
             <li>Priority support</li>
           </ul>
-          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20Growth%20plan" class="btn btn-primary">Book a Free Demo</a>
+          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20Growth%20plan" class="btn btn-gold">Book Free Demo</a>
         </div>
-        <div class="pricing-card">
-          <div class="pricing-header">
-            <h3>Premium</h3>
-            <div class="price">R1,999<span>/month</span></div>
-          </div>
-          <ul class="pricing-features">
+        <div class="price-card reveal reveal-delay-2">
+          <div class="price-tier">Premium</div>
+          <div class="price-amount">R1,999<span>/month</span></div>
+          <div class="price-desc">For businesses that want the full experience</div>
+          <ul class="price-features">
             <li>Unlimited calls</li>
             <li>Advanced call handling</li>
             <li>Appointment booking</li>
@@ -237,190 +1405,430 @@
             <li>Custom integrations</li>
             <li>Dedicated account manager</li>
           </ul>
-          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20Premium%20plan" class="btn btn-secondary">Book a Free Demo</a>
+          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20Premium%20plan" class="btn btn-ghost">Book Free Demo</a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Testimonials -->
-  <section class="testimonials" id="testimonials">
-    <div class="container">
-      <h2 class="section-title">Trusted by Business Owners</h2>
-      <div class="testimonial-grid">
-        <div class="testimonial-card">
-          <p class="testimonial-text">"I was skeptical at first, but the difference has been incredible. I used to lose 15-20% of calls when I was under a sink or on the road. Last month alone, the AI booked 23 emergency jobs that I would have completely missed."</p>
+  <section class="section" id="testimonials">
+    <div class="section-container">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">Testimonials</div>
+        <h2 class="section-title">Trusted by business owners <span class="gradient-text">everywhere</span></h2>
+        <p class="section-subtitle mx-auto">Real results from real businesses using the AI Receptionist every day.</p>
+      </div>
+      <div class="testimonials-track">
+        <div class="testimonial reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"I was skeptical at first, but the difference has been incredible. I used to lose 15–20% of calls when under a sink or on the road. Last month alone, the AI booked 23 emergency jobs I would have completely missed."</div>
           <div class="testimonial-author">
-            <strong>James Mitchell</strong>
-            <span>Owner, Mitchell Plumbing</span>
+            <div class="testimonial-avatar">JM</div>
+            <div>
+              <div class="testimonial-name">James Mitchell</div>
+              <div class="testimonial-role">Owner, Mitchell Plumbing</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"As a solo practitioner, I was constantly torn between treating patients and answering the phone. Now the AI handles everything — bookings, confirmations, even questions about parking. We've seen a 40% increase in new patient bookings."</p>
+        <div class="testimonial reveal reveal-delay-1">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"As a solo practitioner, I was constantly torn between treating patients and answering the phone. Now the AI handles everything — bookings, confirmations, even parking questions. New patient bookings are up 40%."</div>
           <div class="testimonial-author">
-            <strong>Dr. Priya Sharma</strong>
-            <span>BDS, Bright Smile Dental Clinic</span>
+            <div class="testimonial-avatar">PS</div>
+            <div>
+              <div class="testimonial-name">Dr. Priya Sharma</div>
+              <div class="testimonial-role">BDS, Bright Smile Dental Clinic</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"I work alone most days, and the phone was my enemy. I'd be mid-highlight, phone ringing, and I'd have to ignore it. The AI books appointments around my schedule and sends confirmation texts. I booked 37 new clients in the first month."</p>
+        <div class="testimonial reveal reveal-delay-2">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"I work alone most days, and the phone was my enemy. I'd be mid-highlight, phone ringing, ignoring it. The AI books around my schedule and sends confirmations. 37 new clients in the first month."</div>
           <div class="testimonial-author">
-            <strong>Linda O'Connor</strong>
-            <span>Owner, Glow Beauty Salon</span>
+            <div class="testimonial-avatar">LO</div>
+            <div>
+              <div class="testimonial-name">Linda O'Connor</div>
+              <div class="testimonial-role">Owner, Glow Beauty Salon</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"We're a small shop with three mechanics. The phone used to ring constantly while we were under cars. Since setting up the AI, we've captured 52 leads that would have been missed. It's like having a receptionist who never sleeps."</p>
+        <div class="testimonial reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"We have three mechanics and the phone used to ring constantly while we were under cars. Since setting up the AI, we've captured 52 leads that would have gone unanswered. Like having a receptionist who never sleeps."</div>
           <div class="testimonial-author">
-            <strong>Marcus Williams</strong>
-            <span>Owner, Williams Auto Workshop</span>
+            <div class="testimonial-avatar">MW</div>
+            <div>
+              <div class="testimonial-name">Marcus Williams</div>
+              <div class="testimonial-role">Owner, Williams Auto Workshop</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Running a gym means juggling hundreds of member inquiries. The AI books tours, answers questions about membership, and follows up with prospects. Our trial-to-member conversion jumped from 28% to 61%."</p>
+        <div class="testimonial reveal reveal-delay-1">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"The AI books tours, answers membership questions, and follows up with prospects. Our trial-to-member conversion jumped from 28% to 61%. Genuinely game-changing for a small gym like ours."</div>
           <div class="testimonial-author">
-            <strong>Sarah Chen</strong>
-            <span>Owner, Fit Life Gym</span>
+            <div class="testimonial-avatar">SC</div>
+            <div>
+              <div class="testimonial-name">Sarah Chen</div>
+              <div class="testimonial-role">Owner, Fit Life Gym</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"The AI sounds natural — customers don't even realize it's not a person. I've gained about 18% more work since turning it on. I can't recommend this highly enough."</p>
+        <div class="testimonial reveal reveal-delay-2">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"The AI sounds natural — customers don't even realize it's not a person. I've gained about 18% more work since turning it on. I genuinely can't recommend this highly enough."</div>
           <div class="testimonial-author">
-            <strong>Roberto Vasquez</strong>
-            <span>Owner, Vasquez Electrical</span>
+            <div class="testimonial-avatar">RV</div>
+            <div>
+              <div class="testimonial-name">Roberto Vasquez</div>
+              <div class="testimonial-role">Owner, Vasquez Electrical</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Dental is all about the patient experience. The AI answers questions about procedures, insurance, and availability. Our no-show rate dropped from 12% to under 3%, and we've added 30 new families in three months."</p>
+        <div class="testimonial reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"Our no-show rate dropped from 12% to under 3%, and we've added 30 new families in three months. The AI answers questions about procedures, insurance, and availability — perfectly every time."</div>
           <div class="testimonial-author">
-            <strong>Jennifer Kowalski</strong>
-            <span>Owner, Kowalski Family Dentistry</span>
+            <div class="testimonial-avatar">JK</div>
+            <div>
+              <div class="testimonial-name">Jennifer Kowalski</div>
+              <div class="testimonial-role">Owner, Kowalski Family Dentistry</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"I run a one-man plumbing business. Before the AI, I'd lose 2-3 calls a week — that's hundreds in lost revenue. Now every call gets answered, booked, and confirmed. I've made back the cost ten times over."</p>
+        <div class="testimonial reveal reveal-delay-1">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"I run a one-man plumbing business. Before the AI, I'd lose 2–3 calls a week — that's hundreds in lost revenue. Now every call gets answered, booked, and confirmed. Made back the cost ten times over."</div>
           <div class="testimonial-author">
-            <strong>David Okafor</strong>
-            <span>Owner, Okafor Plumbing Solutions</span>
+            <div class="testimonial-avatar">DO</div>
+            <div>
+              <div class="testimonial-name">David Okafor</div>
+              <div class="testimonial-role">Owner, Okafor Plumbing Solutions</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"I used to miss calls constantly during services. Clients would leave voicemails, I'd call back hours later, and half the time they'd already booked somewhere else. I've grown my client list by 45% and I'm working fewer hours."</p>
+        <div class="testimonial reveal reveal-delay-2">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"I used to miss calls constantly during services. Clients would leave voicemails, I'd call back hours later, and half the time they'd already booked somewhere else. Grown my client list by 45% — working fewer hours."</div>
           <div class="testimonial-author">
-            <strong>Maria Gonzalez</strong>
-            <span>Owner, Bella Vita Hair Studio</span>
+            <div class="testimonial-avatar">MG</div>
+            <div>
+              <div class="testimonial-name">Maria Gonzalez</div>
+              <div class="testimonial-role">Owner, Bella Vita Hair Studio</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"HVAC is seasonal, and when demand spikes, we can't afford to miss a single call. Last winter we lost 40+ emergency calls. Set up the AI, and this winter we captured every single one. Revenue is up 30% year-over-year."</p>
+        <div class="testimonial reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"Last winter we lost 40+ emergency calls. Set up the AI, and this winter we captured every single one. Revenue is up 30% year-over-year. HVAC is seasonal and you just can't afford to miss calls."</div>
           <div class="testimonial-author">
-            <strong>Tom Henderson</strong>
-            <span>Owner, Henderson Heating & Air</span>
+            <div class="testimonial-avatar">TH</div>
+            <div>
+              <div class="testimonial-name">Tom Henderson</div>
+              <div class="testimonial-role">Owner, Henderson Heating & Air</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Our spa offers massage, facials, body treatments — each with different durations and pricing. Booking was a nightmare. The AI handles it all. Our booking accuracy is perfect, and we've reduced admin time by 70%."</p>
+        <div class="testimonial reveal reveal-delay-1">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"Our spa offers massage, facials, body treatments — all different durations and pricing. Booking was a nightmare. The AI handles it all. Booking accuracy is perfect, and admin time is down 70%."</div>
           <div class="testimonial-author">
-            <strong>Aisha Patel</strong>
-            <span>Owner, Serenity Spa & Wellness</span>
+            <div class="testimonial-avatar">AP</div>
+            <div>
+              <div class="testimonial-name">Aisha Patel</div>
+              <div class="testimonial-role">Owner, Serenity Spa & Wellness</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Landscaping quotes are complicated. I'd spend hours on the phone. The AI takes initial calls, gathers details, and books estimates. I show up to the job already knowing what they want. Efficiency has skyrocketed."</p>
+        <div class="testimonial reveal reveal-delay-2">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"Landscaping quotes are complicated. I'd spend hours on the phone. The AI takes calls, gathers details, and books estimates. I show up already knowing what they want. Efficiency has skyrocketed."</div>
           <div class="testimonial-author">
-            <strong>Michael Brennan</strong>
-            <span>Owner, Brennan Landscaping</span>
+            <div class="testimonial-avatar">MB</div>
+            <div>
+              <div class="testimonial-name">Michael Brennan</div>
+              <div class="testimonial-role">Owner, Brennan Landscaping</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Auto repair customers call with all sorts of questions. My mechanics can't answer phones while working. The AI schedules appointments, explains pricing, and arranges loaner vehicles. We're booking 50% more appointments per week."</p>
+        <div class="testimonial reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"My mechanics can't answer phones while working. The AI schedules appointments, explains pricing, and arranges loaner vehicles. We're booking 50% more appointments per week. Absolutely worth it."</div>
           <div class="testimonial-author">
-            <strong>Keiko Tanaka</strong>
-            <span>Owner, Tanaka Auto Repair</span>
+            <div class="testimonial-avatar">KT</div>
+            <div>
+              <div class="testimonial-name">Keiko Tanaka</div>
+              <div class="testimonial-role">Owner, Tanaka Auto Repair</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"I've been in the trade for 25 years, and I was old-school. Set up the AI reluctantly, and within a month I was calling my nephew to say 'you were right.' I've added 12% more jobs per month, and my wife says I'm less stressed."</p>
+        <div class="testimonial reveal reveal-delay-1">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"I've been in the trade for 25 years and I was old-school. Set up the AI reluctantly, and within a month I was calling my nephew to say 'you were right.' 12% more jobs per month, and my wife says I'm less stressed."</div>
           <div class="testimonial-author">
-            <strong>Chris Andersen</strong>
-            <span>Owner, Andersen Electric</span>
+            <div class="testimonial-avatar">CA</div>
+            <div>
+              <div class="testimonial-name">Chris Andersen</div>
+              <div class="testimonial-role">Owner, Andersen Electric</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"We have 600+ members and 30+ classes a week. Managing bookings was drowning my front desk. The AI handles routine questions and follows up with cancellations. Retention went from 68% to 82%, and we've added 200+ members."</p>
+        <div class="testimonial reveal reveal-delay-2">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"We have 600+ members and 30+ classes a week. The AI handles routine questions and follows up with cancellations. Member retention went from 68% to 82%, and we've added 200+ members."</div>
           <div class="testimonial-author">
-            <strong>Fatima Al-Hassan</strong>
-            <span>Owner, Atlas Fitness</span>
+            <div class="testimonial-avatar">FA</div>
+            <div>
+              <div class="testimonial-name">Fatima Al-Hassan</div>
+              <div class="testimonial-role">Owner, Atlas Fitness</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Pest control is urgent. When someone has a wasp nest, they call three companies and go with whoever picks up first. Before the AI, I picked up maybe 60% of calls. Now it's 100%. Revenue is up 40%."</p>
+        <div class="testimonial reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"Pest control is urgent. When someone has a wasp nest, they call three companies and go with whoever picks up first. Before the AI, I picked up maybe 60% of calls. Now it's 100%. Revenue up 40%."</div>
           <div class="testimonial-author">
-            <strong>Steve Morrison</strong>
-            <span>Owner, Morrison Pest Control</span>
+            <div class="testimonial-avatar">SM</div>
+            <div>
+              <div class="testimonial-name">Steve Morrison</div>
+              <div class="testimonial-role">Owner, Morrison Pest Control</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"I run a small salon with three technicians. The phone rang all day. I'd answer, interrupt a client, mess up someone's nails, then apologize. The AI took all of that off my plate. I've added 40 regular clients in two months."</p>
+        <div class="testimonial reveal reveal-delay-1">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"I'd answer the phone, interrupt a client, mess up someone's nails, then apologize. The AI took all of that off my plate. Added 40 regular clients in two months. Absolute game changer."</div>
           <div class="testimonial-author">
-            <strong>Rachel Kim</strong>
-            <span>Owner, Kim's Nail Salon</span>
+            <div class="testimonial-avatar">RK</div>
+            <div>
+              <div class="testimonial-name">Rachel Kim</div>
+              <div class="testimonial-role">Owner, Kim's Nail Salon</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Car valeting is all about convenience. Customers want to book evenings, weekends. Before the AI, I was playing phone tag constantly. My weekends went from 80% booked to full, and I'm getting positive reviews about how easy it is."</p>
+        <div class="testimonial reveal reveal-delay-2">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"Car valeting is all about convenience. Customers want evenings and weekends. Before the AI, I was playing phone tag constantly. Weekends went from 80% booked to completely full."</div>
           <div class="testimonial-author">
-            <strong>Daniel Moyo</strong>
-            <span>Owner, Moyo's Car Valet</span>
+            <div class="testimonial-avatar">DM</div>
+            <div>
+              <div class="testimonial-name">Daniel Moyo</div>
+              <div class="testimonial-role">Owner, Moyo's Car Valet</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Patients call with back pain, neck pain, migraines — each needs different appointment lengths. The AI asks the right questions, books the appropriate slot, and sends intake forms. No-shows have nearly disappeared."</p>
+        <div class="testimonial reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"Patients call with back pain, neck pain, migraines — each needs different appointment lengths. The AI asks the right questions, books the appropriate slot, and sends intake forms. No-shows have nearly disappeared."</div>
           <div class="testimonial-author">
-            <strong>Hannah Bergström</strong>
-            <span>Owner, Bergström Chiropractic</span>
+            <div class="testimonial-avatar">HB</div>
+            <div>
+              <div class="testimonial-name">Hannah Bergström</div>
+              <div class="testimonial-role">Owner, Bergström Chiropractic</div>
+            </div>
           </div>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-text">"Construction leads come in hot. If you don't answer quickly, they move on. I'm on site, phone on silent. Now the AI answers every call, qualifies the lead, and books estimates. I've tripled my pipeline in two months."</p>
+        <div class="testimonial reveal reveal-delay-1">
+          <div class="testimonial-stars">★★★★★</div>
+          <div class="testimonial-text">"Construction leads come in hot. If you don't answer quickly, they move on. I'm on site, phone on silent. The AI answers every call, qualifies the lead, and books estimates. Tripled my pipeline in two months."</div>
           <div class="testimonial-author">
-            <strong>Patrick Ndlovu</strong>
-            <span>Owner, Ndlovu Construction</span>
+            <div class="testimonial-avatar">PN</div>
+            <div>
+              <div class="testimonial-name">Patrick Ndlovu</div>
+              <div class="testimonial-role">Owner, Ndlovu Construction</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Contact / Final CTA -->
-  <section class="final-cta" id="contact">
-    <div class="container">
-      <h2 class="section-title">Ready to Never Miss Another Call?</h2>
-      <p class="final-cta-text">Book a free demo and see how the AI Receptionist works for your business. No commitment, no credit card required.</p>
-      <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary btn-large">Book Your Free Demo Now</a>
-      <div class="contact-info">
-        <p>Or contact us directly:</p>
-        <p>📱 WhatsApp: <a href="https://wa.me/27718804995">+27 71 880 4995</a></p>
-        <p>📧 Email: <a href="mailto:branleyf@gmail.com">branleyf@gmail.com</a></p>
+  <!-- Final CTA -->
+  <section class="section cta-section">
+    <div class="cta-glow"></div>
+    <div class="section-container cta-content">
+      <div class="reveal text-center">
+        <div class="section-label" style="justify-content:center;">Get Started</div>
+        <h2 class="section-title">Ready to never miss<br>another <span class="gradient-text">customer call</span>?</h2>
+        <p class="section-subtitle mx-auto" style="margin-bottom:2.5rem;">Book a free demo and see the AI Receptionist work in real time. No commitment, no credit card, no pressure — just results.</p>
+        <div class="hero-buttons" style="margin-bottom:2rem;">
+          <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="btn btn-primary btn-large">📞 Book Your Free Demo Now</a>
+        </div>
+        <p style="color:var(--text-muted);font-size:0.9rem;">
+          ✉️ <a href="mailto:branleyf@gmail.com" style="color:var(--text-secondary);text-decoration:none;">branleyf@gmail.com</a> &nbsp;·&nbsp; 📱 <a href="tel:+27718804995" style="color:var(--text-secondary);text-decoration:none;">+27 71 880 4995</a>
+        </p>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p>&copy; 2026 Viral AI Vault. AI Receptionist for Small Businesses.</p>
-      <p>All rights reserved.</p>
-    </div>
+  <footer>
+    <p>&copy; <span id="year"></span> AI Receptionist · <a href="mailto:branleyf@gmail.com">branleyf@gmail.com</a> · Built with AI by Viral AI Vault</p>
   </footer>
 
-  <!-- Floating WhatsApp Button -->
-  <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20learn%20more%20about%20the%20AI%20Receptionist" class="whatsapp-float" aria-label="Chat on WhatsApp">
-    <svg viewBox="0 0 32 32" width="32" height="32">
-      <path fill="currentColor" d="M16 0c-8.837 0-16 7.163-16 16 0 2.825 0.737 5.607 2.137 8.048l-2.137 7.952 7.933-2.127c2.42 1.37 5.173 2.127 8.067 2.127 8.837 0 16-7.163 16-16s-7.163-16-16-16zM16 29.467c-2.482 0-4.908-0.646-7.07-1.872l-0.507-0.292-4.713 1.262 1.262-4.669-0.321-0.509c-1.331-2.197-2.038-4.701-2.038-7.253 0-7.435 6.065-13.5 13.5-13.5s13.5 6.065 13.5 13.5-6.065 13.364-13.613 13.364zM21.5 18.5c-0.276-0.138-1.5-0.741-1.724-0.818s-0.393-0.121-0.559 0.121c-0.166 0.242-0.637 0.818-0.778 0.987s-0.281 0.208-0.517 0.093c-0.652-0.326-1.083-0.581-1.518-1.325-0.112-0.192 0.112-0.211 0.322-0.625 0.065-0.141 0.032-0.264-0.017-0.364s-0.559-1.349-0.766-1.845c-0.202-0.484-0.408-0.417-0.559-0.425-0.145-0.007-0.31-0.015-0.475-0.015s-0.435 0.061-0.663 0.31c-0.228 0.25-0.871 0.852-0.871 2.074s0.894 2.407 1.018 2.573c0.124 0.166 1.758 2.684 4.261 3.765 1.592 0.688 2.106 0.743 2.853 0.632 0.459-0.068 1.5-0.612 1.718-1.204s0.219-1.101 0.153-1.204c-0.066-0.103-0.242-0.166-0.508-0.294z"/>
-    </svg>
-  </a>
+  <!-- WhatsApp Float -->
+  <a href="https://wa.me/27718804995?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%20demo%20of%20the%20AI%20Receptionist" class="whatsapp-float" target="_blank" aria-label="WhatsApp">💬</a>
 
-  <script src="script.js"></script>
+  <script>
+    // ===== PARTICLE NETWORK CANVAS =====
+    (function() {
+      const canvas = document.getElementById('hero-canvas');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      let mouse = { x: null, y: null };
+      let w, h;
+
+      function resize() {
+        w = canvas.width = canvas.parentElement.offsetWidth;
+        h = canvas.height = canvas.parentElement.offsetHeight;
+      }
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * w;
+          this.y = Math.random() * h;
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = (Math.random() - 0.5) * 0.5;
+          this.radius = Math.random() * 1.5 + 0.5;
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          if (this.x < 0 || this.x > w) this.vx *= -1;
+          if (this.y < 0 || this.y > h) this.vy *= -1;
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(139, 92, 246, 0.5)';
+          ctx.fill();
+        }
+      }
+
+      function init() {
+        particles = [];
+        const count = Math.min(Math.floor((w * h) / 12000), 120);
+        for (let i = 0; i < count; i++) particles.push(new Particle());
+      }
+
+      function drawLines() {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 120) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(99, 102, 241, ${0.15 * (1 - dist / 120)})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+          // Mouse connection
+          if (mouse.x !== null) {
+            const dx = particles[i].x - mouse.x;
+            const dy = particles[i].y - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(mouse.x, mouse.y);
+              ctx.strokeStyle = `rgba(6, 182, 212, ${0.3 * (1 - dist / 150)})`;
+              ctx.lineWidth = 0.6;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => { p.update(); p.draw(); });
+        drawLines();
+        requestAnimationFrame(animate);
+      }
+
+      canvas.addEventListener('mousemove', e => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+      });
+
+      canvas.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
+
+      window.addEventListener('resize', () => { resize(); init(); });
+      resize();
+      init();
+      animate();
+    })();
+
+    // ===== SCROLL REVEAL =====
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // ===== NAVBAR SCROLL =====
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ===== MOBILE MENU =====
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const navLinks = document.getElementById('nav-links');
+
+    mobileToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+
+    // ===== ANIMATED COUNTERS =====
+    function animateCounters() {
+      const counters = document.querySelectorAll('.stat-number[data-target]');
+      counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const start = 0;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.floor(start + (target - start) * eased);
+          counter.textContent = current + '%';
+          if (progress < 1) requestAnimationFrame(update);
+        }
+
+        requestAnimationFrame(update);
+      });
+    }
+
+    const statsSection = document.querySelector('.stats-section');
+    const statsObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        animateCounters();
+        statsObserver.disconnect();
+      }
+    }, { threshold: 0.3 });
+
+    if (statsSection) statsObserver.observe(statsSection);
+
+    // ===== YEAR =====
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
