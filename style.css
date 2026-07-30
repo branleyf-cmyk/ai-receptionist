@@ -1232,14 +1232,14 @@
 }
 
 .roi-features li::before {
-  content: "âœ“";
+  content: "\2713";
   color: var(--accent-primary);
   font-weight: bold;
   margin-right: 0.75rem;
 }
 
 .roi-features li.weak::before {
-  content: "âœ—";
+  content: "\2717";
   color: #ef4444;
 }
 
