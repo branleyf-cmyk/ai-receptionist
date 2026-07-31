@@ -1,4 +1,4 @@
-﻿// =========================================================
+// =========================================================
 // WhatsApp AI Sales Assistant — Main JS
 // Integrates Google Gemini AI (optional) + template fallback
 // =========================================================
@@ -497,8 +497,8 @@ function showTool() {
 
 function renderCRM() {
   const contacts = getContacts();
-  const term = ($('crm-search')?.value || '').toLowerCase();
-  const filter = $('crm-filter')?.value || 'all';
+  const term = ($('searchInput')?.value || '').toLowerCase();
+  const filter = $('filterSelect')?.value || 'all';
 
   $('stat-total').textContent = contacts.length;
   $('stat-interested').textContent = contacts.filter(c => c.status === 'interested').length;
@@ -510,7 +510,7 @@ function renderCRM() {
     return match && status;
   });
 
-  const list = $('contacts-list');
+  const list = $('contactsList');
   if (contacts.length === 0) {
     list.innerHTML = `<div style="text-align:center;padding:3rem 1rem;opacity:0.6"><p style="font-size:1.1rem;margin-bottom:0.5rem"> No contacts yet</p><p style="font-size:0.88rem">Save your first business contact after analysing.</p></div>`;
     return;
@@ -644,7 +644,7 @@ function updateApiKeyUI() {
   }
 }
 
-function resetFilter() { $('crm-search').value = ''; $('crm-filter').value = 'all'; renderCRM(); }
+function resetFilter() { $('searchInput').value = ''; $('filterSelect').value = 'all'; renderCRM(); }
 function filterContacts() { renderCRM(); }
 
 // ===== NAV TOGGLE (MOBILE) =====
@@ -660,8 +660,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) form.addEventListener('submit', handleFormSubmit);
 
   // CRM search/filter events
-  const searchInput = $('crm-search');
-  const filterSelect = $('crm-filter');
+  const searchInput = $('searchInput');
+  const filterSelect = $('filterSelect');
   if (searchInput) searchInput.addEventListener('input', filterContacts);
   if (filterSelect) filterSelect.addEventListener('change', filterContacts);
 
