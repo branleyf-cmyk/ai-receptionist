@@ -113,6 +113,11 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* CRM View Toggle */
+    #crm-view {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -129,6 +134,7 @@
         <li><a href="index.html#features">Features</a></li>
         <li><a href="index.html#industries">Industries</a></li>
         <li><a href="sales.html" class="active">AI Sales Assistant</a></li>
+        <li><a href="#" onclick="showCRM(); return false;">📊 Sales Pipeline</a></li>
       </ul>
       <button class="nav-toggle" id="navToggle" onclick="toggleNav()">☰</button>
     </div>
@@ -251,7 +257,7 @@
             <div id="analysisContent"></div>
           </div>
 
-          <!-- RIGHT: Message + Strategy -->
+          <!-- RIGHT: Strategy + Follow-ups -->
           <div>
             <!-- Strategy -->
             <div class="result-card" style="margin-bottom:1.5rem">
@@ -299,9 +305,10 @@
     </div>
   </section>
 
-  <!-- CRM SECTION -->
-  <section class="crm-section" id="crmSection" style="padding:4rem 1.5rem;max-width:1200px;margin:0 auto">
-    <div class="crm-header" style="text-align:center;margin-bottom:2.5rem">
+  <!-- CRM VIEW -->
+  <section class="crm-section" id="crm-view" style="padding:4rem 1.5rem;max-width:1200px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:2.5rem">
+      <button type="button" class="btn-gradient" onclick="showTool()" style="padding:0.75rem 1.5rem;margin-bottom:1rem;background:linear-gradient(135deg,#6366f1,#8b5cf6)">← Back to Tool</button>
       <h2 style="font-size:2rem;margin-bottom:0.5rem">📊 Sales Pipeline</h2>
       <p style="opacity:0.7;max-width:500px;margin:0 auto">Track your outreach, follow-ups, and conversions in real time</p>
     </div>
@@ -345,95 +352,6 @@
   <div id="contactModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;backdrop-filter:blur(8px);align-items:center;justify-content:center"></div>
 
   <script src="sales.js"></script>
-  <script>
-    // ===== API KEY MANAGEMENT =====
-    function saveApiKeyFromUI() {
-      const input = document.getElementById('apiKeyInput');
-      const key = input.value.trim();
-      setApiKey(key);
-      updateApiStatus();
-      if (key) {
-        showToast('🧠 Gemini AI connected! Your messages will be AI-enhanced.');
-      } else {
-        showToast('📝 API key cleared. Using built-in templates.');
-      }
-    }
-
-    function updateApiStatus() {
-      const key = getApiKey();
-      const status = document.getElementById('apiStatus');
-      const text = document.getElementById('apiStatusText');
-      const input = document.getElementById('apiKeyInput');
-
-      if (key) {
-        status.className = 'api-status active';
-        text.textContent = 'Connected';
-        input.value = ''; // Don't show the key
-        input.placeholder = 'API key saved ✓ (paste new key to change)';
-      } else {
-        status.className = 'api-status inactive';
-        text.textContent = 'Not connected';
-        input.placeholder = 'Paste your Gemini API key (optional)';
-      }
-    }
-
-    // Simple toast
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.style.cssText = 'position:fixed;bottom:2rem;right:2rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;padding:1rem 1.5rem;border-radius:12px;font-size:0.9rem;font-weight:600;z-index:10000;box-shadow:0 8px 32px rgba(99,102,241,0.4);animation:slideUp 0.3s ease';
-      toast.textContent = message;
-      document.body.appendChild(toast);
-      setTimeout(() => {
-        toast.style.animation = 'slideUp 0.3s ease reverse';
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
-    }
-
-    // WhatsApp send
-    function sendViaWhatsApp() {
-      const message = document.getElementById('messageTextarea').value.trim();
-      if (!message) {
-        showToast('⚠️ No message to send');
-        return;
-      }
-      const phone = document.getElementById('phoneNumber').value.trim().replace(/[\s\-()]/g, '');
-      const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank');
-    }
-
-    // Copy message
-    function copyMessage() {
-      const message = document.getElementById('messageTextarea').value.trim();
-      if (!message) {
-        showToast('⚠️ No message to copy');
-        return;
-      }
-      navigator.clipboard.writeText(message).then(() => {
-        showToast('✅ Message copied to clipboard!');
-      }).catch(() => {
-        // Fallback
-        const ta = document.getElementById('messageTextarea');
-        ta.select();
-        document.execCommand('copy');
-        showToast('✅ Message copied!');
-      });
-    }
-
-    // Override the generateWhatsAppMessage call to show loading
-    const originalHandleSubmit = handleFormSubmit;
-
-    // Show results section when analysis is done
-    const origRenderAnalysis = renderAnalysis;
-    renderAnalysis = function(data, analysis) {
-      document.getElementById('resultsSection').style.display = 'block';
-      origRenderAnalysis(data, analysis);
-    };
-
-    // Initialize API status on load
-    document.addEventListener('DOMContentLoaded', () => {
-      updateApiStatus();
-    });
-  </script>
 
   <style>
     @keyframes slideUp {

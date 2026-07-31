@@ -7,6 +7,7 @@
 const STORAGE_KEY = 'wa_sales_contacts';
 const API_KEY_STORAGE = 'gemini_api_key';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const DEFAULT_GEMINI_KEY = 'AIzaSyB7JdVh8bJv5fGpZ9vZ2qX3rW6cE7tY1uM';
 
 // ===== DATA LAYER =====
 function getContacts() {
@@ -14,7 +15,6 @@ function getContacts() {
   catch { return []; }
 }
 function saveContacts(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-const DEFAULT_GEMINI_KEY = 'AIzaSyB7JdVh8bJv5fGpZ9vZ2qX3rW6cE7tY1uM';
 function getApiKey() { return localStorage.getItem(API_KEY_STORAGE) || DEFAULT_GEMINI_KEY; }
 function setApiKey(key) { localStorage.setItem(API_KEY_STORAGE, key.trim()); }
 
@@ -77,7 +77,7 @@ const INDUSTRIES = {
     benefits: 'An AI receptionist takes every reservation call, handles catering enquiries instantly, and captures orders even during the busiest service.'
   },
   fitness: {
-    name: 'Fitness / Gym', emoji: '️',
+    name: 'Fitness / Gym', emoji: '🏋️',
     whatTheyDo: 'Provide fitness services including gym access, personal training, group classes, and wellness programmes.',
     services: ['Gym memberships', 'Personal training', 'Group fitness classes', 'Nutrition coaching', 'Corporate wellness'],
     challenges: ['Prospects enquiring about memberships need instant answers or they walk away', 'High staff turnover means inconsistent phone handling', 'Trial sign-ups need prompt follow-up to convert', 'Evening peak hours make phones ring off the hook'],
@@ -91,7 +91,7 @@ const INDUSTRIES = {
     benefits: 'Your AI receptionist captures every emergency call, books assessments instantly, and follows up on quote requests — even while you are on the job.'
   },
   'real-estate': {
-    name: 'Real Estate', emoji: '',
+    name: 'Real Estate', emoji: '🏠',
     whatTheyDo: 'Handle property sales, rentals, and management services for landlords and tenants.',
     services: ['Property sales', 'Rental management', 'Tenant screening', 'Property valuations', 'Lease renewals'],
     challenges: ['Property enquiries come in 24/7 especially after work hours', 'Missing a serious buyer call can mean losing a big sale', 'Agents are in showings and cannot be on the phone', 'Rental applications need fast processing'],
@@ -173,12 +173,9 @@ async function callGemini(prompt, maxTokens = 1024) {
   }
 }
 
-// Extract JSON from Gemini's response (handles markdown code blocks)
 function extractJSON(raw) {
   if (!raw) return null;
-  // Strip markdown code fences
   const stripped = raw.replace(/```(?:json)?/g, '').replace(/```/g, '').trim();
-  // Find first { or [ and last } or ]
   const startBracket = stripped.indexOf('{');
   const startArray = stripped.indexOf('[');
   let startIndex = -1, endIndex = -1;
@@ -241,7 +238,7 @@ Focus on practical, specific insights relevant to ${industry.name}.`;
   const response = await callGemini(prompt, 400);
   const parsed = extractJSON(response);
   if (parsed && parsed.whatTheyDo) return parsed;
-  return template; // fallback on parse/Gemini failure
+  return template;
 }
 
 // ===== STRATEGY =====
@@ -342,7 +339,7 @@ Each: 20-35 words, friendly, offer new value (case study, free audit, demo, etc.
 // ===== DISPLAY FUNCTIONS =====
 function renderAnalysis(data, analysis) {
   const industry = getIndustry(data.businessType);
-  let html = `<strong style="font-size:1.05rem"> ${escapeHtml(data.businessName)}</strong>`;
+  let html = `<strong style="font-size:1.05rem">${escapeHtml(data.businessName)}</strong>`;
   if (data.contactPerson) html += `<div style="opacity:0.7;font-size:0.88rem;margin-top:0.3rem">Contact: ${escapeHtml(data.contactPerson)}</div>`;
   html += `<div style="opacity:0.7;font-size:0.88rem">🏷️ <strong>Industry:</strong> ${industry.name}</div>`;
 
@@ -355,7 +352,7 @@ function renderAnalysis(data, analysis) {
   }
 
   if (analysis.challenges && analysis.challenges.length) {
-    html += `<div style="margin:1.25rem 0"><h4 style="margin:0 0 0.6rem 0;font-size:0.95rem">️ Likely Challenges</h4><ul style="margin:0;padding-left:1.25rem">`;
+    html += `<div style="margin:1.25rem 0"><h4 style="margin:0 0 0.6rem 0;font-size:0.95rem">⚠️ Likely Challenges</h4><ul style="margin:0;padding-left:1.25rem">`;
     analysis.challenges.forEach(c => html += `<li style="margin-bottom:0.3rem;font-size:0.92rem">${escapeHtml(c)}</li>`);
     html += `</ul></div>`;
   }
@@ -400,26 +397,21 @@ async function handleFormSubmit(event) {
   $('resultsSection').style.display = 'none';
 
   try {
-    // Step 1: Analyse business
     const analysis = await analyzeBusiness(data);
     renderAnalysis(data, analysis);
 
-    // Step 2: Generate strategy
     const strategy = await generateStrategy(data, analysis);
     renderStrategy(strategy);
 
-    // Step 3: Generate WhatsApp message
     const message = await generateWhatsAppMessage(data, analysis, strategy);
     $('messageTextarea').value = message;
     window.currentAnalysis = analysis;
     window.currentStrategy = strategy;
     window.currentMessage = message;
 
-    // Step 4: Generate follow-ups
     const followUps = await generateFollowUps(data, analysis);
     renderFollowUps(followUps);
 
-    // Show results
     $('resultsSection').style.display = 'block';
     $('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
     showToast(hasGemini ? '✅ AI analysis complete!' : '✅ Strategy ready! Connect Gemini to personalise further.');
@@ -435,7 +427,7 @@ async function handleFormSubmit(event) {
 // ===== MESSAGE ACTIONS =====
 function copyMessage() {
   const msg = $('messageTextarea').value;
-  if (!msg) return showToast('️ Nothing to copy');
+  if (!msg) return showToast('⚠️ Nothing to copy');
   navigator.clipboard.writeText(msg).then(() => showToast('✅ Message copied!')).catch(() => showToast('❌ Copy failed'));
 }
 
@@ -443,7 +435,7 @@ function sendViaWhatsApp() {
   const msg = $('messageTextarea').value;
   const phone = getFormData().phoneNumber.replace(/\s|-/g, '');
   if (!msg) return showToast('⚠️ Generate a message first');
-  if (!phone) return showToast('️ Add a phone number first');
+  if (!phone) return showToast('⚠️ Add a phone number first');
   window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(msg), '_blank');
 }
 
@@ -451,7 +443,7 @@ function sendViaWhatsApp() {
 function saveContact() {
   const data = getFormData();
   const msg = $('messageTextarea').value;
-  if (!data.businessName) return showToast('️ Fill in a business name first');
+  if (!data.businessName) return showToast('⚠️ Fill in a business name first');
 
   const contacts = getContacts();
   const existing = contacts.findIndex(c => c.phoneNumber === data.phoneNumber && c.businessName === data.businessName);
@@ -512,7 +504,7 @@ function renderCRM() {
 
   const list = $('contactsList');
   if (contacts.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:3rem 1rem;opacity:0.6"><p style="font-size:1.1rem;margin-bottom:0.5rem"> No contacts yet</p><p style="font-size:0.88rem">Save your first business contact after analysing.</p></div>`;
+    list.innerHTML = `<div style="text-align:center;padding:3rem 1rem;opacity:0.6"><p style="font-size:1.1rem;margin-bottom:0.5rem">📭 No contacts yet</p><p style="font-size:0.88rem">Save your first business contact after analysing.</p></div>`;
     return;
   }
   if (filtered.length === 0) {
@@ -552,29 +544,59 @@ function openContactModal(id) {
   const c = contacts.find(x => x.id === id);
   if (!c) return;
 
-  $('modal-business').textContent = c.businessName;
-  $('modal-contact').textContent = c.contactPerson ? `Attn: ${c.contactPerson}` : c.phoneNumber;
-  $('modal-phone').textContent = c.phoneNumber;
-  $('modal-website').textContent = c.website || '—';
-  $('modal-type').textContent = c.industryLabel || c.businessType;
-  $('modal-summary').textContent = c.messageSummary || 'No message saved yet.';
-  $('modal-objections').textContent = c.objections || 'None raised';
-  $('modal-interest').textContent = c.interestLevel;
-  $('modal-followup').textContent = c.followUpDate ? formatDate(c.followUpDate) : 'Not scheduled';
+  const modal = $('contactModal');
+  modal.innerHTML = `
+    <div style="background:rgba(20,20,40,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem;max-width:600px;width:90%;max-height:90vh;overflow-y:auto;position:relative">
+      <button onclick="closeModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;opacity:0.6">✕</button>
+      <h2 style="margin:0 0 0.5rem 0;font-size:1.5rem">${escapeHtml(c.businessName)}</h2>
+      <div style="opacity:0.7;font-size:0.9rem;margin-bottom:1.5rem">${escapeHtml(c.contactPerson || c.phoneNumber)}</div>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+        <div><div style="font-size:0.8rem;opacity:0.6;margin-bottom:0.2rem">Phone</div><div style="font-size:0.95rem">${escapeHtml(c.phoneNumber)}</div></div>
+        <div><div style="font-size:0.8rem;opacity:0.6;margin-bottom:0.2rem">Website</div><div style="font-size:0.95rem">${escapeHtml(c.website || '—')}</div></div>
+        <div><div style="font-size:0.8rem;opacity:0.6;margin-bottom:0.2rem">Industry</div><div style="font-size:0.95rem">${escapeHtml(c.industryLabel || c.businessType)}</div></div>
+        <div><div style="font-size:0.8rem;opacity:0.6;margin-bottom:0.2rem">Interest Level</div><div style="font-size:0.95rem">${escapeHtml(c.interestLevel)}</div></div>
+      </div>
+
+      <div style="margin-bottom:1.5rem">
+        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">📝 WhatsApp Summary</div>
+        <div style="font-size:0.9rem;line-height:1.6;opacity:0.9;padding:0.75rem;background:rgba(255,255,255,0.04);border-radius:8px">${escapeHtml(c.messageSummary || 'No message saved yet.')}</div>
+      </div>
+
+      <div style="margin-bottom:1.5rem">
+        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">🚧 Objections / Notes</div>
+        <div style="font-size:0.9rem;line-height:1.6;opacity:0.9;padding:0.75rem;background:rgba(255,255,255,0.04);border-radius:8px">${escapeHtml(c.objections || 'None raised')}</div>
+      </div>
+
+      <div style="margin-bottom:1.5rem">
+        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">📅 Follow-up Date</div>
+        <div style="font-size:0.9rem;opacity:0.9">${c.followUpDate ? formatDate(c.followUpDate) : 'Not scheduled'}</div>
+      </div>
+
+      <div style="margin-bottom:1.5rem">
+        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.75rem">Status</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap" id="modalStatusButtons"></div>
+      </div>
+
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+        <button type="button" class="btn-gradient" onclick="editContact('${c.id}')" style="flex:1;padding:0.75rem">✏️ Edit Notes</button>
+        <button type="button" class="btn-gradient" onclick="scheduleFollowUp('${c.id}')" style="flex:1;padding:0.75rem">📅 Schedule Follow-up</button>
+        <button type="button" class="btn-gradient" onclick="deleteContact('${c.id}')" style="flex:1;padding:0.75rem;background:linear-gradient(135deg,#ef4444,#dc2626)">🗑️ Delete</button>
+      </div>
+    </div>
+  `;
+  modal.style.display = 'flex';
 
   const statuses = ['new', 'contacted', 'interested', 'not-interested', 'converted'];
   const statusLabels = { 'new': 'New', 'contacted': 'Contacted', 'interested': 'Interested', 'not-interested': 'Not Interested', 'converted': 'Converted' };
-  $('modal-status').innerHTML = statuses.map(s =>
-    `<button type="button" class="btn btn-sm ${c.status === s ? 'btn-wa' : 'btn-outline'}" style="margin:0.15rem;flex:1" onclick="updateContactStatus('${c.id}','${s}')">${statusLabels[s]}</button>`
+  $('modalStatusButtons').innerHTML = statuses.map(s =>
+    `<button type="button" class="btn ${c.status === s ? 'btn-wa' : 'btn-outline'}" style="padding:0.5rem 1rem;font-size:0.85rem" onclick="updateContactStatus('${c.id}','${s}')">${statusLabels[s]}</button>`
   ).join('');
-
-  $('modal-edit-btn').onclick = () => editContact(c.id);
-  $('modal-followup-btn').onclick = () => scheduleFollowUp(c.id);
-  $('modal-close-btn').onclick = closeModal;
-  $('contact-modal').classList.add('active');
 }
 
-function closeModal() { $('contact-modal').classList.remove('active'); }
+function closeModal() {
+  $('contactModal').style.display = 'none';
+}
 
 function updateContactStatus(id, status) {
   const contacts = getContacts();
@@ -623,10 +645,42 @@ function scheduleFollowUp(id) {
 function deleteContact(id) {
   if (!confirm('Delete this contact?')) return;
   saveContacts(getContacts().filter(c => c.id !== id));
+  closeModal();
   renderCRM();
   showToast('🗑️ Contact deleted');
 }
 
+function exportContacts() {
+  const contacts = getContacts();
+  if (contacts.length === 0) return showToast('⚠️ No contacts to export');
+
+  const headers = ['Business Name', 'Contact Person', 'Phone', 'Website', 'Industry', 'Status', 'Interest Level', 'Follow-up Date', 'Message Summary', 'Objections', 'Created'];
+  const rows = contacts.map(c => [
+    c.businessName,
+    c.contactPerson || '',
+    c.phoneNumber,
+    c.website || '',
+    c.industryLabel || c.businessType,
+    c.status,
+    c.interestLevel,
+    c.followUpDate || '',
+    c.messageSummary || '',
+    c.objections || '',
+    formatDate(c.createdAt)
+  ]);
+
+  const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `contacts-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 Contacts exported!');
+}
+
+// ===== API KEY UI =====
 function updateApiKeyUI() {
   const key = getApiKey();
   const status = $('apiStatus');
@@ -644,10 +698,29 @@ function updateApiKeyUI() {
   }
 }
 
-function resetFilter() { $('searchInput').value = ''; $('filterSelect').value = 'all'; renderCRM(); }
-function filterContacts() { renderCRM(); }
+function saveApiKeyFromUI() {
+  const input = $('apiKeyInput');
+  const key = input.value.trim();
+  if (key) {
+    setApiKey(key);
+    showToast('🧠 Gemini AI connected!');
+  } else {
+    localStorage.removeItem(API_KEY_STORAGE);
+    showToast('📝 API key cleared');
+  }
+  updateApiKeyUI();
+}
 
-// ===== NAV TOGGLE (MOBILE) =====
+function resetFilter() {
+  $('searchInput').value = '';
+  $('filterSelect').value = 'all';
+  renderCRM();
+}
+
+function filterContacts() {
+  renderCRM();
+}
+
 function toggleNav() {
   const links = $('navLinks');
   links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
@@ -655,20 +728,14 @@ function toggleNav() {
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
-  // Form submit handler
   const form = $('salesForm');
   if (form) form.addEventListener('submit', handleFormSubmit);
 
-  // CRM search/filter events
   const searchInput = $('searchInput');
   const filterSelect = $('filterSelect');
   if (searchInput) searchInput.addEventListener('input', filterContacts);
   if (filterSelect) filterSelect.addEventListener('change', filterContacts);
 
-  // API key UI
   updateApiKeyUI();
-
-  // Initial CRM render
   renderCRM();
 });
-
