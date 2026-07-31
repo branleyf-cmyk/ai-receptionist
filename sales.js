@@ -1,199 +1,183 @@
-// =========================================================
-// WhatsApp AI Sales Assistant — Main JS
-// Integrates Google Gemini AI (optional) + template fallback
-// =========================================================
+// =============================================================
+// WhatsApp AI Sales Assistant — sales.js
+// Matches the current sales.html structure
+// =============================================================
 
 // ===== CONFIG =====
-const STORAGE_KEY = 'wa_sales_contacts';
-const API_KEY_STORAGE = 'gemini_api_key';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const DEFAULT_GEMINI_KEY = 'AIzaSyB7JdVh8bJv5fGpZ9vZ2qX3rW6cE7tY1uM';
-
-// ===== DATA LAYER =====
-function getContacts() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
-}
-function saveContacts(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
-function getApiKey() { return localStorage.getItem(API_KEY_STORAGE) || DEFAULT_GEMINI_KEY; }
-function setApiKey(key) { localStorage.setItem(API_KEY_STORAGE, key.trim()); }
+const STORAGE_KEY = 'ai_receptionist_contacts';
+const GEMINI_API_KEY = 'AIzaSyB7j dVh8bJv5fGpZ9vZ2qX3rW6cE7tY1uM'; // Hardcoded free Gemini key
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + GEMINI_API_KEY;
 
 // ===== HELPERS =====
-const $ = (id) => document.getElementById(id);
-const genId = () => Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+const $ = id => document.getElementById(id);
 
-function showToast(msg) {
-  const existing = document.getElementById('site-toast');
-  if (existing) existing.remove();
-  const t = document.createElement('div');
-  t.id = 'site-toast';
-  t.textContent = msg;
-  t.style.cssText = 'position:fixed;bottom:2rem;right:2rem;padding:1rem 1.5rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border-radius:12px;font-size:0.9rem;font-weight:600;z-index:10000;box-shadow:0 8px 32px rgba(99,102,241,0.4);animation:slideUp .3s ease;max-width:400px';
-  document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
 }
 
 function escapeHtml(str) {
   if (!str) return '';
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function formatDate(ts) {
-  if (!ts) return '—';
+  if (!ts) return '';
   const d = new Date(ts);
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-// ===== INDUSTRY KNOWLEDGE =====
-const INDUSTRIES = {
-  dental: {
-    name: 'Dental Practice', emoji: '🦷',
-    whatTheyDo: 'Provide dental care services including routine check-ups, cleanings, fillings, cosmetic dentistry, and emergency dental work.',
-    services: ['General dentistry & examinations', 'Teeth whitening & cosmetic procedures', 'Root canals & extractions', 'Dental implants & orthodontics', 'Emergency dental care'],
-    challenges: ['Scheduling conflicts and no-shows eat up valuable chair time', 'New patient enquiries often come after hours when desks are closed', 'Competition from other local practices means leads must be captured fast', 'Staff spend more time on phones instead of with patients'],
-    benefits: 'An AI receptionist answers every call instantly, books appointments directly into your system, sends reminders to reduce no-shows, and follows up with patients who missed calls.'
-  },
-  medical: {
-    name: 'Medical Practice', emoji: '🏥',
-    whatTheyDo: 'Deliver healthcare services to patients, managing appointments, follow-ups, and patient enquiries.',
-    services: ['General consultations', 'Specialist referrals', 'Chronic disease management', 'Lab work & diagnostics', 'Patient follow-ups'],
-    challenges: ['High patient volumes mean many calls go unanswered', 'After-hours enquiries pile up overnight', 'Staff are stretched between patient care and admin', 'Missed follow-ups lead to poor patient outcomes'],
-    benefits: 'Your AI receptionist handles every patient call 24/7, books appointments, sends reminders, and ensures no enquiry falls through the cracks.'
-  },
-  beauty: {
-    name: 'Beauty Salon / Spa', emoji: '💅',
-    whatTheyDo: 'Offer beauty and wellness services including hair, nails, skincare, massages, and spa treatments.',
-    services: ['Hair styling & colouring', 'Manicures & pedicures', 'Facials & skincare', 'Massage therapy', 'Bridal & event packages'],
-    challenges: ['Peak booking times overwhelm the front desk', 'Clients calling after hours cannot book appointments', 'Competition is fierce — clients move to the salon that answers first', 'Staff are hands-on with clients and cannot answer phones'],
-    benefits: 'Your AI receptionist books every client instantly, even at midnight, sends appointment reminders to reduce no-shows, and upsells packages.'
-  },
-  restaurant: {
-    name: 'Restaurant', emoji: '🍽️',
-    whatTheyDo: 'Serve food and drinks to diners, handling reservations, takeout orders, and catering enquiries.',
-    services: ['Dine-in service', 'Takeaway & delivery', 'Private event catering', 'Group bookings', 'Special menu requests'],
-    challenges: ['Lunch and dinner rushes make it impossible to answer every call', 'Lost reservation enquiries mean lost revenue', 'Staff cannot juggle the floor, kitchen, and phones', 'Catering enquiries need quick responses to win the booking'],
-    benefits: 'An AI receptionist takes every reservation call, handles catering enquiries instantly, and captures orders even during the busiest service.'
-  },
-  fitness: {
-    name: 'Fitness / Gym', emoji: '🏋️',
-    whatTheyDo: 'Provide fitness services including gym access, personal training, group classes, and wellness programmes.',
-    services: ['Gym memberships', 'Personal training', 'Group fitness classes', 'Nutrition coaching', 'Corporate wellness'],
-    challenges: ['Prospects enquiring about memberships need instant answers or they walk away', 'High staff turnover means inconsistent phone handling', 'Trial sign-ups need prompt follow-up to convert', 'Evening peak hours make phones ring off the hook'],
-    benefits: 'Your AI receptionist answers every membership enquiry, books trial sessions, and follows up with prospects around the clock.'
-  },
-  'home-services': {
-    name: 'Home Services', emoji: '🔧',
-    whatTheyDo: 'Provide home service solutions like plumbing, electrical work, cleaning, and repairs.',
-    services: ['Emergency repairs', 'Routine maintenance', 'Installations & upgrades', 'Inspections & quotes', 'Service contracts'],
-    challenges: ['Emergency calls come in at all hours and missing them means losing to competitors', 'Quotes need fast turnaround or customers hire someone else', 'Owners are often on-site and cannot answer phones', 'Seasonal demand spikes overwhelm small teams'],
-    benefits: 'Your AI receptionist captures every emergency call, books assessments instantly, and follows up on quote requests — even while you are on the job.'
-  },
-  'real-estate': {
-    name: 'Real Estate', emoji: '🏠',
-    whatTheyDo: 'Handle property sales, rentals, and management services for landlords and tenants.',
-    services: ['Property sales', 'Rental management', 'Tenant screening', 'Property valuations', 'Lease renewals'],
-    challenges: ['Property enquiries come in 24/7 especially after work hours', 'Missing a serious buyer call can mean losing a big sale', 'Agents are in showings and cannot be on the phone', 'Rental applications need fast processing'],
-    benefits: 'Your AI receptionist qualifies every lead, books viewings, sends listing alerts, and captures buyer details — so no opportunity slips through.'
-  },
-  legal: {
-    name: 'Law Firm', emoji: '⚖️',
-    whatTheyDo: 'Provide legal services across various practice areas to individuals and businesses.',
-    services: ['Consultations & case reviews', 'Contract drafting', 'Litigation & dispute resolution', 'Conveyancing & property law', 'Estate planning'],
-    challenges: ['Potential clients call multiple firms — the first to respond wins', 'Consultation bookings during business hours are chaotic', 'Billing inquiries eat reception time', 'After-hours calls from distressed clients need acknowledgment'],
-    benefits: 'An AI receptionist captures every potential client instantly, qualifies their matter, and books consultations — so no lead goes to a competitor.'
-  },
-  retail: {
-    name: 'Retail Store', emoji: '🛍️',
-    whatTheyDo: 'Sell products directly to consumers in a physical or online storefront.',
-    services: ['Product sales', 'Special orders', 'Lay-bys & financing', 'Gift registry', 'Loyalty programmes'],
-    challenges: ['Floor staff cannot answer phones during rushes', 'Product availability queries waste time', 'After-hours enquiries disappear if unanswered'],
-    benefits: 'Your AI receptionist answers product queries, checks stock, books consultations, and captures sales 24/7.'
-  },
-  auto: {
-    name: 'Auto Services', emoji: '🔩',
-    whatTheyDo: 'Provide vehicle repairs, servicing, maintenance, and vehicle sales.',
-    services: ['Vehicle servicing & repairs', 'Diagnostics & inspections', 'Tyre replacement', 'Vehicle sales', 'Service plans'],
-    challenges: ['Mechanics are under vehicles and cannot answer phones', 'Customers compare quotes — fastest response wins', 'Emergency breakdown calls come in anytime', 'Booking systems get overwhelmed during peak season'],
-    benefits: 'Your AI receptionist takes every booking call, provides quotes for common services, and follows up with pending enquiries.'
-  },
-  education: {
-    name: 'Education / Tutoring', emoji: '📚',
-    whatTheyDo: 'Provide educational services including tutoring, courses, and skills training.',
-    services: ['One-on-one tutoring', 'Group classes', 'Online courses', 'Exam preparation', 'Skills workshops'],
-    challenges: ['Parents and students enquire outside office hours', 'Trial lessons need prompt booking', 'Class schedules change frequently', 'Instructors are teaching and cannot answer phones'],
-    benefits: 'Your AI receptionist handles every enrolment enquiry, books trial sessions, and sends class reminders automatically.'
-  },
-  tech: {
-    name: 'Tech / IT Services', emoji: '💻',
-    whatTheyDo: 'Provide technology solutions including IT support, software development, and managed services.',
-    services: ['IT support & helpdesk', 'Software development', 'Cloud solutions', 'Cybersecurity services', 'Managed IT services'],
-    challenges: ['Clients need immediate responses for IT emergencies', 'Project scoping calls take senior staff time', 'Prospects expect fast quotes in a competitive market'],
-    benefits: 'Your AI receptionist captures every lead, qualifies technical needs, and books discovery calls — without pulling your team off real work.'
-  },
-  consulting: {
-    name: 'Consulting', emoji: '📊',
-    whatTheyDo: 'Offer professional consulting services across business, financial, or management domains.',
-    services: ['Strategy consulting', 'Financial advisory', 'Business coaching', 'Process optimisation', 'Market research'],
-    challenges: ['High-value prospects evaluate multiple consultants — responsiveness wins', 'Discovery calls are hard to schedule across busy calendars', 'Small teams juggle client delivery and business development'],
-    benefits: 'An AI receptionist captures every enquiry instantly, qualifies the lead, and books discovery calls.'
-  },
-  other: {
-    name: 'Business', emoji: '📦',
-    whatTheyDo: 'A business serving customers and needing to manage enquiries, bookings, and sales.',
-    services: ['Customer service', 'Booking & scheduling', 'Sales & follow-ups', 'Lead capture'],
-    challenges: ['Missed calls mean missed revenue', 'After-hours enquiries are lost', 'Staff cannot balance core work and phones', 'Leads go cold when follow-ups are delayed'],
-    benefits: 'Your AI receptionist answers every call, captures leads, books appointments, and follows up automatically.'
-  }
-};
+function showToast(msg) {
+  const t = $('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-const getIndustry = (type) => INDUSTRIES[type] || INDUSTRIES.other;
+// ===== LOCAL STORAGE =====
+function getContacts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveContacts(list) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
 
 // ===== GEMINI API =====
-async function callGemini(prompt, maxTokens = 1024) {
-  const apiKey = getApiKey();
-  if (!apiKey) return null;
+async function callGemini(prompt, maxTokens) {
   try {
-    const res = await fetch(GEMINI_URL + '?key=' + apiKey, {
+    const res = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: maxTokens }
+        generationConfig: { temperature: 0.8, maxOutputTokens: maxTokens || 800 }
       })
     });
-    if (!res.ok) { console.warn('Gemini error:', res.status); return null; }
     const data = await res.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    return text || null;
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
   } catch (e) {
-    console.warn('Gemini call failed:', e.message);
-    return null;
+    console.warn('Gemini API error:', e);
+    return '';
   }
 }
 
-function extractJSON(raw) {
-  if (!raw) return null;
-  const stripped = raw.replace(/```(?:json)?/g, '').replace(/```/g, '').trim();
-  const startBracket = stripped.indexOf('{');
-  const startArray = stripped.indexOf('[');
-  let startIndex = -1, endIndex = -1;
-  if (startBracket === -1 && startArray === -1) return null;
-  if (startBracket === -1) { startIndex = startArray; endIndex = stripped.lastIndexOf(']'); }
-  else if (startArray === -1) { startIndex = startBracket; endIndex = stripped.lastIndexOf('}'); }
-  else {
-    const first = Math.min(startBracket, startArray);
-    startIndex = first;
-    endIndex = stripped.lastIndexOf(first === startBracket ? '}' : ']');
-  }
-  if (startIndex === -1 || endIndex === -1 || endIndex <= startIndex) return null;
-  const jsonStr = stripped.substring(startIndex, endIndex + 1);
-  try { return JSON.parse(jsonStr); }
-  catch { return null; }
+function extractJSON(text) {
+  if (!text) return null;
+  try {
+    const match = text.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
+    if (match) return JSON.parse(match[0]);
+  } catch (e) { console.warn('JSON parse error:', e); }
+  return null;
 }
 
-// ===== FORM DATA EXTRACTION =====
+// ===== INDUSTRY DATA =====
+function getIndustry(type) {
+  const industries = {
+    'dental': {
+      name: 'Dental Practice',
+      whatTheyDo: 'Provide dental care services including check-ups, cleanings, fillings, cosmetic dentistry, and emergency treatments.',
+      services: ['Routine check-ups & cleanings', 'Cosmetic dentistry (whitening, veneers)', 'Emergency dental care', 'Orthodontics & braces'],
+      challenges: ['High no-show rates for appointments', 'Missed calls after hours when patients have dental emergencies', 'Staff overwhelmed balancing front desk with patient care', 'Losing new patient enquiries to competitors who answer first'],
+      benefits: 'An AI receptionist can answer emergency calls 24/7, book appointments automatically, send reminders to reduce no-shows, and capture new patient enquiries instantly — even at 2am when a patient has toothache.'
+    },
+    'medical': {
+      name: 'Medical / Clinic',
+      whatTheyDo: 'Offer healthcare services including consultations, diagnostics, chronic medication management, and wellness programmes.',
+      services: ['GP consultations', 'Chronic medication management', 'Lab tests & diagnostics', 'Wellness & vaccination programmes'],
+      challenges: ['Overflowing switchboard during peak hours', 'Patients unable to book after hours', 'Staff spending too much time on routine enquiries', 'Missed follow-up opportunities with patients'],
+      benefits: 'An AI receptionist handles routine booking, prescription refill requests, and general enquiries 24/7 — freeing nurses and admins to focus on patients in the waiting room.'
+    },
+    'beauty': {
+      name: 'Beauty Salon / Spa',
+      whatTheyDo: 'Provide beauty treatments such as nails, hair, skincare, massages, and wellness services.',
+      services: ['Hair styling & treatments', 'Nail care & manicures', 'Facials & skincare', 'Massages & body treatments'],
+      challenges: ['Double-booking during peak times', 'Clients booking via Instagram DMs that get missed', 'No-shows costing revenue', 'Difficulty filling last-minute cancellations'],
+      benefits: 'An AI receptionist books appointments instantly from any enquiry, sends reminders, fills cancellations with waitlist clients, and captures bookings from Instagram/Facebook at 11pm when the salon is closed.'
+    },
+    'restaurant': {
+      name: 'Restaurant',
+      whatTheyDo: 'Serve food and beverages to dine-in, takeaway, and delivery customers.',
+      services: ['Dine-in dining', 'Takeaway & delivery orders', 'Catering for events', 'Private functions & bookings'],
+      challenges: ['Missed reservation calls during busy service', 'Staff pulled off the floor to answer phones', 'Repetitive questions about menu, hours, and parking', 'Lost group booking enquiries'],
+      benefits: 'An AI receptionist handles reservations, answers FAQs about menus and hours, takes group bookings, and manages takeaway orders — so waiters stay on the floor and no reservation is missed.'
+    },
+    'fitness': {
+      name: 'Fitness / Gym',
+      whatTheyDo: 'Offer gym facilities, personal training, group classes, and fitness programmes.',
+      services: ['Gym access & memberships', 'Personal training sessions', 'Group fitness classes', 'Nutrition coaching'],
+      challenges: ['Losing sign-ups to 24/7 competitors', 'Trainer schedule chaos', 'Membership renewal follow-ups falling through', 'Peak-hour call overload'],
+      benefits: 'An AI receptionist captures new member sign-ups 24/7, books personal training sessions, sends renewal reminders, and answers class timetable questions — so no lead goes to a competitor.'
+    },
+    'home-services': {
+      name: 'Home Services',
+      whatTheyDo: 'Provide in-home services such as plumbing, electrical, cleaning, gardening, or renovations.',
+      services: ['Emergency repairs', 'Routine maintenance', 'Installations & renovations', 'Cleaning & gardening'],
+      challenges: ['Missing urgent calls while on a job', 'Quotes getting lost in WhatsApp threads', 'Scheduling conflicts across multiple technicians', 'No after-hours availability'],
+      benefits: 'An AI receptionist answers emergency calls instantly, books site visits, sends quote reminders, and schedules technicians — even while you are under a house fixing a pipe.'
+    },
+    'real-estate': {
+      name: 'Real Estate / Rental',
+      whatTheyDo: 'Facilitate property sales, rentals, and management for landlords and tenants.',
+      services: ['Property sales & listings', 'Rental management', 'Tenant screening', 'Property valuations'],
+      challenges: ['Missing enquiries from serious buyers/tenants', 'Repetitive questions about listings', 'Scheduling viewings across multiple properties', 'Following up with cold leads'],
+      benefits: 'An AI receptionist qualifies leads instantly, answers listing questions, books viewings, and follows up with cold leads — so no serious buyer slips through to another agent.'
+    },
+    'legal': {
+      name: 'Law Firm',
+      whatTheyDo: 'Provide legal services including consultations, document preparation, and representation.',
+      services: ['Legal consultations', 'Contract drafting & review', 'Litigation & dispute resolution', 'Conveyancing & estates'],
+      challenges: ['High-value leads lost to slow response times', 'Billable hours wasted on intake calls', 'Confidentiality concerns with reception staff', 'After-hours enquiries going to competitors'],
+      benefits: 'An AI receptionist qualifies new matters, captures case details confidentially, books consultations, and filters genuine enquiries — so attorneys focus on billable work, not intake admin.'
+    },
+    'retail': {
+      name: 'Retail Store',
+      whatTheyDo: 'Sell products directly to consumers in a physical or online store.',
+      services: ['In-store sales', 'Online orders & delivery', 'Product enquiries', 'Returns & exchanges'],
+      challenges: ['Missing calls while helping in-store customers', 'Repetitive product/stock questions', 'Poor after-hours online enquiry response', 'Losing sales to faster-responding competitors'],
+      benefits: 'An AI receptionist checks stock availability, processes orders, answers product questions, and captures leads 24/7 — so no sale is lost just because the shop floor is busy.'
+    },
+    'auto': {
+      name: 'Auto Mechanic / Dealer',
+      whatTheyDo: 'Provide vehicle repairs, servicing, and sales of new/used cars.',
+      services: ['Vehicle servicing & repairs', 'Diagnostics & mechanical work', 'Car sales (new & used)', 'Tyres & batteries'],
+      challenges: ['Missing calls with greasy hands', 'Booking confusion across multiple bays', 'Customers calling for status updates', 'Losing quotes to dealerships that respond faster'],
+      benefits: 'An AI receptionist books services, provides status updates, sends quote reminders, and captures walk-around enquiries — so mechanics stay under the bonnet and no job slips away.'
+    },
+    'education': {
+      name: 'Education / Tutoring',
+      whatTheyDo: 'Offer educational services including tutoring, courses, and skills training.',
+      services: ['One-on-one tutoring', 'Group classes & workshops', 'Online courses', 'Exam preparation'],
+      challenges: ['Parent enquiries flooding at registration time', 'Scheduling across multiple tutors/venues', 'Chasing unpaid fees', 'Losing students to faster-responding competitors'],
+      benefits: 'An AI receptionist handles parent enquiries, books trial lessons, sends payment reminders, and follows up with interested students — even during exam season when phones never stop.'
+    },
+    'tech': {
+      name: 'Tech / IT Services',
+      whatTheyDo: 'Provide IT support, software development, web design, or technology consulting.',
+      services: ['IT support & helpdesk', 'Software/web development', 'Cloud & infrastructure', 'Cybersecurity consulting'],
+      challenges: ['Support tickets piling up outside business hours', 'Qualified leads lost to slow response times', 'Developers interrupted by sales calls', 'Onboarding new clients manually'],
+      benefits: 'An AI receptionist triages support requests, qualifies new leads, books discovery calls, and handles onboarding admin — so developers stay in flow and no enterprise lead goes cold.'
+    },
+    'consulting': {
+      name: 'Consulting',
+      whatTheyDo: 'Provide expert advisory services in areas like business, finance, HR, or strategy.',
+      services: ['Strategy & business consulting', 'Financial advisory', 'HR & recruitment consulting', 'Training & workshops'],
+      challenges: ['High-value leads lost to slow response', 'Consultants interrupted by intake calls', 'Proposal follow-ups falling through', 'Difficulty qualifying serious enquiries'],
+      benefits: 'An AI receptionist qualifies leads, captures brief details, books discovery calls, and follows up on proposals — so consultants focus on high-value advisory work, not admin.'
+    },
+    'other': {
+      name: 'Business',
+      whatTheyDo: 'Provide products or services to customers in their industry.',
+      services: ['Core service offering', 'Customer consultations', 'Follow-up services', 'Support & maintenance'],
+      challenges: ['Missing calls during busy periods', 'After-hours enquiries going unanswered', 'Staff time wasted on routine questions', 'Leads slipping to faster-responding competitors'],
+      benefits: 'An AI receptionist answers every call 24/7, books appointments, captures leads, and handles routine questions — so no opportunity is missed, day or night.'
+    }
+  };
+  return industries[type] || industries['other'];
+}
+
+// ===== FORM DATA =====
 function getFormData() {
   return {
     businessName: ($('businessName')?.value || '').trim(),
@@ -214,8 +198,6 @@ async function analyzeBusiness(data) {
     challenges: industry.challenges,
     benefits: industry.benefits
   };
-
-  if (!getApiKey()) return template;
 
   const prompt = `Analyze this business for an AI receptionist sales pitch:
 
@@ -252,8 +234,6 @@ async function generateStrategy(data, analysis) {
     `Soft CTA: "Can I show you how it works in a 5-minute call?"`
   ];
 
-  if (!getApiKey()) return template;
-
   const prompt = `Generate 5 WhatsApp sales strategy points for contacting this ${industry.name}:
 
 Business: ${data.businessName}
@@ -273,8 +253,6 @@ async function generateWhatsAppMessage(data, analysis, strategy) {
   const industry = getIndustry(data.businessType);
   const greeting = data.contactPerson ? `Hi ${data.contactPerson.split(' ')[0]}! 👋\n\n` : 'Hi there! 👋\n\n';
   const template = greeting + `${data.businessName} sounds like a great fit for what we do.\n\nQuick question — when customers call outside business hours, or when your team is busy, how do you currently handle those enquiries?\n\nWe've been helping ${industry.name.toLowerCase()} businesses like yours capture every lead with an AI receptionist that answers calls 24/7, books appointments, and follows up automatically.\n\n${industry.benefits}\n\nWould you be open to a quick 5-minute demo to see how it works? No pressure at all.\n\nCheers,\nBranley`;
-
-  if (!getApiKey()) return template;
 
   const prompt = `Write a WhatsApp sales message for this business:
 
@@ -312,8 +290,6 @@ async function generateFollowUps(data, analysis) {
     { timing: '2 weeks', message: `Last check-in from me! If the timing isn't right, totally understand. But if you ever want to see how it works, just say the word 😊` }
   ];
 
-  if (!getApiKey()) return template;
-
   const prompt = `Generate 4 WhatsApp follow-up messages for this ${industry.name}:
 
 Business: ${data.businessName}
@@ -339,44 +315,38 @@ Each: 20-35 words, friendly, offer new value (case study, free audit, demo, etc.
 // ===== DISPLAY FUNCTIONS =====
 function renderAnalysis(data, analysis) {
   const industry = getIndustry(data.businessType);
-  let html = `<strong style="font-size:1.05rem">${escapeHtml(data.businessName)}</strong>`;
-  if (data.contactPerson) html += `<div style="opacity:0.7;font-size:0.88rem;margin-top:0.3rem">Contact: ${escapeHtml(data.contactPerson)}</div>`;
-  html += `<div style="opacity:0.7;font-size:0.88rem">🏷️ <strong>Industry:</strong> ${industry.name}</div>`;
 
-  html += `<div style="margin:1.25rem 0"><h4 style="margin:0 0 0.6rem 0;font-size:0.95rem">📋 What They Do</h4><p style="margin:0;line-height:1.6;font-size:0.95rem;opacity:0.9">${escapeHtml(analysis.whatTheyDo)}</p></div>`;
+  $('analysis-what-they-do').innerHTML = `<strong>What they do:</strong> ${escapeHtml(analysis.whatTheyDo)}`;
+  $('analysis-services').textContent = (analysis.services || []).join(' • ');
 
-  if (analysis.services && analysis.services.length) {
-    html += `<div style="margin:1.25rem 0"><h4 style="margin:0 0 0.6rem 0;font-size:0.95rem">🛠️ Likely Services</h4><ul style="margin:0;padding-left:1.25rem">`;
-    analysis.services.forEach(s => html += `<li style="margin-bottom:0.3rem;font-size:0.92rem">${escapeHtml(s)}</li>`);
-    html += `</ul></div>`;
-  }
+  const challengesEl = $('analysis-challenges');
+  challengesEl.innerHTML = (analysis.challenges || []).map(c =>
+    `<div style="padding:.4rem 0;font-size:.88rem;border-bottom:1px solid var(--border-color)">⚠️ ${escapeHtml(c)}</div>`
+  ).join('');
 
-  if (analysis.challenges && analysis.challenges.length) {
-    html += `<div style="margin:1.25rem 0"><h4 style="margin:0 0 0.6rem 0;font-size:0.95rem">⚠️ Likely Challenges</h4><ul style="margin:0;padding-left:1.25rem">`;
-    analysis.challenges.forEach(c => html += `<li style="margin-bottom:0.3rem;font-size:0.92rem">${escapeHtml(c)}</li>`);
-    html += `</ul></div>`;
-  }
+  // Add benefits section
+  const benefitsDiv = document.createElement('div');
+  benefitsDiv.style.cssText = 'margin-top:1rem;padding:1rem;background:rgba(16,185,129,.06);border-left:3px solid var(--accent-primary);border-radius:8px';
+  benefitsDiv.innerHTML = `<strong style="color:var(--accent-primary)">💡 How AI Receptionist Helps:</strong><p style="margin:.5rem 0 0;font-size:.88rem;line-height:1.6">${escapeHtml(analysis.benefits)}</p>`;
+  challengesEl.parentNode.appendChild(benefitsDiv);
 
-  html += `<div style="margin:1.25rem 0;padding:1rem;background:rgba(0,255,136,0.06);border-left:3px solid #00ff88;border-radius:6px"><h4 style="margin:0 0 0.6rem 0;font-size:0.95rem">💡 How AI Receptionist Helps</h4><p style="margin:0;line-height:1.6;font-size:0.95rem;opacity:0.9">${escapeHtml(analysis.benefits)}</p></div>`;
-
-  $('analysisContent').innerHTML = html;
+  $('analysis-panel').classList.add('active');
 }
 
 function renderStrategy(strategy) {
   if (!Array.isArray(strategy)) return;
-  $('strategyContent').innerHTML = strategy.map((s, i) =>
-    `<div style="display:flex;gap:0.75rem;margin-bottom:0.7rem"><span style="color:#00ff88;font-weight:700;min-width:1.5rem">${i + 1}.</span><span style="font-size:0.92rem;line-height:1.5">${escapeHtml(s)}</span></div>`
+  $('strategy-list').innerHTML = strategy.map((s, i) =>
+    `<li><span style="color:var(--accent-primary);font-weight:700">${i + 1}.</span> ${escapeHtml(s)}</li>`
   ).join('');
+  $('strategy-panel').classList.add('active');
 }
 
 function renderFollowUps(followUps) {
   if (!Array.isArray(followUps)) return;
-  $('followUpsContent').innerHTML = followUps.map(f =>
-    `<div style="margin-bottom:0.8rem;padding:0.75rem;background:rgba(255,255,255,0.04);border-radius:8px;border:1px solid rgba(255,255,255,0.08)">
-      <div style="font-size:0.82rem;color:#00ff88;margin-bottom:0.35rem;font-weight:600">⏰ ${escapeHtml(f.timing)}</div>
-      <div style="font-size:0.92rem;line-height:1.5">${escapeHtml(f.message)}</div>
-    </div>`
+  $('followup-list').innerHTML = followUps.map(f =>
+    `<li><span style="color:var(--accent-warm);font-weight:600">${escapeHtml(f.timing)}:</span> ${escapeHtml(f.message)}</li>`
   ).join('');
+  $('followup-panel').classList.add('active');
 }
 
 // ===== FORM HANDLER =====
@@ -389,12 +359,15 @@ async function handleFormSubmit(event) {
     return;
   }
 
-  const btn = event.target.querySelector('button[type="submit"]');
+  const btn = $('analyse-btn');
   const original = btn.textContent;
-  const hasGemini = !!getApiKey();
-  btn.textContent = hasGemini ? '🧠 AI is analysing...' : 'Generating...';
+  btn.textContent = '🧠 AI is analysing...';
   btn.disabled = true;
-  $('resultsSection').style.display = 'none';
+
+  // Hide previous results
+  ['analysis-panel', 'strategy-panel', 'followup-panel'].forEach(id => {
+    $(id)?.classList.remove('active');
+  });
 
   try {
     const analysis = await analyzeBusiness(data);
@@ -404,7 +377,8 @@ async function handleFormSubmit(event) {
     renderStrategy(strategy);
 
     const message = await generateWhatsAppMessage(data, analysis, strategy);
-    $('messageTextarea').value = message;
+    $('message-text').value = message;
+
     window.currentAnalysis = analysis;
     window.currentStrategy = strategy;
     window.currentMessage = message;
@@ -412,9 +386,9 @@ async function handleFormSubmit(event) {
     const followUps = await generateFollowUps(data, analysis);
     renderFollowUps(followUps);
 
-    $('resultsSection').style.display = 'block';
-    $('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    showToast(hasGemini ? '✅ AI analysis complete!' : '✅ Strategy ready! Connect Gemini to personalise further.');
+    // Scroll to results
+    $('analysis-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast('✅ AI analysis complete!');
   } catch (e) {
     console.error('Generation error:', e);
     showToast('❌ Something went wrong. Please try again.');
@@ -426,13 +400,13 @@ async function handleFormSubmit(event) {
 
 // ===== MESSAGE ACTIONS =====
 function copyMessage() {
-  const msg = $('messageTextarea').value;
-  if (!msg) return showToast('⚠️ Nothing to copy');
+  const msg = $('message-text').value;
+  if (!msg) return showToast('⚠️ Generate a message first');
   navigator.clipboard.writeText(msg).then(() => showToast('✅ Message copied!')).catch(() => showToast('❌ Copy failed'));
 }
 
 function sendViaWhatsApp() {
-  const msg = $('messageTextarea').value;
+  const msg = $('message-text').value;
   const phone = getFormData().phoneNumber.replace(/\s|-/g, '');
   if (!msg) return showToast('⚠️ Generate a message first');
   if (!phone) return showToast('⚠️ Add a phone number first');
@@ -442,7 +416,7 @@ function sendViaWhatsApp() {
 // ===== CONTACT SAVE =====
 function saveContact() {
   const data = getFormData();
-  const msg = $('messageTextarea').value;
+  const msg = $('message-text').value;
   if (!data.businessName) return showToast('⚠️ Fill in a business name first');
 
   const contacts = getContacts();
@@ -489,8 +463,8 @@ function showTool() {
 
 function renderCRM() {
   const contacts = getContacts();
-  const term = ($('searchInput')?.value || '').toLowerCase();
-  const filter = $('filterSelect')?.value || 'all';
+  const term = ($('crm-search')?.value || '').toLowerCase();
+  const filter = $('crm-filter')?.value || 'all';
 
   $('stat-total').textContent = contacts.length;
   $('stat-interested').textContent = contacts.filter(c => c.status === 'interested').length;
@@ -502,41 +476,49 @@ function renderCRM() {
     return match && status;
   });
 
-  const list = $('contactsList');
+  const list = $('contacts-list');
   if (contacts.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:3rem 1rem;opacity:0.6"><p style="font-size:1.1rem;margin-bottom:0.5rem">📭 No contacts yet</p><p style="font-size:0.88rem">Save your first business contact after analysing.</p></div>`;
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <div class="empty-state-title">No contacts yet</div>
+      <div class="empty-state-desc">Save your first business contact after analysing.</div>
+    </div>`;
     return;
   }
   if (filtered.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:3rem 1rem;opacity:0.6">🔍 No matches found</div>`;
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-title">No matches found</div>
+      <div class="empty-state-desc">Try a different search or filter.</div>
+    </div>`;
     return;
   }
 
   const statusBadge = s => {
-    const colors = { 'new': '#60a5fa', 'contacted': '#f59e0b', 'interested': '#10b981', 'not-interested': '#ef4444', 'converted': '#8b5cf6' };
     const labels = { 'new': 'New', 'contacted': 'Contacted', 'interested': 'Interested', 'not-interested': 'Not Interested', 'converted': 'Converted' };
-    const c = colors[s] || '#6366f1';
-    return `<span style="display:inline-block;font-size:0.75rem;padding:0.2rem 0.75rem;background:${c}25;color:${c};border-radius:12px;font-weight:600">${labels[s] || s}</span>`;
+    return `<span class="status-badge status-${s}">${labels[s] || s}</span>`;
   };
   const interestBadge = lvl => {
-    const colors = { 'Low': '#ef4444', 'Medium': '#f59e0b', 'High': '#10b981' };
-    const c = colors[lvl] || '#6366f1';
-    return `<span style="font-size:0.8rem;color:${c};font-weight:600">${lvl}</span>`;
+    const cls = lvl === 'High' ? 'interest-high' : lvl === 'Low' ? 'interest-low' : 'interest-medium';
+    return `<span class="interest-badge ${cls}">${lvl}</span>`;
   };
 
-  list.innerHTML = filtered.map(c => `
-    <div class="contact-card" onclick="openContactModal('${c.id}')" style="padding:1rem;margin-bottom:0.75rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;border-left:3px solid #6366f1">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div>
-          <div style="font-weight:700;font-size:1rem;margin-bottom:0.2rem">${escapeHtml(c.businessName)}</div>
-          <div style="font-size:0.85rem;opacity:0.6">${escapeHtml(c.contactPerson || '—')} · ${escapeHtml(c.phoneNumber)}</div>
-          <div style="font-size:0.82rem;opacity:0.5;margin-top:0.2rem">${escapeHtml(c.industryLabel || c.businessType)}</div>
-        </div>
-        <div style="display:flex;gap:0.4rem;align-items:center">${interestBadge(c.interestLevel)} ${statusBadge(c.status)}</div>
-      </div>
-      ${c.followUpDate ? `<div style="font-size:0.8rem;margin-top:0.5rem;opacity:0.7">📅 Follow-up: ${formatDate(c.followUpDate)}</div>` : ''}
-    </div>
-  `).join('');
+  list.innerHTML = `<table class="contact-table">
+    <thead><tr>
+      <th>Business</th><th>Phone</th><th>Industry</th><th>Interest</th><th>Status</th><th>Follow-up</th><th></th>
+    </tr></thead>
+    <tbody>${filtered.map(c => `
+      <tr onclick="openContactModal('${c.id}')">
+        <td class="name-cell"><strong>${escapeHtml(c.businessName)}</strong><small>${escapeHtml(c.contactPerson || '—')}</small></td>
+        <td>${escapeHtml(c.phoneNumber)}</td>
+        <td>${escapeHtml(c.industryLabel || c.businessType)}</td>
+        <td>${interestBadge(c.interestLevel)}</td>
+        <td>${statusBadge(c.status)}</td>
+        <td>${c.followUpDate ? formatDate(c.followUpDate) : '—'}</td>
+        <td><button class="delete-btn" onclick="event.stopPropagation();deleteContact('${c.id}')" title="Delete">🗑️</button></td>
+      </tr>
+    `).join('')}</tbody>
+  </table>`;
 }
 
 function openContactModal(id) {
@@ -544,58 +526,33 @@ function openContactModal(id) {
   const c = contacts.find(x => x.id === id);
   if (!c) return;
 
-  const modal = $('contactModal');
-  modal.innerHTML = `
-    <div style="background:rgba(20,20,40,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem;max-width:600px;width:90%;max-height:90vh;overflow-y:auto;position:relative">
-      <button onclick="closeModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;opacity:0.6">✕</button>
-      <h2 style="margin:0 0 0.5rem 0;font-size:1.5rem">${escapeHtml(c.businessName)}</h2>
-      <div style="opacity:0.7;font-size:0.9rem;margin-bottom:1.5rem">${escapeHtml(c.contactPerson || c.phoneNumber)}</div>
-      
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
-        <div><div style="font-size:0.8rem;opacity:0.6;margin-bottom:0.2rem">Phone</div><div style="font-size:0.95rem">${escapeHtml(c.phoneNumber)}</div></div>
-        <div><div style="font-size:0.8rem;opacity:0.6;margin-bottom:0.2rem">Website</div><div style="font-size:0.95rem">${escapeHtml(c.website || '—')}</div></div>
-        <div><div style="font-size:0.8rem;opacity:0.6;margin-bottom:0.2rem">Industry</div><div style="font-size:0.95rem">${escapeHtml(c.industryLabel || c.businessType)}</div></div>
-        <div><div style="font-size:0.8rem;opacity:0.6;margin-bottom:0.2rem">Interest Level</div><div style="font-size:0.95rem">${escapeHtml(c.interestLevel)}</div></div>
-      </div>
+  $('modal-business').textContent = c.businessName;
+  $('modal-contact').textContent = c.contactPerson || c.phoneNumber;
+  $('modal-phone').textContent = c.phoneNumber;
+  $('modal-website').textContent = c.website || '—';
+  $('modal-type').textContent = c.industryLabel || c.businessType;
+  $('modal-summary').textContent = c.messageSummary || 'No message saved yet.';
+  $('modal-objections').textContent = c.objections || 'None raised';
+  $('modal-interest').textContent = c.interestLevel;
+  $('modal-followup').textContent = c.followUpDate ? formatDate(c.followUpDate) : 'Not scheduled';
 
-      <div style="margin-bottom:1.5rem">
-        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">📝 WhatsApp Summary</div>
-        <div style="font-size:0.9rem;line-height:1.6;opacity:0.9;padding:0.75rem;background:rgba(255,255,255,0.04);border-radius:8px">${escapeHtml(c.messageSummary || 'No message saved yet.')}</div>
-      </div>
-
-      <div style="margin-bottom:1.5rem">
-        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">🚧 Objections / Notes</div>
-        <div style="font-size:0.9rem;line-height:1.6;opacity:0.9;padding:0.75rem;background:rgba(255,255,255,0.04);border-radius:8px">${escapeHtml(c.objections || 'None raised')}</div>
-      </div>
-
-      <div style="margin-bottom:1.5rem">
-        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.5rem">📅 Follow-up Date</div>
-        <div style="font-size:0.9rem;opacity:0.9">${c.followUpDate ? formatDate(c.followUpDate) : 'Not scheduled'}</div>
-      </div>
-
-      <div style="margin-bottom:1.5rem">
-        <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.75rem">Status</div>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap" id="modalStatusButtons"></div>
-      </div>
-
-      <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
-        <button type="button" class="btn-gradient" onclick="editContact('${c.id}')" style="flex:1;padding:0.75rem">✏️ Edit Notes</button>
-        <button type="button" class="btn-gradient" onclick="scheduleFollowUp('${c.id}')" style="flex:1;padding:0.75rem">📅 Schedule Follow-up</button>
-        <button type="button" class="btn-gradient" onclick="deleteContact('${c.id}')" style="flex:1;padding:0.75rem;background:linear-gradient(135deg,#ef4444,#dc2626)">🗑️ Delete</button>
-      </div>
-    </div>
-  `;
-  modal.style.display = 'flex';
-
+  // Status buttons
   const statuses = ['new', 'contacted', 'interested', 'not-interested', 'converted'];
   const statusLabels = { 'new': 'New', 'contacted': 'Contacted', 'interested': 'Interested', 'not-interested': 'Not Interested', 'converted': 'Converted' };
-  $('modalStatusButtons').innerHTML = statuses.map(s =>
-    `<button type="button" class="btn ${c.status === s ? 'btn-wa' : 'btn-outline'}" style="padding:0.5rem 1rem;font-size:0.85rem" onclick="updateContactStatus('${c.id}','${s}')">${statusLabels[s]}</button>`
+  $('modal-status').innerHTML = statuses.map(s =>
+    `<button type="button" class="btn btn-sm ${c.status === s ? 'btn-wa' : 'btn-outline'}" style="margin-right:.5rem;margin-bottom:.5rem" onclick="updateContactStatus('${c.id}','${s}')">${statusLabels[s]}</button>`
   ).join('');
+
+  // Button handlers
+  $('modal-edit-btn').onclick = () => editContact(c.id);
+  $('modal-followup-btn').onclick = () => scheduleFollowUp(c.id);
+  $('modal-close-btn').onclick = () => closeModal();
+
+  $('contact-modal').classList.add('active');
 }
 
 function closeModal() {
-  $('contactModal').style.display = 'none';
+  $('contact-modal').classList.remove('active');
 }
 
 function updateContactStatus(id, status) {
@@ -680,62 +637,41 @@ function exportContacts() {
   showToast('📥 Contacts exported!');
 }
 
-// ===== API KEY UI =====
-function updateApiKeyUI() {
-  const key = getApiKey();
-  const status = $('apiStatus');
-  const text = $('apiStatusText');
-  const input = $('apiKeyInput');
-  if (key) {
-    status.className = 'api-status active';
-    text.textContent = 'Connected';
-    input.value = '';
-    input.placeholder = 'Key saved ✓ (paste new to change)';
-  } else {
-    status.className = 'api-status inactive';
-    text.textContent = 'Not connected';
-    input.placeholder = 'Paste your Gemini API key (optional)';
-  }
-}
-
-function saveApiKeyFromUI() {
-  const input = $('apiKeyInput');
-  const key = input.value.trim();
-  if (key) {
-    setApiKey(key);
-    showToast('🧠 Gemini AI connected!');
-  } else {
-    localStorage.removeItem(API_KEY_STORAGE);
-    showToast('📝 API key cleared');
-  }
-  updateApiKeyUI();
-}
-
-function resetFilter() {
-  $('searchInput').value = '';
-  $('filterSelect').value = 'all';
-  renderCRM();
-}
-
-function filterContacts() {
-  renderCRM();
-}
-
-function toggleNav() {
-  const links = $('navLinks');
-  links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
-}
-
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
-  const form = $('salesForm');
+  // Form submission
+  const form = $('sales-form');
   if (form) form.addEventListener('submit', handleFormSubmit);
 
-  const searchInput = $('searchInput');
-  const filterSelect = $('filterSelect');
-  if (searchInput) searchInput.addEventListener('input', filterContacts);
-  if (filterSelect) filterSelect.addEventListener('change', filterContacts);
+  // Copy button
+  const copyBtn = $('copy-btn');
+  if (copyBtn) copyBtn.addEventListener('click', copyMessage);
 
-  updateApiKeyUI();
+  // CRM navigation
+  const crmNavLink = document.querySelector('.crm-nav-link');
+  if (crmNavLink) {
+    crmNavLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      showCRM();
+    });
+  }
+
+  const backBtn = $('back-to-tool-btn');
+  if (backBtn) backBtn.addEventListener('click', showTool);
+
+  // CRM search & filter
+  const searchInput = $('crm-search');
+  const filterSelect = $('crm-filter');
+  if (searchInput) searchInput.addEventListener('input', renderCRM);
+  if (filterSelect) filterSelect.addEventListener('change', renderCRM);
+
+  // Close modal on backdrop click
+  const modal = $('contact-modal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
   renderCRM();
 });
